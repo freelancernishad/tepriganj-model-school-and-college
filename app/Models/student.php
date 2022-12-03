@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Models;
+
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class student extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+
+        'school_id',
+        'Year',
+        'AdmissionID',
+        'StudentID',
+        'StudentRoll',
+        'StudentClass',
+        'StudentGender',
+        'StudentReligion',
+        'StudentName',
+        'StudentNameEn',
+        'StudentFatherNameBn',
+        'StudentFatherName',
+        'StudentMotherNameBn',
+        'StudentMotherName',
+        'StudentFatherNid',
+        'StudentMotherNid',
+        'StudentFatherBCN',
+        'StudentMotherBCN',
+        'guardNameBn',
+        'guardName',
+        'guardNid',
+        'guardRalation',
+        'StudentFatherOccupation',
+        'parentEarn',
+        'StudentMotherOccupation',
+        'ParentEmail',
+        'ParentPassword',
+        'StudentEmail',
+        'StudentPassword',
+        'StudentDateOfBirth',
+        'StudentBirthCertificateNo',
+        'StudentCategory',
+        'StudentKota',
+        'StudentKotaSonodNo',
+        'preSchool',
+        'preClass',
+        'bigBroSis',
+        'bigBroSisName',
+        'bigBroSisClass',
+        'bigBroSisGroup',
+        'bigBroSisRoll',
+        'StudentGroup',
+        'StudentAddress',
+        'division',
+        'district',
+        'upazila',
+        'union',
+        'post_office',
+        'StudentPhoneNumber',
+        'AreaPostalCode',
+        'stipend',
+        'StudentStatus',
+        'StudentTranferFrom',
+        'StudentPicture',
+        'JoiningDate',
+        'StudentTranferStatus',
+        'AplicationStatus',
+        'ThisMonthPaymentStatus',
+
+
+
+    ];
+
+
+    public function Payments(){
+        return $this->belongsTo(payment::class, 'StudentID', 'studentId');
+    }
+}
