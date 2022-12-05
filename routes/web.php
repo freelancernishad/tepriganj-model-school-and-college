@@ -254,7 +254,7 @@ Route::group(['prefix' => 'dashboard','middleware' => ['auth']], function() {
         // return   Auth::user()->roles->permission;
         //   Auth::user()->roles;
           $roles = Role::all();
-           $classess = json_encode(['Six', 'Seven', 'Eight', 'Nine', 'Ten']);
+           $classess = json_encode(['Play', 'Nursery', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']);
 
 
 
@@ -268,7 +268,7 @@ Route::get('/{vue_capture?}', function () {
         // return  Uniouninfo::find(1);
  $uniounDetials['defaultColor']  = 'green';
       $uniounDetials = json_decode(json_encode($uniounDetials));
-      $classess = json_encode(['Six', 'Seven', 'Eight', 'Nine', 'Ten']);
+      $classess = json_encode(['Play', 'Nursery', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']);
 
 
      return view('frontlayout',compact('uniounDetials','classess'));
