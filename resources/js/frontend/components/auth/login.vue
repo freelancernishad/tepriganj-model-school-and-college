@@ -47,9 +47,9 @@
 
 
                         <div class="text-center mt-3">
-                                    <img width="50px" :src="$asseturl+'assets/img/bangladesh-govt.png'" alt="">
-                                    <h4 style="margin: 0;    margin-top: 10px;"> টেপ্রীগঞ্জ আদর্শ দ্বি-মুখী উচ্চ বিদ্যালয়</h4>
-                                    টেপ্রীগঞ্জ, দেবীগঞ্জ, পঞ্চগড়
+                                    <img width="50px" :src="$asseturl+schooldetails.logo" alt="">
+                                    <h4 style="margin: 0;    margin-top: 10px;"> {{ schooldetails.SCHOLL_NAME }}</h4>
+                                    {{ schooldetails.SCHOLL_ADDRESS }}
 								</div>
 
                     </form>
@@ -80,6 +80,7 @@ export default {
             this.form = JSON.parse(localStorage.getItem("login"));
             this.rememberme = true;
         }
+        this.getSchoolData();
     },
 
     data() {
@@ -96,10 +97,21 @@ export default {
                 email: "",
                 password: "",
             },
+            schooldetails:{},
             errorss: {},
         };
     },
     methods: {
+
+
+        getSchoolData(){
+            axios.get(`/api/school/settings?school_id=${this.school_id}&front=front`)
+            .then(({ data }) => {
+                this.schooldetails = data;
+            })
+            .catch()
+        },
+
         async login() {
             this.loadLogin = true;
 
@@ -145,6 +157,9 @@ export default {
                                 if(res.role=='data_entry_oparetor'){
 
                                     window.location.href = "/dashboard/only/result";
+                                }else if(res.role=='camera_man'){
+
+                                    window.location.href = "/dashboard/student/img";
                                 }else{
 
                                     window.location.href = "/dashboard";

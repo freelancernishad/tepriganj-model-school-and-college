@@ -1050,6 +1050,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                                    'monthly_fee'=>'মাসিক বেতন',
                                    'session_fee'=>'সেশন ফি',
                                    'exam_fee'=>'পরীক্ষার ফি',
+                                   'registration_fee'=>'রেজিস্ট্রেশন ফি',
+                                   'form_filup_fee'=>'ফরম পূরণ ফি',
                             ];
 
                             $kahts = json_decode(json_encode($khat));
@@ -1227,10 +1229,12 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
                             $khat = [
-                                   'Admission_fee'=>'ভর্তি ফি',
-                                   'monthly_fee'=>'মাসিক বেতন',
-                                   'session_fee'=>'সেশন ফি',
-                                   'exam_fee'=>'পরীক্ষার ফি',
+                                'Admission_fee'=>'ভর্তি ফি',
+                                'monthly_fee'=>'মাসিক বেতন',
+                                'session_fee'=>'সেশন ফি',
+                                'exam_fee'=>'পরীক্ষার ফি',
+                                'registration_fee'=>'রেজিস্ট্রেশন ফি',
+                                'form_filup_fee'=>'ফরম পূরণ ফি',
                             ];
 
                             $kahts = json_decode(json_encode($khat));
@@ -1435,8 +1439,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                 <tr>
                     <td class='tableRowHead'  width='20%'>Name (বাংলা)</td>
                     <td>$student->StudentName</td>
-                    <td class='tableRowHead'  width='20%'>Name (English)</td>
-                    <td>$student->StudentNameEn</td>
+                    <td class='tableRowHead' width='20%'>Name (English)</td>
+                    <td  style='text-transform:uppercase' >$student->StudentNameEn</td>
 
                 </tr>
                 <tr>
@@ -1467,7 +1471,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td class='tableRowHead' >Father Name (বাংলা)</td>
                     <td>$student->StudentFatherNameBn</td>
                     <td class='tableRowHead' >Father Name (English)</td>
-                    <td>$student->StudentFatherName</td>
+                    <td  style='text-transform:uppercase'>$student->StudentFatherName</td>
 
                 </tr>
                 <tr>
@@ -1484,7 +1488,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td class='tableRowHead' >Mother Name (বাংলা)</td>
                     <td>$student->StudentMotherNameBn</td>
                     <td class='tableRowHead' >Mother Name (English)</td>
-                    <td>$student->StudentMotherName</td>
+                    <td  style='text-transform:uppercase'>$student->StudentMotherName</td>
 
                 </tr>
                 <tr>
@@ -1508,7 +1512,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td class='tableRowHead' >Guard. Name (বাংলা)</td>
                     <td>$student->guardNameBn</td>
                     <td class='tableRowHead' >Guard. Name (English)</td>
-                    <td>$student->guardName</td>
+                    <td  style='text-transform:uppercase'>$student->guardName</td>
 
                 </tr>
                 <tr>
@@ -1565,7 +1569,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td class='tableRowHead'  width='15%'>Applied On</td>
                     <td>$student->JoiningDate</td>
                     <td  class='tableRowHead' width='15%'>Printed On</td>
-                    <td>".date('Y-m-d')."</td>
+                    <td>".date('d-m-Y')."</td>
                 </tr>
                 <tr>
                     <td class='tableRowHead'>Declaration</td>

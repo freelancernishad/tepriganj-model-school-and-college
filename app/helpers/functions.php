@@ -151,15 +151,27 @@ function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='paymen
 
 function subjectCol($subject)
     {
-        if($subject=='ইংলিশ'){
+        if($subject=='ইংরেজি'){
             return 'English_1st';
         }else if($subject=='বাংলা'){
             return 'Bangla_1st';
-        }else if($subject=='জীব-বিজ্ঞান'){
+        }else if($subject=='জীব বিজ্ঞান'){
             return 'Biology';
+        }else if($subject=='পদার্থবিজ্ঞান'){
+            return 'physics';
+        }else if($subject=='উচ্চতর গণিত'){
+            return 'Higher_Mathematics';
         }else{
-            $orginal = array("বাংলা ১ম","বাংলা ২য়","ইংলিশ ১ম","ইংলিশ ২য়","গনিত","বিজ্ঞান","পদার্থ","রসায়ন","ভূগোল","অর্থনীতি","ইতিহাস","বাংলাদেশ ও বিশ্ব পরিচয়","ধর্ম","ইসলাম-ধর্ম","হিন্দু-ধর্ম","কৃষি","তথ্য ও যোগাযোগ প্রযোক্তি");
-            $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","vugol","orthoniti","itihas","B_and_B","Religion","ReligionIslam","ReligionHindu","Agriculture","ICT");
+
+            $orginal = array("বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান","পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়","ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা","ইসলাম-ধর্ম","হিন্দু-ধর্ম", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি");
+
+            $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","Biology","B_and_B","vugol","orthoniti","itihas","Religion","ReligionIslam","ReligionHindu","Agriculture","Higher_Mathematics","ICT","Physical_Education_and_Health","Arts_and_Crafts","Work_and_life_oriented_education","Career_Education");
+
+
+            // $orginal = array("বাংলা ১ম","বাংলা ২য়","ইংলিশ ১ম","ইংলিশ ২য়","গনিত","বিজ্ঞান","পদার্থ","রসায়ন","ভূগোল","অর্থনীতি","ইতিহাস","বাংলাদেশ ও বিশ্ব পরিচয়","ধর্ম","ইসলাম-ধর্ম","হিন্দু-ধর্ম","কৃষি","তথ্য ও যোগাযোগ প্রযোক্তি");
+            // $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","vugol","orthoniti","itihas","B_and_B","Religion","ReligionIslam","ReligionHindu","Agriculture","ICT");
+
+
             return str_replace($orginal, $colname, $subject);
         }
     }
@@ -546,6 +558,9 @@ if ($text == 'Other') {
 
 function allList($type = '', $class = '', $group = '')
 {
+    $type = strtolower($type);
+    $class = strtolower($class);
+   $group = strtolower($group);
     $data = [];
     if ($type == 'year') {
 
@@ -568,31 +583,34 @@ function allList($type = '', $class = '', $group = '')
     } else if ($type == 'subjects') {
 
 
-        if ($class == 'Nursery') {
-            $data = ["বাংলা", "ইংলিশ", "গনিত"];
-        } elseif ($class == 'Play' || $class == 'One' || $class == 'Two') {
-            $data = ["বাংলা", "ইংলিশ", "গনিত"];
-        } elseif ($class == 'Three' || $class == 'Four' || $class == 'Five') {
-            $data = ["বাংলা", "ইংলিশ", "গনিত", "বাংলাদেশ ও বিশ্ব পরিচয়", "বিজ্ঞান", "ধর্ম"];
-        } elseif ($class == 'Six' || $class == 'Seven' || $class == 'Eight') {
-            $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংলিশ ১ম", "ইংলিশ ২য়", "গনিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযোক্তি"];
-        } elseif ($class == 'Nine' || $class == 'Ten') {
 
+        if ($class == 'nursery') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত"];
+        } elseif ($class == 'play' || $class == 'one' || $class == 'two') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত"];
+        } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বাংলাদেশ ও বিশ্ব পরিচয়", "বিজ্ঞান", "ধর্ম"];
+        } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বাংলাদেশ ও বিশ্ব পরিচয়", "বিজ্ঞান", "ধর্ম"];
+        } elseif ($class == 'six' || $class == 'seven' ) {
+            $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+        } elseif ($class == 'eight') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+        }elseif ($class == 'nine' || $class == 'ten') {
+            if ($group == 'science') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+            } elseif ($group == 'humanities') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+            } elseif ($group == 'commerce') {
 
-            if ($group == 'Science') {
-
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংলিশ ১ম", "ইংলিশ ২য়", "গনিত", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযোক্তি"];
-            } elseif ($group == 'Humanities') {
-
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংলিশ ১ম", "ইংলিশ ২য়", "গনিত", "বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযোক্তি"];
-            } elseif ($group == 'Commerce') {
-
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংলিশ ১ম", "ইংলিশ ২য়", "গনিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযোক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
             } else {
 
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংলিশ ১ম", "ইংলিশ ২য়", "গনিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযোক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
             }
         }
+
+
     } else if ($type == 'groups') {
         $data = ["Science", "Humanities", "Commerce"];
     } else if ($type == 'exams') {
@@ -600,6 +618,44 @@ function allList($type = '', $class = '', $group = '')
     } else if ($type == 'religions') {
         $data = ["Islam", "Hindu", "Other"];
     }
+
+    return $data;
+}
+
+
+
+function resultSub($class = '', $group = '')
+{
+
+    $class = strtolower($class);
+   $group = strtolower($group);
+    $data = [];
+
+
+
+        if ($class == 'nursery') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত"];
+        } elseif ($class == 'play' || $class == 'one' || $class == 'two') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত"];
+        } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বাংলাদেশ ও বিশ্ব পরিচয়", "বিজ্ঞান", "ধর্ম"];
+        } elseif ($class == 'six' || $class == 'seven' || $class == 'eight') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+        } elseif ($class == 'nine' || $class == 'ten') {
+            if ($group == 'science') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি","শারীরিক শিক্ষা ও স্বাস্থ্য","চারু ও কারুকলা","ক্যারিয়ার শিক্ষা"];
+            } elseif ($group == 'humanities') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি","শারীরিক শিক্ষা ও স্বাস্থ্য","চারু ও কারুকলা","ক্যারিয়ার শিক্ষা"];
+            } elseif ($group == 'commerce') {
+
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+            } else {
+
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+            }
+        }
+
+
 
     return $data;
 }
@@ -702,13 +758,13 @@ function fileupload2($file, $path)
     $base64_decode = base64_decode($bases);
     $base64 = time().'.' . explode('/', explode(':', substr($file, 0, strpos($file, ';')))[1])[1];
 
-    $path = "backend/notice/";
+    // $path = backend/notice/"backend/notice/";
     if (!file_exists(env('FILE_PATH') . $path)) {
         File::makeDirectory(env('FILE_PATH') . $path, 0777, true, true);
     }
-    $destinationPath =$path. $base64;
+    $destinationPath =env('FILE_PATH').$path. $base64;
     file_put_contents($destinationPath, $base64_decode);
-    return env('FILE_PATH').$destinationPath;
+    return $destinationPath;
 
 }
 
@@ -1275,31 +1331,42 @@ function characterCount($string)
 {
     $greed = 'F';
     $point = '0.00';
-    if($total==100){
-        if($mark<33){
+
+
+    $Persent_33 = (33*$total)/100;
+    $Persent_40 = (40*$total)/100;
+    $Persent_50 = (50*$total)/100;
+    $Persent_60 = (60*$total)/100;
+    $Persent_70 = (70*$total)/100;
+    $Persent_80 = (80*$total)/100;
+    $Persent_101 = (101*$total)/100;
+
+
+
+        if($mark<$Persent_33){
             $greed ='F';
             $point ='0.00';
-        }elseif($mark<40){
+        }elseif($mark<$Persent_40){
             $greed ='D';
             $point ='1.00';
         }
-        elseif($mark<50){
+        elseif($mark<$Persent_50){
             $greed ='C';
             $point ='2.00';
         }
-        elseif($mark<60){
+        elseif($mark<$Persent_60){
             $greed ='B';
             $point ='3.00';
         }
-        elseif($mark<70){
+        elseif($mark<$Persent_70){
             $greed ='A-';
             $point ='3.50';
         }
-        elseif($mark<80){
+        elseif($mark<$Persent_80){
             $greed ='A';
             $point ='4.00';
         }
-        elseif($mark<101){
+        elseif($mark<$Persent_101){
             $greed ='A+';
             $point ='5.00';
         }
@@ -1307,17 +1374,6 @@ function characterCount($string)
 
 
 
-
-    }elseif($total==75){
-        $greed = 'F';
-        $point = '0.00';
-    }elseif($total==50){
-        $greed = 'F';
-        $point = '0.00';
-    }elseif($total==25){
-        $greed = 'F';
-        $point = '0.00';
-    }
 
     if($type=='greed'){
         return $greed;
@@ -1377,9 +1433,10 @@ function characterCount($string)
 
  function StudentAdmissionId($admition_id='',$school_id)
 {
-    $studentCount =  student::where(['school_id'=>$school_id])->count();
+    $regYear = date("Y");
+    $studentCount =  student::where(['school_id'=>$school_id,'Year'=>$regYear])->count();
     if($studentCount>0){
-    $student =  student::where(['school_id'=>$school_id])->latest()->first();
+    $student =  student::where(['school_id'=>$school_id,'Year'=>$regYear])->orderBy('id','desc')->latest()->first();
     $admition_id = $student->AdmissionID;
     $mutiple = (rand(1, 9));
         if($admition_id=='' || $admition_id==null){

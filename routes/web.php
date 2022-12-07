@@ -214,7 +214,7 @@ Route::get('/allow/application/notification', function () {
 
 
 
-        Route::get('/pdf/{school_id}/{class}/{roll}/{year}/{exam}',[frontendController::class ,'view_result_pdf']);
+        Route::get('/pdf/{school_id}/{class}/{roll}/{year}/{exam}/{group}',[frontendController::class ,'view_result_pdf']);
 
         Route::get('/routines/{school_id}/{class}/{year}/download',[RoutineController::class , 'routine_download'])->name('routines.routine_download');
 
@@ -259,7 +259,7 @@ Route::group(['prefix' => 'dashboard','middleware' => ['auth']], function() {
 
 
         return view('layout',compact('roles','classess'));
-    })->where('vue_capture', '[\/\w\.-]*')->name('dashboard');
+    })->where('vue_capture', '.*')->name('dashboard');
 });
 Route::get('/{vue_capture?}', function () {
 

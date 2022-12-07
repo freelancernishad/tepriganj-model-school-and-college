@@ -120,6 +120,23 @@
 
 
 
+                        <li class="nav-item sidebar-nav-item"  v-if="$localStorage.getItem('role')=='admin'" :class="{ active: selected == 2 }">
+                            <a href="javascript:void(0)" class="nav-link" @click="submenu(2)"><i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span></a>
+                        <transition name="slide">
+                            <ul class="nav sub-group-menu menu-open child" v-if="selected == 2" style="display:block">
+                                <li class="nav-item">
+                                    <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All
+                                        Teachers</router-link>
+                                </li>
+                                <li class="nav-item" >
+                                    <router-link   :to="{name:'staffsattendance'}" class="nav-link"><i class="fas fa-angle-right"></i> Attendence</router-link>
+                                </li>
+
+
+
+                            </ul>
+                        </transition>
+                        </li>
 
 
                          <li class="nav-item sidebar-nav-item" :class="{ active: selected == 1 }" >
@@ -144,7 +161,7 @@
                                 </ul>
                             </transition>
                         </li>
-<!-- 
+<!--
                         <li class="nav-item"  v-if="$localStorage.getItem('role')=='teacher'"><router-link   :to="{name:'events'}" class="nav-link"><i class="flaticon-script"></i><span>Profile</span></router-link></li> -->
 
 
@@ -162,23 +179,6 @@
 
 
 
-<li class="nav-item sidebar-nav-item"  v-if="$localStorage.getItem('role')=='admin'" :class="{ active: selected == 2 }">
-    <a href="javascript:void(0)" class="nav-link" @click="submenu(2)"><i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span></a>
-   <transition name="slide">
-    <ul class="nav sub-group-menu menu-open child" v-if="selected == 2" style="display:block">
-        <li class="nav-item">
-            <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All
-                Teachers</router-link>
-        </li>
-        <li class="nav-item" >
-            <router-link   :to="{name:'staffsattendance'}" class="nav-link"><i class="fas fa-angle-right"></i> Attendence</router-link>
-        </li>
-
-
-
-    </ul>
-</transition>
-</li>
 
 <li class="nav-item sidebar-nav-item" :class="{ active: selected == 3 }">
     <a href="javascript:void(0)" class="nav-link" @click="submenu(3)"><i class="flaticon-technological"></i><span>Acconunt</span></a>
@@ -331,6 +331,8 @@ export default {
             // console.log(this.user.role);
             if(this.user.role=='data_entry_oparetor'){
                 this.$router.push({name:'resultsoparetor'});
+            }else if(this.user.role=='camera_man'){
+                this.$router.push({name:'fileupload'});
             }
         }
         this.$store.commit('setUpdateUser', this.user)

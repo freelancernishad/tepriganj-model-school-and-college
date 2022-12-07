@@ -25,7 +25,7 @@
                                 <img class="img-fluid" width="75px" :src="schoolinfo.logo" alt="">
                                 <span class="text-dark" style="font-size:20px;display: flex;flex-direction: column;justify-content: center;margin-left: 15px;">
                                 <span style="font-size: 25px;border-bottom: 1px solid #6db5ae;">{{ schoolinfo.SCHOLL_NAME }}</span>
-                                <span style="font-size: 15px;color: #570abd;font-weight: 600;letter-spacing: 2px;">TEPRIGANJ MODEL SCHOOL AND COLLEGE</span>
+                                <span style="font-size: 15px;color: #570abd;font-weight: 600;letter-spacing: 2px;">TEPRIGANJ ADARSHA B.L HIGH SCHOOL</span>
                                 </span>
 
 
@@ -71,7 +71,7 @@
                             <li class="nav-item">
                                 <router-link class="text-light px-3 nav-link " aria-current="page" :to="{name:'payment'}">পেমেন্ট</router-link>
                             </li>
-
+                            
                             <li class="nav-item dropdown">
                                 <router-link class="text-light px-3 nav-link" to="/result" id="navbarDropdown" >
                                     ফলাফল

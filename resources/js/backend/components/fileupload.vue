@@ -1,10 +1,12 @@
 <template>
-    <div class="container">
+    <div>
+    <loader v-if="preloader" object="#ff9633" color1="#ffffff" color2="#17fd3d" size="5" speed="2"
+        bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="circular"></loader>
+        <router-link style="float: right;padding: 0 31px;" :to="{ name: 'logout' }"><i class="flaticon-turn-off"></i>Logout</router-link>
+    <div class="container m-5">
 
 
-
-
-            <div class="other">
+            <form @submit.stop.prevent="PaymentSearch" class="other">
 
 
 <div class="form-group">
@@ -31,17 +33,65 @@
 </div>
 <div class="form-group">
     <label for="">রোল</label>
-    <input type="text" v-model="data.StudentRoll" class="form-control">
+    <input type="tel" v-model="data.StudentRoll" class="form-control" required>
 </div>
-</div>
-<button type="button" class="btn btn-info" @click="PaymentSearch">খুঁজুন</button>
+<button type="submit" class="btn btn-info p-3" style="font-size: 20px;" >খুঁজুন</button>
+</form>
 
 
 
 
 
 
-      <div class="upload-example" style="width:500px;margin:0 auto"  v-if="searched == 1">
+      <div class="upload-example" style="width:300px;margin:0 auto"  v-if="searched == 1">
+
+        <div class="card-body">
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                       <b> Admission Id:</b> {{  student.AdmissionID }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>Student Id:</b> {{  student.StudentID }}
+                                    </div>
+                                    <hr>
+                                    <div class="col-md-6">
+                                        <b>Name:</b> {{  student.StudentName }}
+                                    </div>
+
+                                    <div class="col-md-6" v-if="student.StudentClass=='Nine' || student.StudentClass=='Ten'">
+                                        <b>Group:</b> {{  student.StudentGroup }}
+                                    </div>
+                                    <div class="col-md-6" v-else>
+                                        <b>Group:</b> N/A
+                                    </div>
+
+                                    <hr>
+                                    <div class="col-md-6">
+                                        <b>Class:</b> {{  student.StudentClass }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>Roll:</b> {{  student.StudentRoll }}
+                                    </div>
+                                    <hr>
+                                    <div class="col-md-6">
+                                        <b>Father Name:</b> {{  student.StudentFatherNameBn }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>Mother Name:</b> {{  student.StudentMotherNameBn }}
+                                    </div>
+                                    <hr>
+
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
         <Cropper
           ref="cropper"
           class="upload-example-cropper"
@@ -79,6 +129,7 @@
 
 
       </div>
+      </div>
 
   </template>
 
@@ -107,6 +158,7 @@
             StudentPicture:'',
         },
         image:"",
+        preloader:false,
         student: {},
             paymentStatus: 'Paid',
             paymentUrl: '#',
@@ -120,6 +172,7 @@
     methods: {
 
         async PaymentSearch() {
+            this.preloader =true
             var res = await this.callApi('post', `/api/payment/data/search`, this.data);
             if (res.data.student) {
                 this.student = res.data.student
@@ -132,6 +185,7 @@
             }
             this.paymentUrl = res.data.paymentUrl
             this.paymentStatus = res.data.paymentStatus
+            this.preloader =false
             // var res2 = await this.callApi('get',`/api/student/applicant/copy/${res.data.student.AdmissionID}`,[]);
         },
 
@@ -140,6 +194,7 @@
 
 
      async cropImage() {
+        this.preloader =true
         const result = this.$refs.cropper.getResult();
         console.log(result)
         this.form.StudentPicture =result.canvas.toDataURL("image/jpeg")
@@ -150,6 +205,7 @@
         // newTab.document.body.innerHTML = `<img src="${result.canvas.toDataURL(
         //   "image/jpeg"
         // )}"></img>`;
+        this.preloader =false
 
 
       },
@@ -170,6 +226,9 @@
           reader.readAsDataURL(input.files[0]);
         }
       },
+    },
+    mounted() {
+        this.all_list('groups');
     },
   };
   </script>

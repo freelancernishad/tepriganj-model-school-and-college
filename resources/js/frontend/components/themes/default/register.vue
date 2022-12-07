@@ -664,6 +664,7 @@
                                 নির্বাচন করুন
                             </option>
                             <option>ব্যবসায়ি</option>
+                            <option>কৃষক</option>
                             <option>কৃষি শ্রমিক</option>
                             <option>ডাক্তার</option>
                             <option>জেলে</option>
@@ -773,7 +774,7 @@
                 </tr>
                 <tr>
                     <td> {{ form.StudentName }}</td>
-                    <td> {{ form.StudentNameEn }}</td>
+                    <td style="text-transform:uppercase"> {{ form.StudentNameEn }}</td>
                     <td> {{ dateformatGlobal(form.StudentDateOfBirth)[3] }}</td>
                     <td> {{ form.StudentBirthCertificateNo }}</td>
 
@@ -787,7 +788,7 @@
                 </tr>
                 <tr>
                     <td>{{ form.StudentFatherNameBn }}</td>
-                    <td>{{ form.StudentFatherName }}</td>
+                    <td style="text-transform:uppercase">{{ form.StudentFatherName }}</td>
                     <td>{{ form.StudentFatherNid }}</td>
                     <td>{{ form.StudentFatherBCN }}</td>
 
@@ -801,7 +802,7 @@
                 </tr>
                 <tr>
                     <td>{{ form.StudentMotherNameBn }}</td>
-                    <td>{{ form.StudentMotherName }}</td>
+                    <td style="text-transform:uppercase">{{ form.StudentMotherName }}</td>
                     <td>{{ form.StudentMotherNid }}</td>
                     <td>{{ form.StudentMotherBCN }}</td>
 
@@ -815,7 +816,7 @@
                 </tr>
                 <tr>
                     <td>{{ form.guardNameBn }}</td>
-                    <td>{{ form.guardName }}</td>
+                    <td style="text-transform:uppercase">{{ form.guardName }}</td>
                     <td>{{ form.guardNid }}</td>
                     <td >{{ form.guardRalation }}</td>
 
