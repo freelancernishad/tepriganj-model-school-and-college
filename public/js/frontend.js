@@ -2142,6 +2142,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.form = JSON.parse(localStorage.getItem("login"));
       this.rememberme = true;
     }
+
+    this.getSchoolData();
   },
   data: function data() {
     return {
@@ -2157,25 +2159,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         email: "",
         password: ""
       },
+      schooldetails: {},
       errorss: {}
     };
   },
   methods: {
-    login: function login() {
+    getSchoolData: function getSchoolData() {
       var _this = this;
+
+      axios.get("/api/school/settings?school_id=".concat(this.school_id, "&front=front")).then(function (_ref) {
+        var data = _ref.data;
+        _this.schooldetails = data;
+      })["catch"]();
+    },
+    login: function login() {
+      var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this.loadLogin = true;
+                _this2.loadLogin = true;
 
-                if (_this.form.email == "" || _this.form.password == "") {
-                  _this.emptyFields = true;
+                if (_this2.form.email == "" || _this2.form.password == "") {
+                  _this2.emptyFields = true;
                 } else {
-                  if (_this.rememberme) {
-                    localStorage.setItem("login", JSON.stringify(_this.form));
+                  if (_this2.rememberme) {
+                    localStorage.setItem("login", JSON.stringify(_this2.form));
                   } else {
                     localStorage.removeItem("login");
                   } // var res = await this.callApi('post','/login',this.form);
@@ -2191,29 +2202,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   //     }
 
 
-                  axios.post("/login", _this.form).then(function (res) {
+                  axios.post("/login", _this2.form).then(function (res) {
                     console.log(res);
 
                     if (res.data == 0) {
                       Notification.customError("Please Enter Valid Email and Password");
-                      _this.loadLogin = false;
+                      _this2.loadLogin = false;
                     } else {
                       User.responseAfterLogin(res);
                       Notification.customSuccess("Signed in successfully Complete");
-                      _this.loadLogin = false;
+                      _this2.loadLogin = false;
 
-                      if (_this.$route.query.redirect) {
-                        window.location.href = _this.$route.query.redirect;
+                      if (_this2.$route.query.redirect) {
+                        window.location.href = _this2.$route.query.redirect;
                       } else {
                         if (res.role == 'data_entry_oparetor') {
                           window.location.href = "/dashboard/only/result";
+                        } else if (res.role == 'camera_man') {
+                          window.location.href = "/dashboard/student/img";
                         } else {
                           window.location.href = "/dashboard";
                         }
                       }
                     }
                   })["catch"](function (error) {
-                    return _this.errorss = error.response.data.errors;
+                    return _this2.errorss = error.response.data.errors;
                   });
                 }
 
@@ -2339,8 +2352,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       vfOptions: {
         autoplay: true
       },
-      vfImages: [this.$asseturl + "assets/img/padmabanner.jpeg"],
-      vfTransitions: ["blinds2d", "blinds3d", "blocks1", "blocks2", "book", "camera", "concentric", "cube", "explode", "fade", "fall", "kenburn", "round1", "round2", "slide", "swipe", "warp", "waterfall", "wave", "zip"],
+      vfImages: [// this.$asseturl + "assets/img/padmabanner.jpeg",
+      "https://tepriganjhighschool.edu.bd/public/backend/slider/1670087505____66768.jpeg"],
+      vfTransitions: ["fade", "blinds2d", "blinds3d", "blocks1", "blocks2", "book", "camera", "concentric", "cube", "explode", "fall", "kenburn", "round1", "round2", "slide", "swipe", "warp", "waterfall", "wave", "zip"],
       actionModalhome: {
         id: 'action-modal-home',
         title: '',
@@ -4579,7 +4593,7 @@ var render = function render() {
   }, [_c("img", {
     attrs: {
       width: "50px",
-      src: _vm.$asseturl + "assets/img/bangladesh-govt.png",
+      src: _vm.$asseturl + _vm.schooldetails.logo,
       alt: ""
     }
   }), _vm._v(" "), _c("h4", {
@@ -4587,7 +4601,7 @@ var render = function render() {
       margin: "0",
       "margin-top": "10px"
     }
-  }, [_vm._v(" টেপ্রীগঞ্জ আদর্শ দ্বি-মুখী উচ্চ বিদ্যালয়")]), _vm._v("\n                                    টেপ্রীগঞ্জ, দেবীগঞ্জ, পঞ্চগড়\n\t\t\t\t\t\t\t\t")])])])])])]);
+  }, [_vm._v(" " + _vm._s(_vm.schooldetails.SCHOLL_NAME))]), _vm._v("\n                                    " + _vm._s(_vm.schooldetails.SCHOLL_ADDRESS) + "\n\t\t\t\t\t\t\t\t")])])])])])]);
 };
 
 var staticRenderFns = [];
@@ -5270,7 +5284,7 @@ var render = function render() {
       "font-weight": "600",
       "letter-spacing": "2px"
     }
-  }, [_vm._v("TEPRIGANJ MODEL SCHOOL AND COLLEGE")])])])])])]), _vm._v(" "), _c("nav", {
+  }, [_vm._v("TEPRIGANJ ADARSHA B.L HIGH SCHOOL")])])])])])]), _vm._v(" "), _c("nav", {
     staticClass: "navbar navbar-expand-lg navbar-light bg-primary text-light"
   }, [_c("div", {
     staticClass: "container-fluid"
@@ -6392,7 +6406,7 @@ var render = function render() {
       "margin-top": "25px"
     },
     attrs: {
-      href: _vm.$asseturl + _vm.Notices.file
+      href: _vm.Notices.file
     }
   }, [_c("img", {
     staticStyle: {
@@ -6410,7 +6424,7 @@ var render = function render() {
     },
     attrs: {
       width: "100%",
-      src: _vm.$asseturl + _vm.Notices.file,
+      src: _vm.Notices.file,
       frameborder: "0"
     }
   }) : _vm._e()])])])]), _vm._v(" "), _vm._m(1)])])]), _vm._v(" "), _c("side-bar", {
@@ -6531,7 +6545,15 @@ var render = function render() {
     attrs: {
       value: "exam_fee"
     }
-  }, [_vm._v("পরীক্ষার ফি")])])]), _vm._v(" "), _vm.form.type == "Admission_fee" ? _c("div", {
+  }, [_vm._v("পরীক্ষার ফি")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "registration_fee"
+    }
+  }, [_vm._v("রেজিস্ট্রেশন ফি")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "form_filup_fee"
+    }
+  }, [_vm._v("ফরম পূরণ ফি")])])]), _vm._v(" "), _vm.form.type == "Admission_fee" ? _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     attrs: {
@@ -6558,7 +6580,7 @@ var render = function render() {
         _vm.$set(_vm.form, "adminssionId", $event.target.value);
       }
     }
-  })]) : _vm._e(), _vm._v(" "), _vm.form.type == "monthly_fee" || _vm.form.type == "session_fee" ? _c("div", {
+  })]) : _vm._e(), _vm._v(" "), _vm.form.type == "monthly_fee" || _vm.form.type == "session_fee" || _vm.form.type == "exam_fee" || _vm.form.type == "registration_fee" || _vm.form.type == "form_filup_fee" ? _c("div", {
     staticClass: "monthly_fee"
   }, [_c("div", {
     staticClass: "form-group"
@@ -6849,7 +6871,7 @@ var render = function render() {
     staticClass: "col-md-6"
   }, [_c("b", [_vm._v("Class:")]), _vm._v(" " + _vm._s(_vm.student.StudentClass) + "\n                                ")]), _vm._v(" "), _c("div", {
     staticClass: "col-md-6"
-  }, [_c("b", [_vm._v("Roll:")]), _vm._v(" " + _vm._s(_vm.student.StudentID) + "\n                                ")]), _vm._v(" "), _c("hr"), _vm._v(" "), _c("div", {
+  }, [_c("b", [_vm._v("Roll:")]), _vm._v(" " + _vm._s(_vm.student.StudentRoll) + "\n                                ")]), _vm._v(" "), _c("hr"), _vm._v(" "), _c("div", {
     staticClass: "col-md-6"
   }, [_c("b", [_vm._v("Father Name:")]), _vm._v(" " + _vm._s(_vm.student.StudentFatherNameBn) + "\n                                ")]), _vm._v(" "), _c("div", {
     staticClass: "col-md-6"
@@ -8832,7 +8854,7 @@ var render = function render() {
     attrs: {
       value: ""
     }
-  }, [_vm._v("\n                                নির্বাচন করুন\n                            ")]), _vm._v(" "), _c("option", [_vm._v("ব্যবসায়ি")]), _vm._v(" "), _c("option", [_vm._v("কৃষি শ্রমিক")]), _vm._v(" "), _c("option", [_vm._v("ডাক্তার")]), _vm._v(" "), _c("option", [_vm._v("জেলে")]), _vm._v(" "), _c("option", [_vm._v("সরকারি চাকুরি")]), _vm._v(" "), _c("option", [_vm._v("কামার/কুমোর")]), _vm._v(" "), _c("option", [_vm._v("প্রবাসি")]), _vm._v(" "), _c("option", [_vm._v("ক্ষুদ্র ব্যবসায়ি")]), _vm._v(" "), _c("option", [_vm._v("শিক্ষক")]), _vm._v(" "), _c("option", [_vm._v("অকৃষি শ্রমিক")]), _vm._v(" "), _c("option", [_vm._v("অন্যান্য")])]), _vm._v(" "), _c("p", {
+  }, [_vm._v("\n                                নির্বাচন করুন\n                            ")]), _vm._v(" "), _c("option", [_vm._v("ব্যবসায়ি")]), _vm._v(" "), _c("option", [_vm._v("কৃষক")]), _vm._v(" "), _c("option", [_vm._v("কৃষি শ্রমিক")]), _vm._v(" "), _c("option", [_vm._v("ডাক্তার")]), _vm._v(" "), _c("option", [_vm._v("জেলে")]), _vm._v(" "), _c("option", [_vm._v("সরকারি চাকুরি")]), _vm._v(" "), _c("option", [_vm._v("কামার/কুমোর")]), _vm._v(" "), _c("option", [_vm._v("প্রবাসি")]), _vm._v(" "), _c("option", [_vm._v("ক্ষুদ্র ব্যবসায়ি")]), _vm._v(" "), _c("option", [_vm._v("শিক্ষক")]), _vm._v(" "), _c("option", [_vm._v("অকৃষি শ্রমিক")]), _vm._v(" "), _c("option", [_vm._v("অন্যান্য")])]), _vm._v(" "), _c("p", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -8903,7 +8925,23 @@ var render = function render() {
     attrs: {
       width: "100%"
     }
-  }, [_c("tr", [_c("th", [_vm._v("শ্রেণিঃ " + _vm._s(_vm.form.StudentClass))]), _vm._v(" "), _c("th", [_vm._v("ধর্মঃ " + _vm._s(_vm.form.StudentReligion))]), _vm._v(" "), _c("th", [_vm._v("লিঙ্গঃ " + _vm._s(_vm.form.StudentGender))]), _vm._v(" "), _c("th", [_vm._v("গ্রুপঃ " + _vm._s(_vm.form.StudentGroup))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("শিক্ষার্থীর নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর জন্ম তারিখ ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(" " + _vm._s(_vm.form.StudentName))]), _vm._v(" "), _c("td", [_vm._v(" " + _vm._s(_vm.form.StudentNameEn))]), _vm._v(" "), _c("td", [_vm._v(" " + _vm._s(_vm.dateformatGlobal(_vm.form.StudentDateOfBirth)[3]))]), _vm._v(" "), _c("td", [_vm._v(" " + _vm._s(_vm.form.StudentBirthCertificateNo))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("পিতার নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("পিতার নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("পিতার জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("পিতার জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.StudentFatherNameBn))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentFatherName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentFatherNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentFatherBCN))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("মাতার নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("মাতার নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("মাতার জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("মাতার জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.StudentMotherNameBn))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentMotherName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentMotherNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentMotherBCN))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("পিতা/মাতা জীবিত না থাকলে অভিভাবকের নাম (বাংলা)")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের সাথে শিক্ষার্থীর সম্পর্ক ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.guardNameBn))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.guardName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.guardNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.guardRalation))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("অভিভাবকের পেশা")]), _vm._v(" "), _c("td", {
+  }, [_c("tr", [_c("th", [_vm._v("শ্রেণিঃ " + _vm._s(_vm.form.StudentClass))]), _vm._v(" "), _c("th", [_vm._v("ধর্মঃ " + _vm._s(_vm.form.StudentReligion))]), _vm._v(" "), _c("th", [_vm._v("লিঙ্গঃ " + _vm._s(_vm.form.StudentGender))]), _vm._v(" "), _c("th", [_vm._v("গ্রুপঃ " + _vm._s(_vm.form.StudentGroup))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("শিক্ষার্থীর নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর জন্ম তারিখ ")]), _vm._v(" "), _c("th", [_vm._v("শিক্ষার্থীর জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(" " + _vm._s(_vm.form.StudentName))]), _vm._v(" "), _c("td", {
+    staticStyle: {
+      "text-transform": "uppercase"
+    }
+  }, [_vm._v(" " + _vm._s(_vm.form.StudentNameEn))]), _vm._v(" "), _c("td", [_vm._v(" " + _vm._s(_vm.dateformatGlobal(_vm.form.StudentDateOfBirth)[3]))]), _vm._v(" "), _c("td", [_vm._v(" " + _vm._s(_vm.form.StudentBirthCertificateNo))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("পিতার নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("পিতার নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("পিতার জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("পিতার জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.StudentFatherNameBn))]), _vm._v(" "), _c("td", {
+    staticStyle: {
+      "text-transform": "uppercase"
+    }
+  }, [_vm._v(_vm._s(_vm.form.StudentFatherName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentFatherNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentFatherBCN))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("মাতার নাম (বাংলা) ")]), _vm._v(" "), _c("th", [_vm._v("মাতার নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("মাতার জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("মাতার জন্ম নিবন্ধন নং ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.StudentMotherNameBn))]), _vm._v(" "), _c("td", {
+    staticStyle: {
+      "text-transform": "uppercase"
+    }
+  }, [_vm._v(_vm._s(_vm.form.StudentMotherName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentMotherNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.StudentMotherBCN))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("পিতা/মাতা জীবিত না থাকলে অভিভাবকের নাম (বাংলা)")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের নাম (English) ")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের জাতীয় পরিচয়পত্র নং ")]), _vm._v(" "), _c("th", [_vm._v("অভিভাবকের সাথে শিক্ষার্থীর সম্পর্ক ")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v(_vm._s(_vm.form.guardNameBn))]), _vm._v(" "), _c("td", {
+    staticStyle: {
+      "text-transform": "uppercase"
+    }
+  }, [_vm._v(_vm._s(_vm.form.guardName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.guardNid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.form.guardRalation))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("অভিভাবকের পেশা")]), _vm._v(" "), _c("td", {
     attrs: {
       colspan: "3"
     }
@@ -10713,40 +10751,50 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         str = "Bangla_1st";
       } else if (str == 'বাংলা ২য়') {
         str = "Bangla_2nd";
-      } else if (str == 'ইংলিশ') {
+      } else if (str == 'ইংরেজি') {
         str = "English";
-      } else if (str == 'ইংলিশ ১ম') {
+      } else if (str == 'ইংরেজি ১ম') {
         str = "English_1st";
-      } else if (str == 'ইংলিশ ২য়') {
+      } else if (str == 'ইংরেজি ২য়') {
         str = "English_2nd";
-      } else if (str == 'গনিত') {
+      } else if (str == 'গণিত') {
         str = "Math";
-      } else if (str == 'জীব-বিজ্ঞান') {
+      } else if (str == 'জীব বিজ্ঞান') {
         str = "Biology";
       } else if (str == 'বিজ্ঞান') {
         str = "Science";
-      } else if (str == 'পদার্থ') {
+      } else if (str == 'পদার্থবিজ্ঞান') {
         str = "physics";
       } else if (str == 'রসায়ন') {
         str = "Chemistry";
-      } else if (str == 'ভূগোল') {
+      } else if (str == 'ভূগোল ও পরিবেশ') {
         str = "vugol";
       } else if (str == 'অর্থনীতি') {
         str = "orthoniti";
-      } else if (str == 'ইতিহাস') {
+      } else if (str == 'বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস') {
         str = "itihas";
       } else if (str == 'বাংলাদেশ ও বিশ্ব পরিচয়') {
         str = "B_and_B";
-      } else if (str == 'ধর্ম') {
+      } else if (str == 'ধর্ম ও নৈতিক শিক্ষা') {
         str = "Religion";
       } else if (str == 'ইসলাম-ধর্ম') {
         str = "ReligionIslam";
       } else if (str == 'হিন্দু-ধর্ম') {
         str = "ReligionHindu";
-      } else if (str == 'কৃষি') {
+      } else if (str == 'কৃষি শিক্ষা') {
         str = "Agriculture";
+      } else if (str == 'উচ্চতর গণিত') {
+        str = "Higher_Mathematics";
       } else if (str == 'তথ্য ও যোগাযোগ প্রযোক্তি') {
         str = "ICT";
+      } else if (str == 'শারীরিক শিক্ষা ও স্বাস্থ্য') {
+        str = "Physical_Education_and_Health";
+      } else if (str == 'চারু ও কারুকলা') {
+        str = "Arts_and_Crafts";
+      } else if (str == 'কর্ম ও জীবনমুখী শিক্ষা') {
+        str = "Work_and_life_oriented_education";
+      } else if (str == 'ক্যারিয়ার শিক্ষা') {
+        str = "Career_Education";
       } //         let banglaNumber=
       //         {
       //         "বাংলা":"Bangla",
@@ -10779,12 +10827,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     exam_comvert: function exam_comvert(str) {
       var banglaNumber = {
-        "Weakly Examination": "Weakly_Examination",
-        "ADMITION TEST RESULT": "ADMITION_TEST_RESULT",
-        "First Terminals Examination": "First_Terminals_Examination",
-        "Second Terminals Examination": "Second_Terminals_Examination",
+        "Admition Result": "Admition_Result",
+        "Half Yearly": "Half_Yearly",
+        "Pre-Test": "Pre_Test",
         "Annual Examination": "Annual_Examination",
-        "Test Examination": "Test_Examination"
+        "Model Test": "Model_Test",
+        "Test": "Test" // "Weakly Examination": "Weakly_Examination",
+        // "ADMITION TEST RESULT": "ADMITION_TEST_RESULT",
+        // "First Terminals Examination": "First_Terminals_Examination",
+        // "Second Terminals Examination": "Second_Terminals_Examination",
+        // "Annual Examination": "Annual_Examination",
+        // "Test Examination": "Test_Examination",
+
       };
 
       for (var x in banglaNumber) {
@@ -10801,39 +10855,47 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       } else if (str == 'Bangla_2nd') {
         str = "বাংলা ২য়";
       } else if (str == 'English') {
-        str = "ইংলিশ";
+        str = "ইংরেজি";
       } else if (str == 'English_1st') {
-        str = "ইংলিশ ১ম";
+        str = "ইংরেজি ১ম";
       } else if (str == 'English_2nd') {
-        str = "ইংলিশ ২য়";
+        str = "ইংরেজি ২য়";
       } else if (str == 'Math') {
-        str = "গনিত";
+        str = "গণিত";
       } else if (str == 'Science') {
         str = "বিজ্ঞান";
       } else if (str == 'physics') {
-        str = "পদার্থ";
+        str = "পদার্থবিজ্ঞান";
       } else if (str == 'Chemistry') {
         str = "রসায়ন";
       } else if (str == 'Biology') {
-        str = "জীব-বিজ্ঞান";
+        str = "জীব বিজ্ঞান";
       } else if (str == 'vugol') {
-        str = "ভূগোল";
+        str = "ভূগোল ও পরিবেশ";
       } else if (str == 'orthoniti') {
         str = "অর্থনীতি";
       } else if (str == 'itihas') {
-        str = "ইতিহাস";
+        str = "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস";
       } else if (str == 'B_and_B') {
         str = "বাংলাদেশ ও বিশ্ব পরিচয়";
       } else if (str == 'Religion') {
-        str = "ধর্ম";
+        str = "ধর্ম ও নৈতিক শিক্ষা";
       } else if (str == 'ReligionIslam') {
         str = "ইসলাম-ধর্ম";
       } else if (str == 'ReligionHindu') {
         str = "হিন্দু-ধর্ম";
       } else if (str == 'Agriculture') {
-        str = "কৃষি";
+        str = "কৃষি শিক্ষা";
       } else if (str == 'ICT') {
         str = "তথ্য ও যোগাযোগ প্রযোক্তি";
+      } else if (str == 'Physical_Education_and_Health') {
+        str = "শারীরিক শিক্ষা ও স্বাস্থ্য";
+      } else if (str == 'Arts_and_Crafts') {
+        str = "চারু ও কারুকলা";
+      } else if (str == 'Work_and_life_oriented_education') {
+        str = "কর্ম ও জীবনমুখী শিক্ষা";
+      } else if (str == 'Career_Education') {
+        str = "ক্যারিয়ার শিক্ষা";
       } // let banglaNumber =
       // {
       //     "Bangla": "বাংলা",
