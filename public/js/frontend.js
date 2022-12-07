@@ -5284,7 +5284,7 @@ var render = function render() {
       "font-weight": "600",
       "letter-spacing": "2px"
     }
-  }, [_vm._v("TEPRIGANJ ADARSHA B.L HIGH SCHOOL")])])])])])]), _vm._v(" "), _c("nav", {
+  }, [_vm._v("TEPRIGANJ MODEL SCHOOL AND COLLEGE")])])])])])]), _vm._v(" "), _c("nav", {
     staticClass: "navbar navbar-expand-lg navbar-light bg-primary text-light"
   }, [_c("div", {
     staticClass: "container-fluid"
