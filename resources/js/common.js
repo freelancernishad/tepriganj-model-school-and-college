@@ -378,6 +378,7 @@ export default {
 
             'Users' : 'getUpdateUser',
             'classess' : 'getUpdateClasses',
+            'schoolSettings' : 'getschoolinfo',
         }),
 
 

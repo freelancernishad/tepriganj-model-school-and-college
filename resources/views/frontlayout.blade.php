@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset(sitedetails()->logo) }}" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v-1.0.1') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v-1.0.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pro.min.css') }}">
     <script type="text/javascript" src="{{asset('assets/js/jquery-1.12.4.min.js')}}"></script>
 
@@ -112,7 +112,7 @@ h5 {
 
 
 
-        <component :is="$route.meta.layout || 'div'" :classes-list="{{ $classess }}">
+        <component :is="$route.meta.layout || 'div'" :classes-list="{{ $classess }}" :school_detials="{{ $school_detials }}">
             <router-view />
           </component>
 

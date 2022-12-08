@@ -44,26 +44,26 @@
                             </h6>
                         </div>
                         <div class="col-md-12">
-                            <p>{{  schoolinfo.HISTORY_OF_THE_ORGANIZATION }}</p>
+                            <p  style="text-align: justify;">{{  schoolSettings.HISTORY_OF_THE_ORGANIZATION }}</p>
                         </div>
 
 
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <h6 class="serviceTitle position-relative defaltColor">
                                 প্রধান শিক্ষকের বাণী
                             </h6>
 
-                            <p>{{  schoolinfo.PRINCIPALS_WORDS }}</p>
+                            <p style="text-align: justify;">{{  schoolSettings.PRINCIPALS_WORDS }}</p>
                         </div>
 
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <h6 class="serviceTitle position-relative defaltColor">
                                সভাপতির বাণী
                             </h6>
 
-                            <p>{{  schoolinfo.VICE_PRINCIPALS_STATEMENT }}</p>
-                        </div>
+                            <p>{{  schoolSettings.VICE_PRINCIPALS_STATEMENT }}</p>
+                        </div> -->
 
 
 
@@ -113,7 +113,7 @@ export default {
             },
             vfImages: [
                 // this.$asseturl + "assets/img/padmabanner.jpeg",
-               "https://tmscedu.com/public/backend/slider/1670434010____78677.jpeg",
+                // "https://tmscedu.com/public/backend/slider/1670434010____78677.jpeg",
 
             ],
             vfTransitions: [
@@ -152,7 +152,7 @@ export default {
         };
     },
     mounted() {
-        this.schoolDetial('front');
+        // this.schoolDetial('front');
         setTimeout(() => {
 
             this.sliderimage();
@@ -173,8 +173,8 @@ export default {
 
 
         sliderimage(){
-            // console.log(this.schoolinfo.slider)
-            this.schoolinfo.slider.forEach(element => {
+            // console.log(this.schoolSettings.slider)
+            this.schoolSettings.slider.forEach(element => {
                 this.vfImages.push(this.$asseturl + element)
             });
         },

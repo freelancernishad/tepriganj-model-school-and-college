@@ -2608,7 +2608,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapGetters)({
     'Users': 'getUpdateUser',
-    'classess': 'getUpdateClasses'
+    'classess': 'getUpdateClasses',
+    'schoolSettings': 'getschoolinfo'
   })),
   mounted: function mounted() {}
 });
