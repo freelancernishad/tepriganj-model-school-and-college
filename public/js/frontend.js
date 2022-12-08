@@ -5267,7 +5267,7 @@ var render = function render() {
     staticClass: "img-fluid",
     attrs: {
       width: "75px",
-      src: _vm.schoolSettings.logo,
+      src: _vm.$asseturl + _vm.schoolSettings.logo,
       alt: ""
     }
   }), _vm._v(" "), _c("span", {

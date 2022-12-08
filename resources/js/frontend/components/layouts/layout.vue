@@ -22,7 +22,7 @@
                 <div class="container-fluid">
                     <div class="row py-2 for_mobile">
                         <div class="col-lg-12 col-md-12 col-sm-12 logo school_logo" style="display: flex;">
-                                <img class="img-fluid" width="75px" :src="schoolSettings.logo" alt="">
+                                <img class="img-fluid" width="75px" :src="$asseturl+schoolSettings.logo" alt="">
                                 <span class="text-dark" style="font-size:20px;display: flex;flex-direction: column;justify-content: center;margin-left: 15px;">
                                 <span style="font-size: 25px;border-bottom: 1px solid #6db5ae;">{{ schoolSettings.SCHOLL_NAME }}</span>
                                 <span style="font-size: 15px;color: #570abd;font-weight: 600;letter-spacing: 2px;">TEPRIGANJ MODEL SCHOOL AND COLLEGE</span>
