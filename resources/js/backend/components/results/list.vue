@@ -140,6 +140,7 @@ export default {
             var url = '';
             var religion = '';
             var group = '';
+            var subject = '';
             if (this.$route.params.religion == 'All') {
                 religion = ''
             } else {
@@ -148,12 +149,23 @@ export default {
 
             if(this.$route.params.student_class=='Nine' || this.$route.params.student_class=='Ten'){
                 group = this.$route.params.group;
+
+                if(this.$route.params.subject=='Agriculture' || this.$route.params.subject=='Higher_Mathematics'){
+
+                    subject = this.$route.params.subject;
+                }else{
+
+                    subject = '';
+                }
+
+
             }else{
                 group = '';
+                subject = '';
             }
 
 
-            url = `/api/students/single?filter[StudentClass]=${this.$route.params.student_class}&filter[Year]=${this.year}&filter[StudentReligion]=${religion}&filter[StudentGroup]=${group}&filter[school_id]=${this.$route.params.school_id}&filter[StudentStatus]=Active`;
+            url = `/api/students/single?filter[StudentClass]=${this.$route.params.student_class}&filter[Year]=${this.year}&filter[StudentReligion]=${religion}&filter[StudentGroup]=${group}&filter[school_id]=${this.$route.params.school_id}&filter[StudentStatus]=Active&filter[StudentSubject]=${subject}`;
             axios.get(url)
                 .then(({ data }) => {
                     this.students = data
