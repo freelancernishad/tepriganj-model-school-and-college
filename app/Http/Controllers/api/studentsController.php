@@ -329,7 +329,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
             if($submit_type=='data_entry'){
                 $data['StudentStatus'] = 'Active';
             }
-            smsSend("Dear $r->StudentNameEn,Your Admission Apply has been Submit.Please Payment Your Application Fee.Your Application Id- $AdmissionID",$r->StudentPhoneNumber);
+            smsSend("Dear ".strtoupper($r->StudentNameEn).",Your Admission Apply has been Submit.Please Payment Your Application Fee.Your Application Id- $AdmissionID",$r->StudentPhoneNumber);
             $result =   student::create($data);
         } else {
             $student = student::find($r->id);
@@ -356,6 +356,10 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
     }
     public function singlestudent(Request $request)
     {
+
+
+        // return $request->all();
+
         // return student::with(['Payments'])->get();
         $result = QueryBuilder::for(student::class)
             ->allowedFilters([
@@ -379,6 +383,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                 'StudentPicture',
                 'JoiningDate',
                 AllowedFilter::exact('StudentGroup'),
+                AllowedFilter::exact('StudentSubject'),
                 AllowedFilter::exact('StudentReligion'),
                 AllowedFilter::exact('Year'),
                 AllowedFilter::exact('StudentStatus'),
@@ -1048,7 +1053,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
                             $khat = [
-                                   'Admission_fee'=>'ভর্তি ফর্ম ফি',
+                                   'Admission_fee'=>'ভর্তি ফরম ফি',
                                    'monthly_fee'=>'মাসিক বেতন',
                                    'session_fee'=>'সেশন ফি',
                                    'exam_fee'=>'পরীক্ষার ফি',
@@ -1231,7 +1236,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
                             $khat = [
-                                'Admission_fee'=>'ভর্তি ফর্ম ফি',
+                                'Admission_fee'=>'ফরম ফর্ম ফি',
                                 'monthly_fee'=>'মাসিক বেতন',
                                 'session_fee'=>'সেশন ফি',
                                 'exam_fee'=>'পরীক্ষার ফি',

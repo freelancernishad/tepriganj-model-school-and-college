@@ -114,10 +114,8 @@
 
 
                         <li class="nav-item" @click="submenu(0)">
-                            <router-link :to="{ name: 'home' }" class="nav-link"><i
-                                    class="flaticon-dashboard"></i><span>ড্যাশবোর্ড</span></router-link>
+                            <router-link :to="{ name: 'home' }" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></router-link>
                         </li>
-
 
 
                         <li class="nav-item sidebar-nav-item"  v-if="$localStorage.getItem('role')=='admin'" :class="{ active: selected == 2 }">
@@ -125,15 +123,11 @@
                         <transition name="slide">
                             <ul class="nav sub-group-menu menu-open child" v-if="selected == 2" style="display:block">
                                 <li class="nav-item">
-                                    <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All
-                                        Teachers</router-link>
+                                    <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All Teachers</router-link>
                                 </li>
                                 <li class="nav-item" >
                                     <router-link   :to="{name:'staffsattendance'}" class="nav-link"><i class="fas fa-angle-right"></i> Attendence</router-link>
                                 </li>
-
-
-
                             </ul>
                         </transition>
                         </li>
@@ -148,25 +142,21 @@
                                     <li class="nav-item">
                                         <router-link :to="{ name: 'students' }" class="nav-link"><i class="fas fa-angle-right"></i> All Students </router-link>
                                     </li>
-									
-									
+
                                     <li class="nav-item">
                                         <router-link :to="{ name: 'studentssearch',params: { classname: 'All', status: 'Pending' } }" class="nav-link"><i class="fas fa-angle-right"></i> New Applications </router-link>
                                     </li>
 
-									
-									
                                     <li class="nav-item">
                                         <router-link :to="{ name: 'studentsform' }" class="nav-link"><i class="fas fa-angle-right"></i> Admission Form </router-link>
                                     </li>
                                     <!-- <li class="nav-item">
                                         <router-link :to="{ name: 'students' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Promotion </router-link>
                                     </li> -->
-									
 
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <router-link :to="{ name: 'studentCard' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Card </router-link>
-                                    </li>
+                                    </li> -->
 
                                 </ul>
                             </transition>
@@ -297,6 +287,7 @@
         </li>
         <li class="nav-item"><router-link    :to="{name:'seoSettings'}" class="nav-link"><i class="fas fa-angle-right"></i> Seo Settings</router-link></li>
         <li class="nav-item"><router-link    :to="{name:'sliderSettings'}" class="nav-link"><i class="fas fa-angle-right"></i> Slider</router-link></li>
+
 
 
     </ul>
