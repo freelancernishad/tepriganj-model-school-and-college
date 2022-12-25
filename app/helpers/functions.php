@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\school_detail;
 use App\Models\Sonod;
 use App\Models\student;
 use App\Models\Visitor;
@@ -11,6 +12,29 @@ use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
 
+function PdfMaker($pageSize='A4',$school_id,$html,$Filename,$Watermark=true)
+{
+    $schoolDetails = school_detail::where('school_id',$school_id)->first();
+
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8', 'format' => $pageSize, 'default_font' => 'bangla', 'margin_left' => 5,
+        'margin_right' => 5,
+        'margin_top' => 6,
+        'margin_bottom' => 6,
+        'setAutoTopMargin' => 'stretch',
+    ]);
+    $mpdf->SetDisplayMode('fullpage');
+    // $mpdf->SetHTMLHeader(SchoolPad($school_id));
+    $mpdf->defaultheaderfontsize = 10;
+    $mpdf->defaultheaderfontstyle = 'B';
+    $mpdf->defaultheaderline = 0;
+    $mpdf->showWatermarkImage = $Watermark;
+    // $mpdf->WriteHTML('<watermarkimage src="'.base64($schoolDetails->logo).'" alpha="0.1" size="80,80" />');
+    $mpdf->SetWatermarkImage(base64($schoolDetails->logo),0.15);
+    // $mpdf->SetWatermarkImage(base64($schoolDetails->logo),0.15,array(130,130),array(155,50));
+    $mpdf->WriteHTML($html);
+    $mpdf->Output($Filename, 'I');
+}
 
 
 function sitedetails()
@@ -148,6 +172,55 @@ function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='paymen
 
 
 
+    function BanglaSubToEnglish($banglaSubject)
+    {
+        $data = '';
+        if($banglaSubject=='বাংলা'){
+            $data = 'Bangla';
+        }
+        if($banglaSubject=='বাংলা ১ম'){
+            $data = 'Bangla-I';
+        }elseif($banglaSubject=='বাংলা ২য়'){
+            $data = 'Bangla-II';
+        }elseif($banglaSubject=='ইংরেজি'){
+            $data = 'English';
+        }elseif($banglaSubject=='ইংরেজি ১ম'){
+            $data = 'English-I';
+        }elseif($banglaSubject=='ইংরেজি ২য়'){
+            $data = 'English-II';
+        }elseif($banglaSubject=='গণিত'){
+            $data = 'Mathematics';
+        }elseif($banglaSubject=='বিজ্ঞান'){
+            $data = 'Science';
+        }elseif($banglaSubject=='পদার্থবিজ্ঞান'){
+            $data = 'Physics';
+        }elseif($banglaSubject=='রসায়ন'){
+            $data = 'Chemistry';
+        }elseif($banglaSubject=='জীব বিজ্ঞান'){
+            $data = 'Biology';
+        }elseif($banglaSubject=='বাংলাদেশ ও বিশ্ব পরিচয়'){
+            $data = 'Bangladesh and Global Studies';
+        }elseif($banglaSubject=='ভূগোল ও পরিবেশ'){
+            $data = 'Geography and environment';
+        }elseif($banglaSubject=='অর্থনীতি'){
+            $data = 'Economics';
+        }elseif($banglaSubject=='বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস'){
+            $data = 'History and world civilization of bangladesh';
+        }elseif($banglaSubject=='ধর্ম ও নৈতিক শিক্ষা'){
+            $data = 'Religion and moral education';
+        }elseif($banglaSubject=='কৃষি শিক্ষা'){
+            $data = 'Agricultural Education';
+        }elseif($banglaSubject=='উচ্চতর গণিত'){
+            $data = 'Higher Mathematics';
+        }elseif($banglaSubject=='তথ্য ও যোগাযোগ প্রযুক্তি'){
+            $data = 'Information and Communication Technology';
+        }
+
+        return $data;
+    }
+
+
+
 
 function subjectCol($subject)
     {
@@ -214,12 +287,53 @@ function month_en_to_bn($month)
 
     return str_replace($en_month, $bn_month, $month);
 }
+function exam_en_to_bn($month)
+{
+
+
+    $bn_exam = array("ভর্তির ফলাফল", "অর্ধ বার্ষিক", "বার্ষিক পরীক্ষা","মডেল টেস্ট","প্রি-টেস্ট","টেস্ট");
+    $en_exam = array("Admission Result", "Half Yearly", "Annual Examination","Model Test","Pre-Test","Test");
+
+
+    return str_replace($en_exam, $bn_exam, $month);
+}
 
 function month_to_number($month)
 {
     $monthName = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
     $monthNumber = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     return str_replace($monthName, $monthNumber, $month);
+}
+
+function number_to_month($month)
+{
+    if($month==1){
+        return 'January';
+    }elseif($month==2){
+        return 'February';
+    }elseif($month==3){
+        return 'March';
+    }elseif($month==4){
+        return 'April';
+    }elseif($month==5){
+        return 'May';
+    }elseif($month==6){
+        return 'June';
+    }elseif($month==7){
+        return 'July';
+    }elseif($month==8){
+        return 'August';
+    }elseif($month==9){
+        return 'September';
+    }elseif($month==10){
+        return 'October';
+    }elseif($month==11){
+        return 'November';
+    }elseif($month==12){
+        return 'December';
+    }
+
+
 }
 
 function day_en_to_bn($day)
@@ -614,7 +728,7 @@ function allList($type = '', $class = '', $group = '')
     } else if ($type == 'groups') {
         $data = ["Science", "Humanities", "Commerce"];
     } else if ($type == 'exams') {
-        $data = ["Weakly Examination", "ADMITION TEST RESULT", "First Terminals Examination", "Second Terminals Examination", "Annual Examination", "Test Examination"];
+        $data = ["Admission Result", "Half Yearly", "Annual Examination","Model Test","Pre-Test","Test"];
     } else if ($type == 'religions') {
         $data = ["Islam", "Hindu", "Other"];
     }
@@ -1333,7 +1447,7 @@ function characterCount($string)
     $point = '0.00';
 
 
-    $Persent_33 = (33*$total)/100;
+    $Persent_33 = (32*$total)/100;
     $Persent_40 = (40*$total)/100;
     $Persent_50 = (50*$total)/100;
     $Persent_60 = (60*$total)/100;
@@ -1453,8 +1567,14 @@ function characterCount($string)
         }
 }
 
- function StudentId($class, $roll,$school_id,$StudentGroup='Humanities')
+ function StudentId($class, $roll,$school_id,$StudentGroup='Humanities',$year='')
 {
+
+    if(!$year){
+        $year = date("y");
+    }
+
+
     $groupcode = 2;
     if($StudentGroup=='Science'){
         $groupcode=1;
@@ -1465,7 +1585,7 @@ function characterCount($string)
     }
     $classidd = word_digit($class);
     $classid = str_pad($classidd, 2, '0', STR_PAD_LEFT);
-    $yearid = date("y");
+    $yearid = $year;
     $rollid = str_pad($roll, 3, '0', STR_PAD_LEFT);
     return $school_id . $yearid . $classid.$groupcode . $rollid;
 }
@@ -1491,6 +1611,7 @@ $Fgg = 0;
     $subjects =  allList('subjects', $class, $class_group);
     $greating = [];
     $GPA = 0.00;
+    $totalMark = 0;
     $i = 0;
     foreach ($subjects as $sub) {
         if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
@@ -1507,6 +1628,8 @@ $Fgg = 0;
                 $EXTRA = 0;
             }
             $subMark = $results['ReligionIslam'];
+
+
         } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
             $sub_d = json_decode($results['ReligionHindu_d']);
             if ($sub_d) {
@@ -1537,6 +1660,9 @@ $Fgg = 0;
             }
             $subMark = $results[subjectCol($sub)];
         }
+
+        $totalMark +=$subMark;
+
         // print_r($sub.',');
         // print_r(Greeting($subMark,$SUBJECT_TOTAL,'point'));
         if ($class == "Six" || $class == "Seven") {
@@ -1581,6 +1707,17 @@ $Fgg = 0;
                 // array_push($greating,['Bangla_2ndcq'=>$CQ2great]);
                 // array_push($greating,['Bangla_2ndmcq'=>$MCQ2great]);
 
+
+                // $enArray = [$CQ1great,$CQ2great];
+
+                // if (in_array('F', $enArray)) {
+                //     $gread1 = 'F';
+                // } else {
+                //     $gread1 = 'pass';
+                // }
+                // array_push($greating, $gread1);
+
+
                 array_push($greating, $CQ1great);
                 array_push($greating, $CQ2great);
 
@@ -1601,7 +1738,7 @@ $Fgg = 0;
                 }
                 $subMark1 = $results['English_1st'];
                 $sub_d2 = json_decode($results['English_2nd_d']);
-                if ($sub_d) {
+                if ($sub_d2) {
                     $SUBJECT_TOTAL2 = $sub_d2->SUBJECT_TOTAL;
                     $CQ2 = $sub_d2->CQ;
                     $MCQ2 = $sub_d2->MCQ;
@@ -1616,14 +1753,28 @@ $Fgg = 0;
                 $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
                 $gg1 =  ($subMark1 + $subMark2) / 2;
                 $gg = Greeting($gg1, $ggTo, 'point');
-                $CQ1great = Greeting($CQ1, 100, 'greed');
+                $CQ1great = Greeting($subMark1, $SUBJECT_TOTAL1, 'greed');
                 // $MCQ1great = Greeting($MCQ1,30,'greed');
-                $CQ2great = Greeting($CQ2, 100, 'greed');
+                $CQ2great = Greeting($subMark2, $SUBJECT_TOTAL2, 'greed');
                 // $MCQ2great = Greeting($MCQ2,20,'greed');
                 // array_push($greating,[subjectCol($sub).'cq'=>$CQ1great]);
                 // array_push($greating,[subjectCol($sub).'cq'=>$CQ2great]);
+
+
+                // $enArray = [$CQ1great,$CQ2great];
+
+                // if (in_array('F', $enArray)) {
+                //     $gread1 = 'F';
+                // } else {
+                //     $gread1 = 'pass';
+                // }
+
+
                 array_push($greating, $CQ1great);
                 array_push($greating, $CQ2great);
+
+
+
                 // array_push($greating,$MCQ1great);
                 // array_push($greating,$MCQ2great);
             } elseif (subjectCol($sub) == 'English_2nd') {
@@ -1631,6 +1782,8 @@ $Fgg = 0;
             } else {
                 $gg = Greeting($subMark, $SUBJECT_TOTAL, 'point');
                 $great = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+                        // array_push($greating,[subjectCol($sub).'cq'=>$great]);
+
                 array_push($greating, $great);
             }
             $GPA += $gg;
@@ -1709,10 +1862,29 @@ $Fgg = 0;
                 // array_push($greating,['Bangla_1stmcq'=>$MCQ1great]);
                 // array_push($greating,['Bangla_2ndcq'=>$CQ2great]);
                 // array_push($greating,['Bangla_2ndmcq'=>$MCQ2great]);
-                array_push($greating, $CQ1great);
-                array_push($greating, $MCQ1great);
-                array_push($greating, $CQ2great);
-                array_push($greating, $MCQ2great);
+
+                $bang1Arr = [$CQ1great,$MCQ1great];
+                $bang2Arr = [$CQ2great,$MCQ2great];
+
+                if (in_array('F', $bang1Arr)) {
+                    $gread1 = 'F';
+                } else {
+                    $gread1 = 'pass';
+                }
+                if (in_array('F', $bang2Arr)) {
+                    $gread2 = 'F';
+                } else {
+                    $gread2 = 'pass';
+                }
+
+
+                array_push($greating, $gread1);
+                array_push($greating, $gread2);
+                // array_push($greating, $CQ2great);
+                // array_push($greating, $MCQ2great);
+
+
+
             } elseif (subjectCol($sub) == 'Bangla_2nd') {
                 $gg = 0;
             } elseif (subjectCol($sub) == 'English_1st') {
@@ -1776,6 +1948,13 @@ $Fgg = 0;
                 }
                 array_push($greating, [subjectCol($sub) . 'cq' => 'higher']);
                 array_push($greating, [subjectCol($sub) . 'mcq' => 'higher']);
+            } elseif (subjectCol($sub) == 'ICT') {
+
+                $CQgreat = Greeting($MCQ, 25, 'greed');
+
+
+                array_push($greating, $CQgreat);
+
             } else {
                 $gg = Greeting($subMark, $SUBJECT_TOTAL, 'point');
                 if ($SUBJECT_TOTAL == 100) {
@@ -1802,8 +1981,23 @@ $Fgg = 0;
                 $MCQgreat = Greeting($MCQ, $MCQTotal, 'greed');
                 // array_push($greating,[subjectCol($sub).'cq'=>$CQgreat]);
                 // array_push($greating,[subjectCol($sub).'mcq'=>$MCQgreat]);
-                array_push($greating, $CQgreat);
-                array_push($greating, $MCQgreat);
+
+
+
+                $greedArr = [$CQgreat,$MCQgreat];
+
+
+                if (in_array('F', $greedArr)) {
+                    $gread = 'F';
+                } else {
+                    $gread = 'pass';
+                }
+
+
+
+
+                array_push($greating, $gread);
+                // array_push($greating, $MCQgreat);
             }
             $GPA += $gg;
             // $great = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
@@ -1857,6 +2051,9 @@ foreach ($greating as  $value) {
     }elseif($type=='failed'){
         return $failedCount;
 
+    }elseif($type=='mark'){
+        return $totalMark;
+
     }
 
 
@@ -1904,4 +2101,737 @@ function SubjectDetailsMark($results,$subjextName ='Bangla_1st',$type='all')
     }
 
 
+}
+
+
+
+
+function resultDetails($results,$type='ragular')
+{
+
+     $GpaResult = StudentFailedCount($results);
+
+
+    $MarkResult = StudentFailedCount($results,'mark');
+
+
+
+    if($type=='pdf'){
+       $totalMark = "
+        <tr>
+            <td>Result</td>
+            <td>GPA=$GpaResult</td>
+            <td>Total Mark</td>
+            <td>$MarkResult</td>
+        </tr>";
+
+        if($results->failed>0){
+            $totalMark .="";
+        }else{
+            $totalMark .="<tr>
+                <td>Next Class Roll</td>
+                <td colspan='3'><span id='i_name'>$results->nextroll</span></td>
+            </tr>";
+        }
+
+
+    }else{
+
+
+        if($results->FinalResultStutus=='inhaled'){
+
+            $totalMark = "
+            <tr>
+                <td>Result</td>
+                <td colspan='3' style='color:red'>ফলাফল জানার জন্য বিদ্যালয়ে যোগাযোগ করুন</td>
+
+            </tr>";
+        }else{
+
+            $totalMark = "
+            <tr>
+                <td>Result</td>
+                <td>GPA=$GpaResult</td>
+                <td>Total Mark</td>
+                <td>$MarkResult</td>
+            </tr>";
+
+            if($results->failed>0){
+                $totalMark .="";
+            }else{
+                $totalMark .="<tr>
+                    <td>Next Class Roll</td>
+                    <td colspan='3'><span id='i_name'>$results->nextroll</span></td>
+                </tr>";
+            }
+
+        }
+
+
+
+
+
+    }
+
+
+
+    $stu_id = $results->stu_id;
+    $student = student::where('StudentID',$stu_id)->first();
+    $class = $results->class;
+    $class_group = $results->class_group;
+    if($class=='Six' || $class=='Seven' || $class=='Eight'){
+        $class_group='N/A';
+    }
+
+
+    $fontfammily = '';
+    if($type=='pdf'){
+        // $fontfammily = 'font-family: cursive;';
+    }
+
+
+    $html  = "
+
+    <table class='table table-striped table-bordered' style='$fontfammily;font-family: 'bangla', sans-serif;' width='100%' >
+
+    <tbody>
+        <tr>
+            <td>Roll No</td>
+            <td>$results->roll</td>
+            <td>Class</td>
+            <td>$class</td>
+
+        </tr>
+
+        <tr>
+        <td>Student Id</td>
+        <td>$results->stu_id</td>
+            <td>Admission Id</td>
+            <td>$student->AdmissionID</td>
+        </tr>
+        <tr>
+            <td>Name of Student</td>
+            <td style='text-transform: uppercase;' colspan='3'>$student->StudentNameEn</td>
+
+
+        </tr>
+        <tr>
+            <td>Father's Name</td>
+            <td colspan='3' style='text-transform: uppercase;'>$student->StudentFatherName</td>
+        </tr>
+        <tr>
+            <td>Mother's Name</td>
+            <td colspan='3' style='text-transform: uppercase;'>$student->StudentMotherName</td>
+        </tr>
+        <tr>
+            <td>Exam Name</td>
+            <td>$results->exam_name</td>
+            <td>Year</td>
+            <td>$results->year</td>
+        </tr>
+        <tr>
+            <td>Group</td>
+            <td>$class_group</td>
+            <td>Type: Regular</td>
+            <td>Gender: $student->StudentGender</td>
+        </tr>
+        $totalMark
+
+
+
+    </tbody>
+</table>";
+
+return $html;
+
+}
+
+
+function ResultGradeList($results,$type='ragular')
+{
+    $fontfammily = '';
+    if($type=='pdf'){
+        $fontfammily = 'font-family: cursive;';
+    }
+    $class = $results->class;
+    $class_group = $results->class_group;
+    $subjects =  allList('subjects', $class, $class_group);
+    $html = " <table class='table table-striped table-bordered' style='margin-top:20px;$fontfammily' width='100%'    >
+
+    <thead  class='btn-success' style='background-color: #28a745 !important;'>
+    <tr >
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'>
+                SUBJECT NAME
+            </td>
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'> THEORY</td>
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'> MCQ</td>
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'> PRAC/CA</td>
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'> TOTAL</td>
+        <td class='pl-5 pr-5 text-white' colspan='1' style='text-align:center'> GRADE</td>
+    </tr>
+
+    </thead>
+<tbody>
+    ";
+
+
+
+    foreach ($subjects as $sub) {
+        $html .= "<tr class='table-primar'  >";
+        if ($class == "Six" || $class == "Seven") {
+            if (subjectCol($sub) == 'Bangla_1st') {
+                $html .= " <td class='pl-5 pr-5'>".BanglaSubToEnglish('বাংলা ১ম')." <br/>".BanglaSubToEnglish('বাংলা ২য়')."</td>";
+            } elseif (subjectCol($sub) == 'Bangla_2nd') {
+                $html .= '';
+            } elseif (subjectCol($sub) == 'English_1st') {
+                $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish('ইংরেজি ১ম')." <br/>".BanglaSubToEnglish('ইংরেজি ২য়')."</td>";
+            } elseif (subjectCol($sub) == 'English_2nd') {
+                $html .= '';
+            } else {
+                $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish($sub)."</td>";
+            }
+            if (subjectCol($sub) == 'Bangla_1st') {
+
+                $mark1 =  SubjectDetailsMark($results, 'Bangla_1st', 'all');
+                $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
+
+                $CQ1 = $mark1['CQ'];
+                $MCQ1 = $mark1['MCQ'];
+                $EXTRA1 = $mark1['EXTRA'];
+                $subMark1 = $mark1['subMark'];
+
+
+                $mark2 =  SubjectDetailsMark($results, 'Bangla_2nd', 'all');
+                $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
+                $CQ2 = $mark2['CQ'];
+                $MCQ2 = $mark2['MCQ'];
+                $EXTRA2 = $mark2['EXTRA'];
+                $subMark2 = $mark2['subMark'];
+
+
+
+
+
+
+                $CQ1great = Greeting($subMark1, $SUBJECT_TOTAL1, 'greed');
+                $CQ2great = Greeting($subMark2, $SUBJECT_TOTAL2, 'greed');
+
+
+                $enArray = [$CQ1great,$CQ2great];
+
+                if (in_array('F', $enArray)) {
+                    $gg = 'F';
+                } else {
+                    $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
+                    $gg1 =  ($subMark1 + $subMark2) / 2;
+                    $gg = Greeting($gg1, $ggTo, 'greed');
+                }
+
+
+
+
+
+
+
+                $html .= "<td  style='text-align:center'><span>  $CQ1 <br/> $CQ2 </span></td>";
+
+
+                $html .= "<td  style='text-align:center'><span>  $MCQ1 <br/> $MCQ2 </span></td>";
+                $html .= "<td  style='text-align:center'><span>  $EXTRA1 <br/> $EXTRA2 </span></td>";
+
+                $html .= "<td  style='text-align:center'><span> " . ((int)$subMark1 + (int)$subMark2) . "</span></td>";
+                $html .= "<td  style='text-align:center'><span> " . $gg . "</span></td>";
+            } elseif (subjectCol($sub) == 'Bangla_2nd') {
+                $html .= '';
+            } elseif (subjectCol($sub) == 'English_1st') {
+                $mark1 =  SubjectDetailsMark($results, 'English_1st', 'all');
+                $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
+                $CQ1 = $mark1['CQ'];
+                $MCQ1 = $mark1['MCQ'];
+                $EXTRA1 = $mark1['EXTRA'];
+                $subMark1 = $mark1['subMark'];
+                $mark2 =  SubjectDetailsMark($results, 'English_2nd', 'all');
+                $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
+                $CQ2 = $mark2['CQ'];
+                $MCQ2 = $mark2['MCQ'];
+                $EXTRA2 = $mark2['EXTRA'];
+                $subMark2 = $mark2['subMark'];
+                $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
+                $gg1 =  ($subMark1 + $subMark2) / 2;
+                //   return   $gg = Greeting($gg1, $ggTo, 'point');
+
+
+
+                $CQ1great = Greeting($subMark1, $SUBJECT_TOTAL1, 'greed');
+                $CQ2great = Greeting($subMark2, $SUBJECT_TOTAL2, 'greed');
+
+
+                $enArray = [$CQ1great,$CQ2great];
+
+                if (in_array('F', $enArray)) {
+                    $gg = 'F';
+                } else {
+                    $gg = Greeting($gg1, $ggTo, 'greed');
+                    // $gg = Greeting($gg1, $ggTo, 'greed');
+                }
+
+
+
+
+                $html .= "<td style='text-align:center'><span>  $CQ1 <br/> $CQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span>  $MCQ1 <br/> $MCQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span>  $EXTRA1 <br/> $EXTRA2 </span></td>";
+
+                $html .= "<td style='text-align:center'><span> " . ((int)$subMark1 + (int)$subMark2) . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $gg . "</span></td>";
+            } elseif (subjectCol($sub) == 'English_2nd') {
+                $html .= '';
+            } else {
+
+
+
+                if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
+
+                    $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
+                    $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                } else {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+                    $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                }
+
+
+
+
+
+            }
+
+
+
+
+        } elseif ($class == "Eight") {
+            $html .= " <td class='pl-5 pr-5'>". BanglaSubToEnglish($sub)."</td>";
+
+            if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
+                $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+
+                $html .= "<td><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
+
+                $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+                $html .= "<td><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            } else {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+
+                $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+                $html .= "<td><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            }
+        } elseif ($class == "Nine" || $class == "Ten") {
+            if (subjectCol($sub) == 'Bangla_1st') {
+                $html .= " <td class='pl-5 pr-5'>".BanglaSubToEnglish('বাংলা ১ম')." <br/>".BanglaSubToEnglish('বাংলা ২য়')."</td>";
+            } elseif (subjectCol($sub) == 'Bangla_2nd') {
+                $html .= '';
+            } elseif (subjectCol($sub) == 'English_1st') {
+                $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish('ইংরেজি ১ম')." <br/>".BanglaSubToEnglish('ইংরেজি ২য়')."</td>";
+
+            } elseif (subjectCol($sub) == 'English_2nd') {
+                $html .= '';
+            } else {
+                if (subjectCol($sub) == 'Agriculture') {
+                    if ($results->Agriculture) {
+                        $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish($sub)." (<b>4th Subject</b>)</td>";
+                    } else {
+                        $html .= '';
+                    }
+                } elseif (subjectCol($sub) == 'Higher_Mathematics') {
+                    if ($results->Higher_Mathematics) {
+                        $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish($sub)." (<b>4th Subject</b>)</td>";
+
+                    } else {
+                        $html .= '';
+                    }
+                } else {
+                    $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish($sub)."</td>";
+
+                }
+            }
+            if (subjectCol($sub) == 'Bangla_1st') {
+                $mark1 =  SubjectDetailsMark($results, 'Bangla_1st', 'all');
+                $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
+                $subMark1 = $mark1['subMark'];
+                $CQ1 = $mark1['CQ'];
+                $MCQ1 = $mark1['MCQ'];
+                $EXTRA1 = $mark1['EXTRA'];
+                $mark2 =  SubjectDetailsMark($results, 'Bangla_2nd', 'all');
+                $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
+                $subMark2 = $mark2['subMark'];
+                $CQ2 = $mark2['CQ'];
+                $MCQ2 = $mark2['MCQ'];
+                $EXTRA2 = $mark2['EXTRA'];
+
+
+                $CQ1Grade = Greeting($CQ1, 70, 'greed');
+                $MCQ1Grade = Greeting($MCQ1, 30, 'greed');
+
+                $CQ2Grade = Greeting($CQ2, 70, 'greed');
+                $MCQ2Grade = Greeting($MCQ2, 30, 'greed');
+
+                $grade = [$CQ1Grade, $MCQ1Grade, $CQ2Grade, $MCQ2Grade];
+
+
+                if (in_array('F', $grade)) {
+                    $gg = 'F';
+                } else {
+                    $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
+                    $gg1 =  ($subMark1 + $subMark2) / 2;
+                    $gg = Greeting($gg1, $ggTo, 'greed');
+                }
+
+
+
+
+
+
+
+                $html .= "<td style='text-align:center'><span> $CQ1 <br/> $CQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span>  $MCQ1 <br/> $MCQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span>  $EXTRA1 <br/> $EXTRA2 </span></td>";
+
+                $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . ((int)$subMark1 + (int)$subMark2) . "</span></td>";
+                $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+            } elseif (subjectCol($sub) == 'Bangla_2nd') {
+                $html .= '';
+            } elseif (subjectCol($sub) == 'English_1st') {
+                $mark1 =  SubjectDetailsMark($results, 'English_1st', 'all');
+                $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
+                $subMark1 = $mark1['subMark'];
+                $CQ1 = $mark1['CQ'];
+                $MCQ1 = $mark1['MCQ'];
+                $EXTRA1 = $mark1['EXTRA'];
+
+                $mark2 =  SubjectDetailsMark($results, 'English_2nd', 'all');
+                $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
+                $subMark2 = $mark2['subMark'];
+                $CQ2 = $mark2['CQ'];
+                $MCQ2 = $mark2['MCQ'];
+                $EXTRA2 = $mark2['EXTRA'];
+
+
+
+
+                $CQ1Grade = Greeting($CQ1, $SUBJECT_TOTAL1, 'greed');
+
+
+                $CQ2Grade = Greeting($CQ2, $SUBJECT_TOTAL2, 'greed');
+
+
+                $grade = [$CQ1Grade, $CQ2Grade];
+
+
+                if (in_array('F', $grade)) {
+                    $gg = 'F';
+                } else {
+                    $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
+                    $gg1 =  ($subMark1 + $subMark2) / 2;
+                    $gg = Greeting($gg1, $ggTo, 'greed');
+                }
+                $html .= "<td style='text-align:center'><span>$CQ1 <br/> $CQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span> $MCQ1 <br/> $MCQ2 </span></td>";
+                $html .= "<td style='text-align:center'><span> $EXTRA1 <br/> $EXTRA2 </span></td>";
+                $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . ((int)$subMark1 + (int)$subMark2) . "</span></td>";
+                $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+            } elseif (subjectCol($sub) == 'English_2nd') {
+                $html .= '';
+            } else {
+                if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
+
+
+                    $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+                    $CQGrade = Greeting($CQ, 70, 'greed');
+                    $MCQGrade = Greeting($MCQ, 30, 'greed');
+                    $grade = [$CQGrade, $MCQGrade];
+                    if (in_array('F', $grade)) {
+                        $gg = 'F';
+                    } else {
+                        $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+                    }
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
+
+
+
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
+                    $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+                    $CQGrade = Greeting($CQ, 70, 'greed');
+                    $MCQGrade = Greeting($MCQ, 30, 'greed');
+                    $grade = [$CQGrade, $MCQGrade];
+                    if (in_array('F', $grade)) {
+                        $gg = 'F';
+                    } else {
+                        $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+                    }
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                } elseif (subjectCol($sub) == 'ICT') {
+
+
+
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+                    $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $MCQGrade = Greeting($MCQ, 25, 'greed');
+                    $grade = [$MCQGrade];
+                    if (in_array('F', $grade)) {
+                        $gg = 'F';
+                    } else {
+                        $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+                    }
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                } else {
+
+
+
+
+
+
+
+
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+                    $CqTotal = 70;
+                    $MCqTotal = 30;
+                    if ($SUBJECT_TOTAL == 100) {
+                        if (subjectCol($sub) == 'Biology' || subjectCol($sub) == 'physics' || subjectCol($sub) == 'Higher_Mathematics' || subjectCol($sub) == 'Agriculture' || subjectCol($sub) == 'Chemistry') {
+                            $CqTotal = 50;
+                            $MCqTotal = 25;
+                        } else {
+                            $CqTotal = 70;
+                            $MCqTotal = 30;
+                        }
+                    } elseif ($SUBJECT_TOTAL == 50) {
+                        $CqTotal = 30;
+                        $MCqTotal = 20;
+                    }
+
+
+                    $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+                    $CQGrade = Greeting($CQ, $CqTotal, 'greed');
+                    $MCQGrade = Greeting($MCQ, $MCqTotal, 'greed');
+                    $grade = [$CQGrade, $MCQGrade];
+                    if (in_array('F', $grade)) {
+                        $gg = 'F';
+                    } else {
+                        $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+                    }
+
+                    if (subjectCol($sub) == 'Agriculture') {
+                        if ($results->Agriculture) {
+
+
+
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                        } else {
+                            $html .= '';
+                        }
+                    } elseif (subjectCol($sub) == 'Higher_Mathematics') {
+                        if ($results->Higher_Mathematics) {
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                            $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                        } else {
+                            $html .= '';
+                        }
+                    } else {
+
+                        $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $CQ . "</span></td>";
+                        $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $MCQ . "</span></td>";
+                        $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $EXTRA . "</span></td>";
+                        $html .= "<td style='text-align:center' class='pl-5 pr-5'><span> " . $subMark . "</span></td>";
+                        $html .= "<td style='text-align:center' class='pl-5 pr-5'><span>" . $gg . "</span></td>";
+                    }
+                }
+            }
+        }
+        $html .= "</tr>";
+    }
+    $html .= "
+</tbody>
+</table>
+";
+
+    return $html;
+}
+
+
+
+function gpaToGreed($gpa)
+{
+    $gread = 'F';
+
+// return $gpa;
+if($gpa=='F'){
+    return $gread = 'F';
+}
+    if($gpa>=5){
+       return $gread = 'A+';
+    }elseif($gpa>=4){
+        return $gread = 'A';
+    }elseif($gpa>=3.5){
+        return $gread = 'A-';
+    }elseif($gpa>=3){
+        return $gread = 'B';
+    }elseif($gpa>=2){
+        $gread = 'C';
+    }elseif($gpa>=1){
+        return $gread = 'D';
+    }
+    return $gread;
+
+
+}
+
+
+function promoteClass($oldclass)
+{
+    if($oldclass=='Six'){
+        return 'Seven';
+    }elseif($oldclass=='Seven'){
+        return 'Eight';
+    }elseif($oldclass=='Eight'){
+        return 'Nine';
+    }elseif($oldclass=='Nine'){
+        return 'Ten';
+    }elseif($oldclass=='Ten'){
+        return 'Ten';
+    }else{
+        return "somethig wrong $oldclass";
+    }
+}
+
+
+
+function SchoolPad($school_id)
+{
+    $schoolDetails = school_detail::where('school_id',$school_id)->first();
+
+
+    $html = "
+
+    <table width='100%' style='margin-bottom:20px' border='0'>
+        <tr>
+            <td width='110px' style='border:0 !important'>
+                <img width='75px'  style='overflow:hidden;float:right' src='".base64($schoolDetails->logo)."' alt=''>
+            </td>
+            <td style='border:0 !important'>
+                <p class='fontsize2' style='font-size:30px'> $schoolDetails->SCHOLL_NAME </p>
+                <p class='fontsize1' style='font-size:20px'> $schoolDetails->SCHOLL_ADDRESS  </p>
+                <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
+            </td>
+
+
+        </tr>
+    </table>
+
+
+    ";
+
+    return $html;
 }

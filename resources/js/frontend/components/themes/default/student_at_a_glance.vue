@@ -47,7 +47,7 @@
                             <td align="center" valign="middle" scope="col" style="border-color:#CCCCCC;border-width:1px;border-style:Solid;">মোট</td>
                             <td align="center" valign="middle" scope="col" style="border-color:#CCCCCC;border-width:1px;border-style:Solid;">বিজ্ঞান</td>
                             <!-- <th align="center" valign="middle" scope="col" style="border-color:#CCCCCC;border-width:1px;border-style:Solid;">ব্যব.শি</th> -->
-                            <th align="center" valign="middle" scope="col" style="border-color:#CCCCCC;border-width:1px;border-style:Solid;">মানবিক</th>
+                            <td align="center" valign="middle" scope="col" style="border-color:#CCCCCC;border-width:1px;border-style:Solid;">মানবিক</td>
                         </tr>
 
                         <tr v-for="(student,key) in students.data">
@@ -103,6 +103,11 @@
             </td>
         </tr>
     </table>
+
+    <adsense ad-client="ca-pub-9489624253487221" ad-format="fluid" ad-slot="4940322175" ad-layout-key="-fb+5w+4e-db+86"></adsense>
+
+
+
 
 </div>
             </div>

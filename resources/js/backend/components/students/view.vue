@@ -72,7 +72,7 @@
                                 <td class="font-medium text-dark-medium">{{ form.StudentGender }}</td>
                             </tr>
                             <tr>
-                                <td>Admission Date:</td>
+                                <td>Application Date:</td>
                                 <td class="font-medium text-dark-medium">{{ dateformatGlobal(form.created_at)[3]	 }}</td>
                             </tr>
                             <tr>
@@ -94,11 +94,11 @@
                             </tr>
                             <tr>
                                 <td>Father Name:</td>
-                                <td class="font-medium text-dark-medium">{{ form.StudentFatherName }}</td>
+                                <td class="font-medium text-dark-medium"  style="text-transform: uppercase;">{{ form.StudentFatherName }}</td>
                             </tr>
                             <tr>
                                 <td>Mother Name:</td>
-                                <td class="font-medium text-dark-medium">{{ form.StudentMotherName }}</td>
+                                <td class="font-medium text-dark-medium"  style="text-transform: uppercase;">{{ form.StudentMotherName }}</td>
                             </tr>
                             <tr>
                                 <td>Date Of Birth:</td>

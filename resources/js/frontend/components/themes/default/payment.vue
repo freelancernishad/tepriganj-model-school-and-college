@@ -30,8 +30,8 @@
                             <select class="form-control" v-model="form.type">
                                 <option value="">পেমেন্ট ক্যাটাগরি নির্বাচন করুন</option>
                                 <option value="Admission_fee">ভর্তি ফরম ফি</option>
+                                <option value="session_fee">ভর্তি/সেশন ফি</option>
                                 <option value="monthly_fee">মাসিক বেতন</option>
-                                <option value="session_fee">সেশন ফি</option>
                                 <option value="exam_fee">পরীক্ষার ফি</option>
                                 <option value="registration_fee">রেজিস্ট্রেশন ফি</option>
                                 <option value="form_filup_fee">ফরম পূরণ ফি</option>
@@ -54,9 +54,9 @@
                                 <label for="">পেমেন্ট করার মাধ্যম</label>
                                 <select class="form-control" v-model="form.paymenttype">
                                     <option value="">নির্বাচন করুন</option>
+                                    <option value="other">শ্রেণি রোল এর মাধ্যমে</option>
                                     <option value="AdmissionID">এডমিশন আইডি এর মাধ্যমে</option>
                                     <option value="StudentID"> স্টুডেন্ট আইডি এর মাধ্যমে</option>
-                                    <option value="other">শ্রেণি, রোল, গ্রুপ এর মাধ্যমে</option>
                                 </select>
                             </div>
 
@@ -122,34 +122,39 @@
 
                         <div class="card" v-if="searched == 1">
                             <div class="card-header" style="display: flex;justify-content: end;">
-                                <div v-if="paymentStatus == 'Paid'" class="paiddiv">
-                                                <button class="btn btn-success">Paid</button>
-                                                <!-- <a class="btn btn-info" target="_blank"
-                                                    :href="'/student/applicant/copy/' + student.AdmissionID">Print
-                                                    Applicant Copy</a> -->
-                                            </div>
 
-                                            <a class="btn btn-info" v-else-if="paymentStatus == 'Pending'"
-                                                :href="paymentUrl">Pay Pending Payment</a>
-
-                                            <a class="btn btn-info" v-else-if="paymentStatus == 'Failed'"
-                                                :href="paymentUrl">Pay Failed Payment</a>
-
-                                            <a class="btn btn-info" v-else :href="'/payment?studentId='+student.id+'&type='+form.type+'&month='+form.month">Pay Now</a>
                             </div>
                             <div class="card-body">
                                 <div class="row">
 
-                                    <div class="col-md-6">
-                                       <b> Admission Id:</b> {{  student.AdmissionID }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <b>Student Id:</b> {{  student.StudentID }}
-                                    </div>
-                                    <hr>
+
+
                                     <div class="col-md-6">
                                         <b>Name:</b> {{  student.StudentName }}
                                     </div>
+                                    <div class="col-md-3">
+                                        <b>Roll:</b> {{  student.StudentRoll }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <b>Class:</b> {{  student.StudentClass }}
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="col-md-6">
+                                        <b>Father Name:</b> {{  student.StudentFatherNameBn }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>Mother Name:</b> {{  student.StudentMotherNameBn }}
+                                    </div>
+                                    <hr>
+
+
+
+
+
+
+
 
                                     <div class="col-md-6" v-if="student.StudentClass=='Nine' || student.StudentClass=='Ten'">
                                         <b>Group:</b> {{  student.StudentGroup }}
@@ -159,24 +164,39 @@
                                     </div>
 
                                     <hr>
-                                    <div class="col-md-6">
-                                        <b>Class:</b> {{  student.StudentClass }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <b>Roll:</b> {{  student.StudentRoll }}
-                                    </div>
-                                    <hr>
-                                    <div class="col-md-6">
-                                        <b>Father Name:</b> {{  student.StudentFatherNameBn }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <b>Mother Name:</b> {{  student.StudentMotherNameBn }}
-                                    </div>
-                                    <hr>
 
+                                    <div class="col-md-6">
+                                       <b> Admission Id:</b> {{  student.AdmissionID }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>Student Id:</b> {{  student.StudentID }}
+                                    </div>
+                                    <hr>
                                 </div>
                             </div>
+
+
+                            <div class="card-footer" style="    display: flex;justify-content: center;">
+
+                                <div v-if="paymentStatus == 'Paid'" class="paiddiv">
+                                                <button class="btn btn-success">পরিশোধিত</button>
+                                                 <a class="btn btn-info" target="_blank"
+                                                    :href="'/student/applicant/invoice/' + trxid">রশিদ ডাউনলোড</a>
+                                            </div>
+
+                                            <a class="btn btn-info" v-else-if="paymentStatus == 'Pending'"
+                                                :href="paymentUrl">Pay Pending Payment</a>
+
+                                            <a class="btn btn-info" v-else-if="paymentStatus == 'Failed'"
+                                                :href="paymentUrl">Pay Failed Payment</a>
+
+                                            <a class="btn btn-info" style="font-size: 30px;" v-else :href="'/payment?studentId='+student.id+'&type='+form.type+'&month='+form.month">পেমেন্ট করুন</a>
+
+
+                            </div>
+
                         </div>
+
 
 
 
@@ -214,6 +234,7 @@ export default {
             student: {},
             paymentStatus: 'Paid',
             paymentUrl: '#',
+            trxid: '',
             searched: 0,
         }
     },
@@ -229,6 +250,7 @@ export default {
                 this.searched = 2
             }
             this.paymentUrl = res.data.paymentUrl
+            this.trxid = res.data.trxid
             this.paymentStatus = res.data.paymentStatus
             // var res2 = await this.callApi('get',`/api/student/applicant/copy/${res.data.student.AdmissionID}`,[]);
             this.preloader = false

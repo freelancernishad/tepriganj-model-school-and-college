@@ -1,15 +1,110 @@
 <?php
+
 namespace App\Http\Controllers\api;
+
 use PDF;
 use App\Models\student;
 use Illuminate\Http\Request;
 use App\Models\StudentResult;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ResultLog;
+use App\Models\school_detail;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Meneses\LaravelMpdf\Facades\LaravelMpdf;
+
 class resultController extends Controller
 {
+
+
+    public function marksheet(Request $request)
+    {
+        // return $request->all();
+        $group = 'Humanities';
+        if($request->class=="Nine" || $request->class=="Ten"){
+            $group = $request->group;
+        }
+
+
+        $subject = $request->subject;
+        if($subject=='ধর্ম ও নৈতিক শিক্ষা'){
+            if($request->religion=='Islam'){
+
+                $subject = 'ইসলাম-ধর্ম';
+            }elseif($request->religion=='Hindu'){
+                $subject = 'হিন্দু-ধর্ম';
+
+            }
+        }
+
+
+        $filter = [
+            'class' => $request->class,
+            'year' => $request->year,
+            'exam_name' => $request->exam_name,
+            'class_group' => $group,
+        ];
+
+        if($request->religion=='Islam' || $request->religion=='Hindu' ){
+            $filter['StudentReligion']=$request->religion;
+        }
+        // return $filter;
+         $results = StudentResult::where($filter)->orderBy('roll','asc')->get();
+
+
+
+         $group2 = 'All';
+         if($request->class=="Nine" || $request->class=="Ten"){
+             $group2 = $request->group;
+         }
+
+         $logData = [
+            'class'=>$request->class,
+            'group'=> $group2,
+            'subject'=>$subject,
+            'examName'=>$request->exam_name,
+            'month'=>date('F'),
+            'year'=>date('Y'),
+        ];
+
+
+
+         $resultLog = ResultLog::where($logData)->first();
+    //   return view('resultReport',compact('results','subject'));
+
+    $pdfFileName = date('d-m-Y').'_'.subjectCol($subject).'.pdf';
+
+            $pdf = LaravelMpdf::loadView('resultReport',compact('results','subject','resultLog','pdfFileName'));
+            return $pdf->stream($pdfFileName);
+
+
+    }
+
+
+
+
+
+
+    public function Result(Request $request)
+    {
+        $filter = [
+            'school_id' => $request->school_id,
+            'class' => $request->class,
+            'year' => $request->year,
+            'exam_name' => $request->exam_name,
+            'class_group' => $request->group,
+        ];
+
+      return  $result = StudentResult::where($filter)->orderBy('failed','asc')->orderBy('total','desc')->get();
+    }
+
+
+
+
+
+
+
     public function checkResultall($school_id, $class, $year, $exam_name, $subject = '', $group = '')
     {
         // return $request->subject;
@@ -85,16 +180,51 @@ class resultController extends Controller
                 }
                 // print_r($result);
             } else {
+
                 $result =  StudentResult::create($data);
             }
             $i++;
         }
+
+
+        $logsubject = $request->subject;
+
+        if($request->religion=='Islam'){
+            $logsubject = 'ইসলাম-ধর্ম';
+        }elseif($request->religion=='Hindu'){
+            $logsubject = 'হিন্দু-ধর্ম';
+        }
+
+
+        $logData = [
+            'class'=>$request->classname,
+            'group'=> $request->group,
+            'subject'=>$logsubject,
+            'examName'=>$request->exam_name,
+            'StudentReligion'=>$request->religion,
+            'month'=>date('F', strtotime($request->date)),
+            'year'=>$request->year
+        ];
+
+
+        $checkResultLog = ResultLog::where($logData)->count();
+        if($checkResultLog>0){
+            $ResultLogUp = ResultLog::where($logData)->first();
+            $logData['status'] = '1';
+            $ResultLogUp->update($logData);
+        }else{
+            $logData['status'] = '1';
+            ResultLog::create($logData);
+        }
+
+
+
         return $result;
     }
     public function checkSingleResult(Request $request)
     {
         // return $class_group = $request->filter['class_group'];
-        $result = QueryBuilder::for(StudentResult::class)
+        $data = QueryBuilder::for(StudentResult::class)
             ->allowedFilters([
                 AllowedFilter::exact('school_id'),
                 AllowedFilter::exact('exam_name'),
@@ -111,9 +241,70 @@ class resultController extends Controller
                 AllowedFilter::exact('stu_id'),
                 AllowedFilter::exact('Bangla_1st'),
                 AllowedFilter::exact('id')
-            ])
-            ->get();
-        return response()->json($result);
+            ]);
+            // ->first();
+            $result = $data->first();
+        //    return resultDetails($result);
+            $count = $data->count();
+
+            $html  = "";
+            if ($count > 0) {
+                $Fgg = 0;
+                if ($result->status == 'Draft') {
+                    $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
+                    $html  .= "
+                    <tbody>
+                        <tr class='table-danger'>
+                            <td class='pl-5 pr-5'> <b>
+                                    <center>
+                                        <h4>Result Cannot Published Yet!</h4>
+                                    </center>
+                                </b></td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    ";
+                } else {
+
+
+                    $html="<a  class='btn btn-info' target='_blank' style='float: right;padding:15px;font-size:18px' href='/pdf/$result->school_id/$result->class/$result->roll/$result->year/$result->exam_name/$result->class_group'>Download</a>";
+
+
+                    $html.= resultDetails($result);
+                    $html.= ResultGradeList($result);
+
+                }
+            } else {
+                $html  .= "
+                <table class='width-50 table table-sm mt-3' width='100%' v-if='count == 'not found''>
+                    <tbody>
+                        <tr class='table-danger'>
+                            <td class='pl-5 pr-5' > <b>
+                                    <center>
+                                        <h4>Result Cannot Find!</h4>
+                                    </center>
+                                </b></td>
+                        </tr>
+                    </tbody>
+                </table>";
+            }
+
+
+
+
+
+
+
+
+                return $html;
+
+
+        // return response()->json($result);
+
+
+
+
+
     }
     public function searchResult(Request $request)
     {
@@ -137,388 +328,49 @@ class resultController extends Controller
                 AllowedFilter::exact('id')
             ]);
         $results = $result->first();
+
         $count = $result->count();
         // return $results;
         // return $this->Greeting(80,100,'greed');
         $html  = "";
         if ($count > 0) {
             $Fgg = 0;
-            $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' v-for='resultrow in result'>";
             if ($results->status == 'Draft') {
+                $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
                 $html  .= "
                 <tbody>
                     <tr class='table-danger'>
-                        <td class='pl-5 pr-5' colspan='3'> <b>
+                        <td class='pl-5 pr-5'> <b>
                                 <center>
                                     <h4>Result Cannot Published Yet!</h4>
                                 </center>
                             </b></td>
                     </tr>
-                </tbody>";
+                </tbody>
+                </table>
+                ";
             } else {
-                // return SubjectDetailsMark($results);
-                $subjects =  allList('subjects', $request->filter['class'], $request->filter['class_group']);
-                $GpaResult = StudentFailedCount($results);
-                // return $GpaResult;
-                $html  .= "
-            <tbody v-else>
-                <tr class='table-success'>
-                    <td class='pl-5 pr-5' colspan='2'> <b>
-                            <center>
-                                <h4>STUDENT DETAILS</h4>
-                            </center>
-                        </b></td>
-                    <td class='pl-5 pr-5'></td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>নাম</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $results->name</td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>রোল</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $results->roll </td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>শ্রেণী</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $results->class </td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>সাল</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $results->year </td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>পরীক্ষার নাম</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $results->exam_name </td>
-                </tr>
-                <tr class='table-primar'>
-                    <td class='pl-5 pr-5'> <b>GPA</b></td>
-                    <td class='pl-5'> <b class='ml-5'>:</b></td>
-                    <td> $GpaResult </td>
-                </tr>
-                <tr class='table-success'>
-                    <td class='pl-5 pr-5' colspan='3'> <b>
-                            <center>
-                                <h4>SUBJECT DETAILS</h4>
-                            </center>
-                        </b></td>
-                </tr>
-                <tr class='table-primary'>
-                    <td class='pl-5 pr-5' colspan='2'> <b>
-                            <h5>SUBJECT</h5>
-                        </b></td>
-                    <td class='pl-5 pr-5' colspan='1'> <b>
-                            <h5>MARK</h5>
-                        </b></td>
-                </tr>";
-                foreach ($subjects as $sub) {
-                    $html .= "<tr class='table-primar'>";
-                    if ($request->filter['class'] == "Six" || $request->filter['class'] == "Seven") {
-                        if (subjectCol($sub) == 'Bangla_1st') {
-                            $html .= " <td class='pl-5 pr-5'> <b>বাংলা</b></td>";
-                            $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        } elseif (subjectCol($sub) == 'Bangla_2nd') {
-                            $html .= '';
-                        } elseif (subjectCol($sub) == 'English_1st') {
-                            $html .= " <td class='pl-5 pr-5'> <b>ইংরেজি</b></td>";
-                            $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        } elseif (subjectCol($sub) == 'English_2nd') {
-                            $html .= '';
-                        } else {
-                            $html .= " <td class='pl-5 pr-5'> <b>$sub</b></td>";
-                            $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        }
-                        if (subjectCol($sub) == 'Bangla_1st') {
 
-                            $mark1 =  SubjectDetailsMark($results, 'Bangla_1st', 'all');
-                            $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
-                            $subMark1 = $mark1['subMark'];
 
-                            $mark2 =  SubjectDetailsMark($results, 'Bangla_2nd', 'all');
-                            $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
-                            $subMark2 = $mark2['subMark'];
+                $student = student::where(['StudentID'=>$results->stu_id])->first();
 
 
+                $html .= resultDetails($results);
 
-                            $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
-                            $gg1 =  ($subMark1 + $subMark2) / 2;
-                             $gg = Greeting($gg1, $ggTo, 'greed');
+                $html  .= "<div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$student->id&type=marksheet&resultId=$results->id' class='btn btn-info' style='font-size: 25px;'>ডাউনলোড মার্কশীট</a></div>";
 
+                $html  .= "<h4 style='text-align: center;color: #007BFF;font-size: 25px;margin: 11px 2px;'>অথবা</h4>";
 
+                $html  .= "<h2 style='text-align:center;font-size:20px;color:#007BFF'>মার্কশীট সংগ্রহ করতে বিদ্যালয়ে যোগাযোগ করুন </h2>";
+                //    $html .= ResultGradeList($results);
 
-                            $html .= "<td><span> " . $gg . "</span></td>";
-                        } elseif (subjectCol($sub) == 'Bangla_2nd') {
-                            $html .= '';
-                        } elseif (subjectCol($sub) == 'English_1st') {
-                            $mark1 =  SubjectDetailsMark($results, 'English_1st', 'all');
-                            $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
-                            $subMark1 = $mark1['subMark'];
-                            $mark2 =  SubjectDetailsMark($results, 'English_2nd', 'all');
-                            $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
-                            $subMark2 = $mark2['subMark'];
-                            $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
-                            $gg1 =  ($subMark1 + $subMark2) / 2;
-                            //   return   $gg = Greeting($gg1, $ggTo, 'point');
-                            $gg = Greeting($gg1, $ggTo, 'greed');
-                            $html .= "<td><span> " . $gg . "</span></td>";
-                        } elseif (subjectCol($sub) == 'English_2nd') {
-                            $html .= '';
-                        } else {
-                            if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
-                                $html .= "<td><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                            } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
-                                $html .= "<td><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                            } else {
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
-                                $html .= "<td><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                            }
-                        }
-                    } elseif ($request->filter['class'] == "Eight") {
-                        $html .= " <td class='pl-5 pr-5'> <b>$sub</b></td>";
-                        $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
-                            $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
-                            $html .= "<td><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                        } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
-                            $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
-                            $html .= "<td><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                        } else {
-                            $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
-                            $html .= "<td><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
-                        }
-                    } elseif ($request->filter['class'] == "Nine" || $request->filter['class'] == "Ten") {
-                        if (subjectCol($sub) == 'Bangla_1st') {
-                            $html .= " <td class='pl-5 pr-5'> <b>বাংলা</b></td>";
-                            $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        } elseif (subjectCol($sub) == 'Bangla_2nd') {
-                            $html .= '';
-                        } elseif (subjectCol($sub) == 'English_1st') {
-                            $html .= " <td class='pl-5 pr-5'> <b>ইংরেজি</b></td>";
-                            $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                        } elseif (subjectCol($sub) == 'English_2nd') {
-                            $html .= '';
-                        } else {
-
-
-                            if(subjectCol($sub) == 'Agriculture'){
-                                if($results->Agriculture){
-                                    $html .= " <td class='pl-5 pr-5'> <b>$sub</b></td>";
-                                    $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                                }else{
-                                    $html .='';
-                                }
-                            }elseif(subjectCol($sub) == 'Higher_Mathematics'){
-                                if($results->Higher_Mathematics){
-                                    $html .= " <td class='pl-5 pr-5'> <b>$sub</b></td>";
-                                    $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                                }else{
-                                    $html .='';
-                                }
-                            }else{
-                                $html .= " <td class='pl-5 pr-5'> <b>$sub</b></td>";
-                                $html .= " <td class='pl-5'> <b class='ml-5'>:</b></td>";
-                            }
-
-
-
-
-                        }
-
-
-                        if (subjectCol($sub) == 'Bangla_1st') {
-                            $mark1 =  SubjectDetailsMark($results, 'Bangla_1st', 'all');
-                            $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
-                            $subMark1 = $mark1['subMark'];
-                            $CQ1 = $mark1['CQ'];
-                            $MCQ1 = $mark1['MCQ'];
-                            $mark2 =  SubjectDetailsMark($results, 'Bangla_2nd', 'all');
-                            $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
-                            $subMark2 = $mark2['subMark'];
-                            $CQ2 = $mark2['CQ'];
-                            $MCQ2 = $mark2['MCQ'];
-
-
-                            $CQ1Grade = Greeting($CQ1, 70, 'greed');
-                            $MCQ1Grade = Greeting($MCQ1, 30, 'greed');
-
-                            $CQ2Grade = Greeting($CQ2, 70, 'greed');
-                            $MCQ2Grade = Greeting($MCQ2, 30, 'greed');
-
-                            $grade = [$CQ1Grade,$MCQ1Grade,$CQ2Grade,$MCQ2Grade];
-
-
-                            if (in_array('F', $grade)) {
-                                $gg = 'F';
-                            } else {
-                                $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
-                                $gg1 =  ($subMark1 + $subMark2) / 2;
-                                $gg = Greeting($gg1, $ggTo, 'greed');
-                            }
-
-
-
-
-
-
-
-
-                            $html .= "<td><span> " . $gg . "</span></td>";
-                        } elseif (subjectCol($sub) == 'Bangla_2nd') {
-                            $html .= '';
-                        } elseif (subjectCol($sub) == 'English_1st') {
-                             $mark1 =  SubjectDetailsMark($results, 'English_1st', 'all');
-                            $SUBJECT_TOTAL1 = $mark1['SUBJECT_TOTAL'];
-                            $subMark1 = $mark1['subMark'];
-                            $CQ1 = $mark1['CQ'];
-
-                            $mark2 =  SubjectDetailsMark($results, 'English_2nd', 'all');
-                            $SUBJECT_TOTAL2 = $mark2['SUBJECT_TOTAL'];
-                            $subMark2 = $mark2['subMark'];
-                            $CQ2 = $mark2['CQ'];
-
-
-
-                            $CQ1Grade = Greeting($CQ1, $SUBJECT_TOTAL1, 'greed');
-
-
-                            $CQ2Grade = Greeting($CQ2, $SUBJECT_TOTAL2, 'greed');
-
-
-                            $grade = [$CQ1Grade,$CQ2Grade];
-
-
-                            if (in_array('F', $grade)) {
-                                $gg = 'F';
-                            } else {
-                                $ggTo = ($SUBJECT_TOTAL1 + $SUBJECT_TOTAL2) / 2;
-                                $gg1 =  ($subMark1 + $subMark2) / 2;
-                                $gg = Greeting($gg1, $ggTo, 'greed');
-                            }
-
-
-                            $html .= "<td><span> " . $gg . "</span></td>";
-                        } elseif (subjectCol($sub) == 'English_2nd') {
-                            $html .= '';
-                        } else {
-                            if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
-
-
-                                $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
-                                $CQ = $mark['CQ'];
-                                $MCQ = $mark['MCQ'];
-                                $subMark = $mark['subMark'];
-                                $CQGrade = Greeting($CQ, 70, 'greed');
-                                $MCQGrade = Greeting($MCQ, 30, 'greed');
-                                $grade = [$CQGrade,$MCQGrade];
-                                if (in_array('F', $grade)) {
-                                    $gg = 'F';
-                                } else {
-                                    $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
-                                }
-                                $html .= "<td><span> " . $gg . "</span></td>";
-
-
-
-                            } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
-
-
-
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
-                                $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
-                                $CQ = $mark['CQ'];
-                                $MCQ = $mark['MCQ'];
-                                $subMark = $mark['subMark'];
-                                $CQGrade = Greeting($CQ, 70, 'greed');
-                                $MCQGrade = Greeting($MCQ, 30, 'greed');
-                                $grade = [$CQGrade,$MCQGrade];
-                                if (in_array('F', $grade)) {
-                                    $gg = 'F';
-                                } else {
-                                    $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
-                                }
-                                $html .= "<td><span> " . $gg . "</span></td>";
-
-
-
-
-                            } else {
-
-
-
-
-
-
-
-
-                                $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
-                                $CqTotal = 70;
-                                $MCqTotal = 30;
-                                if($SUBJECT_TOTAL==100){
-                                    if(subjectCol($sub)=='Biology' || subjectCol($sub)=='physics' || subjectCol($sub)=='Higher_Mathematics' || subjectCol($sub)=='Agriculture' || subjectCol($sub)=='Chemistry'){
-                                        $CqTotal = 50;
-                                        $MCqTotal = 25;
-                                    }else{
-                                        $CqTotal = 70;
-                                        $MCqTotal = 30;
-                                    }
-                                }elseif($SUBJECT_TOTAL==50){
-                                    $CqTotal = 30;
-                                    $MCqTotal = 20;
-                                }
-
-
-                                $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
-                                $CQ = $mark['CQ'];
-                                $MCQ = $mark['MCQ'];
-                                $subMark = $mark['subMark'];
-                                $CQGrade = Greeting($CQ, $CqTotal, 'greed');
-                                $MCQGrade = Greeting($MCQ, $MCqTotal, 'greed');
-                                $grade = [$CQGrade,$MCQGrade];
-                                if (in_array('F', $grade)) {
-                                    $gg = 'F';
-                                } else {
-                                    $gg = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
-                                }
-
-                                if(subjectCol($sub) == 'Agriculture'){
-                                    if($results->Agriculture){
-                                        $html .= "<td><span> " . $gg . "</span></td>";
-                                    }else{
-                                        $html .='';
-                                    }
-                                }elseif(subjectCol($sub) == 'Higher_Mathematics'){
-                                    if($results->Higher_Mathematics){
-                                        $html .= "<td><span> " . $gg . "</span></td>";
-                                    }else{
-                                        $html .='';
-                                    }
-                                }else{
-                                    $html .= "<td><span> " . $gg . "</span></td>";
-                                }
-
-                            }
-                        }
-                    }
-                    $html .= "</tr>";
-                }
-                $html .= "
-            </tbody>
-        </table>
-";
             }
         } else {
             $html  .= "
             <table class='width-50 table table-sm mt-3' width='100%' v-if='count == 'not found''>
                 <tbody>
                     <tr class='table-danger'>
-                        <td class='pl-5 pr-5' colspan='3'> <b>
+                        <td class='pl-5 pr-5' > <b>
                                 <center>
                                     <h4>Result Cannot Find!</h4>
                                 </center>
@@ -529,6 +381,18 @@ class resultController extends Controller
         }
         return $html;
     }
+
+
+
+
+
+
+
+
+
+
+
+
     public function checkResult(Request $request)
     {
         // return $request->all();
@@ -565,6 +429,155 @@ class resultController extends Controller
             ->get();
         return response()->json($result);
     }
+
+    public function Resultpromotion(Request $request)
+    {
+
+        $filter = [
+            'school_id' => $request->school_id,
+            'class' => $request->class,
+            'year' => $request->year,
+            'exam_name' => $request->exam_name,
+            'class_group' => $request->class_group,
+        ];
+
+        $results = StudentResult::where($filter)->orderBy('failed','asc')->orderBy('total','desc')->get();
+     $statuses = $request->status;
+     foreach ($results as  $key=>$value) {
+
+        $studentresult = StudentResult::find($value->id);
+
+        if(isset($statuses[$value->id])){
+            $promote = '1';
+            $nextClass = promoteClass($value->class);
+            $nextRoll = $value->nextroll;
+            $nextYear = $value->year+1;
+            $StudentStatus = 'Active';
+        }else{
+            $promote = '0';
+            $nextClass = $value->class;
+            $nextRoll = $value->roll;
+            $nextYear = $value->year;
+            $StudentStatus = 'Failed';
+        }
+
+
+        $data = [
+            'promote' => $promote,
+        ];
+        $result =  $studentresult->update($data);
+
+        $promoteData = [
+
+
+            'StudentClass'=>$nextClass,
+            'StudentRoll'=>$nextRoll,
+            'Year'=>$nextYear,
+            'StudentStatus'=>$StudentStatus,
+        ];
+
+
+        $stu_id =  $studentresult->stu_id;
+        $StudentGroup = student::where('StudentID', $stu_id)->first();
+        $StudentGroup->update($promoteData);
+
+
+
+     }
+return redirect()->back();
+    }
+
+
+    public function ResultPublish(Request $request)
+    {
+
+        $filter = [
+            'school_id' => $request->school_id,
+            'class' => $request->class,
+            'year' => $request->year,
+            'exam_name' => $request->exam_name,
+            'class_group' => $request->class_group,
+        ];
+
+        $results = StudentResult::where($filter)->orderBy('failed','asc')->orderBy('total','desc')->get();
+
+
+
+     $statuses = $request->status;
+    //  print_r(array_keys((array)$status).'<br/>');
+
+     $res = [];
+
+     foreach ($results as  $key=>$value) {
+
+        $studentresult = StudentResult::find($value->id);
+        $stu_id =  $studentresult->stu_id;
+        $StudentGroup = student::where('StudentID', $stu_id)->first()->StudentGroup;
+        $studentresult->update(['class_group' => $StudentGroup]);
+        if(isset($statuses[$value->id])){
+            $status = 'Published';
+            $FinalResultStutus = '';
+        }else{
+            $status = 'Published';
+            $FinalResultStutus = 'inhaled';
+
+        }
+        // $status = $request->status;
+        $subjects =  allList('subjects', $studentresult->class, $studentresult->class_group);
+
+        $totalmark = [];
+        $totalfailed = [];
+        $i = 0;
+        foreach ($subjects as $subject) {
+            // print_r(subjectCol($subject));
+            // if="changesubName(subject)=='Religion' && student.StudentReligion=='Islam'">{{ student['ReligionIslam'] }}</span>
+            // <span v-else-if="changesubName(subject)=='Religion' &&  student.StudentReligion=='Hindu'">{{ student['ReligionHindu'] }}</span>
+            // <span v-else>{{ student[changesubName(subject)] }}</span>
+            $colname = '';
+            if (subjectCol($subject) == 'Religion' && $studentresult->StudentReligion == 'Islam') {
+                $colname = 'ReligionIslam';
+            } elseif (subjectCol($subject) == 'Religion' && $studentresult->StudentReligion == 'Hindu') {
+                $colname = 'ReligionHindu';
+            } else {
+                $colname = subjectCol($subject);
+            }
+            // print_r($colname.' ::: ');
+            $totalmark[$studentresult->roll][$colname] = $studentresult[$colname];
+            $totalfailed[$studentresult->roll][$colname] = $studentresult[$colname];
+
+        }
+        $total =  $this->sumNumber($totalmark[$studentresult->roll]);
+
+
+        $failed = StudentFailedCount($value, 'failed');
+
+        $data = [
+            'total' => $total,
+            'status' => $status,
+            'failed' => $failed,
+            'FinalResultStutus' => $FinalResultStutus,
+            'nextroll' => $key+1,
+        ];
+        $result =  $studentresult->update($data);
+
+
+
+
+
+
+
+
+
+
+
+            $i++;
+     }
+return redirect()->back();
+
+
+    }
+
+
     public function publishResult(Request $request)
     {
         $filter = [
@@ -572,6 +585,7 @@ class resultController extends Controller
             'class' => $request->class,
             'year' => $request->year,
             'exam_name' => $request->exam_name,
+            'class_group' => $request->class_group,
         ];
         $result = StudentResult::where($filter)->get();
         $totalmark = [];
@@ -584,7 +598,7 @@ class resultController extends Controller
             $studentresult->update(['class_group' => $StudentGroup]);
             $status = $request->status;
             $subjects =  allList('subjects', $studentresult->class, $studentresult->class_group);
-            $failed = 0;
+
             foreach ($subjects as $subject) {
                 // print_r(subjectCol($subject));
                 // if="changesubName(subject)=='Religion' && student.StudentReligion=='Islam'">{{ student['ReligionIslam'] }}</span>
@@ -601,17 +615,22 @@ class resultController extends Controller
                 // print_r($colname.' ::: ');
                 $totalmark[$studentresult->roll][$colname] = $studentresult[$colname];
                 $totalfailed[$studentresult->roll][$colname] = $studentresult[$colname];
-                $failed += $this->failedNumber($studentresult[$colname], $colname);
-                //   print_r($studentresult[$colname].'   <br>');
-                // $failed+= 1;
+
             }
             $total =  $this->sumNumber($totalmark[$studentresult->roll]);
-            // $failed =  $this->failedNumber($totalfailed[$studentresult->roll]);
-            // echo $failed.'<br/>';
+            $failed = StudentFailedCount($value, 'failed');
+             $Gparesult = StudentFailedCount($value, 'result');
+
+              $greedRes = gpaToGreed($Gparesult);
+
+
+
             $data = [
                 'total' => $total,
                 'status' => $status,
                 'failed' => $failed,
+                'greed' => $greedRes,
+                'GPA' => $Gparesult,
             ];
             $result =  $studentresult->update($data);
             $i++;
@@ -664,17 +683,10 @@ class resultController extends Controller
         ];
         $data['rows'] = StudentResult::where($resultW)->orderBy('roll', 'ASC')->get();
         $data['sign'] = base64(sitedetails()->PRINCIPALS_Signature);
-        // $pdf = PDF::loadView('admin/pdfReports.full_result_pdf', $data);
-        $mpdf = new \Mpdf\Mpdf([
-            'mode' => 'utf-8', 'format' => 'A4-L', 'default_font' => 'bangla', 'margin_left' => 5,
-            'margin_right' => 5,
-            'margin_top' => 6,
-            'margin_bottom' => 6,
-        ]);
-        $mpdf->WriteHTML($this->fullResultPdf($school_id, $student_class, date("Y", strtotime($date)), $exam,$group));
-        $mpdf->Output('document.pdf', 'I');
-        // return $pdf->stream('document.pdf');
-        // return view('admin/pdfReports.full_result_pdf',$data);
+
+        $pdfFileName = $student_class.'-'.$group.'-'.$exam.'.pdf';
+        return PdfMaker('Legal-L',$school_id,$this->fullResultPdf($school_id, $student_class, date("Y", strtotime($date)), $exam, $group),$pdfFileName);
+
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function result_sheet()
@@ -1390,17 +1402,37 @@ class resultController extends Controller
         $resultlast = StudentResult::where($filter)->latest('id')->first();
         $status = $resultlast->status;
         $result = StudentResult::where($filter)->get();
+
+        $gpa5Count  = StudentResult::where($filter)->where('greed','A+')->count();
+        $gpa4Count  = StudentResult::where($filter)->where('greed','A')->count();
+        $gpa35Count  = StudentResult::where($filter)->where('greed','A-')->count();
+        $gpa3Count = StudentResult::where($filter)->where('greed','B')->count();
+        $gpa2Count  = StudentResult::where($filter)->where('greed','C')->count();
+        $gpa1Count  = StudentResult::where($filter)->where('greed','D')->count();
+        $gpa0Count = StudentResult::where($filter)->where('greed','F')->count();
+
+        $resultCount = [
+            'gpa5Count'=>$gpa5Count,
+            'gpa4Count'=>$gpa4Count,
+            'gpa35Count'=>$gpa35Count,
+            'gpa3Count'=>$gpa3Count,
+            'gpa2Count'=>$gpa2Count,
+            'gpa1Count'=>$gpa1Count,
+            'gpa0Count'=>$gpa0Count,
+        ];
+
+
         $html = "
         <style>
         table, th, td {
             font-size:13px;
           }
           td{
-            border: 1px dotted black;
+            border: 1px solid black;
             padding: 2px 3px;
             font-size: 12px;
         }    th{
-            border: 1px dotted black;
+            border: 1px solid black;
             padding:4px 10px;
             font-size: 12px;
         }
@@ -1427,9 +1459,9 @@ class resultController extends Controller
         ";
         foreach ($subjects as $value) {
             $html .= "
-            <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>CQ</p></td>
+            <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>THEORY</p></td>
             <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>MCQ</p></td>
-            <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>EX</p></td>
+            <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>PRAC/CA</p></td>
             <td style='    height: 58px;    font-size: 10px;'><p  style='transform: rotate(-50deg);border: 0;padding: 0;'>TOTAL</p></td>
         ";
         }
@@ -1512,7 +1544,7 @@ class resultController extends Controller
 
 
                     $total += $resValue[subjectCol($value)];
-                    $subMark = json_decode($resValue[subjectCol($value). "_d"]);
+                    $subMark = json_decode($resValue[subjectCol($value) . "_d"]);
                     if ($subMark) {
                         $html .= "
                             <td>$subMark->CQ</td>
@@ -1527,11 +1559,6 @@ class resultController extends Controller
                         <td>0</td>
                     ";
                     }
-
-
-
-
-
                 }
             }
             $html .= "
@@ -1543,9 +1570,9 @@ class resultController extends Controller
         }
         $html .= "</table>";
         // return '11';
-        return ['html' => $html, 'status' => $status, 'publishids' => $publishids];
+        return ['html' => $html, 'status' => $status, 'publishids' => $publishids, 'resultCount' => $resultCount];
     }
-    public function fullResultPdf($school_id, $class, $year, $exam_name,$group)
+    public function fullResultPdf($school_id, $class, $year, $exam_name, $group)
     {
         $publishids = [];
         $filter = [
@@ -1563,11 +1590,11 @@ class resultController extends Controller
         $html = "
         <style>
           td{
-            border: 1px dotted black;
+            border: 1px solid black;
             padding: 2px 3px;
             font-size: 16px;
         }    th{
-            border: 1px dotted black;
+            border: 1px solid black;
             padding:4px 10px;
             font-size: 12px;
         }
@@ -1576,8 +1603,8 @@ class resultController extends Controller
             width: 100%
         }
         </style>
-        <h3 style='text-align:center;margin:0; font-size:30px;font-weight: 500;' >" . sitedetails()->SCHOLL_NAME . "</h3>
-        <h4 style='text-align:center; margin:0; font-size:20px;font-weight: 500;' >" . sitedetails()->SCHOLL_ADDRESS . " </h4>
+        ".SchoolPad($school_id)."
+
      <span> তারিখ :  " . date('d-m-y') . "</span> <br>
      <span> পরিক্ষার নাম:  " . $exam_name . "</span> <br>
      <span> শ্রেণী :  " . $class . "</span>
@@ -1620,7 +1647,7 @@ class resultController extends Controller
 
             $html .= "
             <tr>
-                <td>$resValue->roll</td>
+                <td>".int_en_to_bn($resValue->roll)."</td>
                 <td>$resValue->name</td>
             ";
             $subjectsGroup = $this->GetSubject($class, $resValue->class_group);
@@ -1637,10 +1664,10 @@ class resultController extends Controller
                         $subMark = json_decode($resValue["ReligionIslam_d"]);
                         if ($subMark) {
                             $html .= "
-                        <td>$subMark->CQ</td>
-                        <td>$subMark->MCQ</td>
-                        <td>$subMark->EXTRA</td>
-                        <td>" . $resValue['ReligionIslam'] . "</td>";
+                            <td>".int_en_to_bn($subMark->CQ)."</td>
+                            <td>".int_en_to_bn($subMark->MCQ)."</td>
+                            <td>".int_en_to_bn($subMark->EXTRA)."</td>
+                        <td>" . int_en_to_bn($resValue['ReligionIslam']) . "</td>";
                         } else {
                             $html .= "
                         <td>0</td>
@@ -1654,10 +1681,10 @@ class resultController extends Controller
                         $subMark = json_decode($resValue["ReligionHindu_d"]);
                         if ($subMark) {
                             $html .= "
-                        <td>$subMark->CQ</td>
-                        <td>$subMark->MCQ</td>
-                        <td>$subMark->EXTRA</td>
-                        <td>" . $resValue['ReligionHindu'] . "</td>";
+                            <td>".int_en_to_bn($subMark->CQ)."</td>
+                            <td>".int_en_to_bn($subMark->MCQ)."</td>
+                            <td>".int_en_to_bn($subMark->EXTRA)."</td>
+                        <td>" . int_en_to_bn($resValue['ReligionHindu']) . "</td>";
                         } else {
                             $html .= "
                         <td>0</td>
@@ -1672,10 +1699,10 @@ class resultController extends Controller
                         $subMark = json_decode($resValue[subjectCol($value) . "_d"]);
                         if ($subMark) {
                             $html .= "
-                        <td>$subMark->CQ</td>
-                        <td>$subMark->MCQ</td>
-                        <td>$subMark->EXTRA</td>
-                        <td>" . $resValue[subjectCol($value)] . "</td>";
+                            <td>".int_en_to_bn($subMark->CQ)."</td>
+                            <td>".int_en_to_bn($subMark->MCQ)."</td>
+                            <td>".int_en_to_bn($subMark->EXTRA)."</td>
+                            <td>" . int_en_to_bn($resValue[subjectCol($value)]) . "</td>";
                         } else {
                             $html .= "
                         <td>0</td>
@@ -1688,37 +1715,30 @@ class resultController extends Controller
                 } else {
 
 
-                $total += $resValue[subjectCol($value)];
-                $subMark = json_decode($resValue[subjectCol($value) . "_d"]);
-                if ($subMark) {
-                    $html .= "
-                    <td>$subMark->CQ</td>
-                    <td>$subMark->MCQ</td>
-                    <td>$subMark->EXTRA</td>
-                    <td>" . $resValue[subjectCol($value)] . "</td>
+                    $total += $resValue[subjectCol($value)];
+                    $subMark = json_decode($resValue[subjectCol($value) . "_d"]);
+                    if ($subMark) {
+                        $html .= "
+                    <td>".int_en_to_bn($subMark->CQ)."</td>
+                    <td>".int_en_to_bn($subMark->MCQ)."</td>
+                    <td>".int_en_to_bn($subMark->EXTRA)."</td>
+                    <td>" . int_en_to_bn($resValue[subjectCol($value)]) . "</td>
                 ";
-                } else {
-                    $html .= "
+                    } else {
+                        $html .= "
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>
                 ";
+                    }
                 }
-
-                }
-
-
-
-
-
-
             }
             $html .= "
-            <td>$failed</td>
-            <td>$Gpa</td>
+            <td>".int_en_to_bn($failed)."</td>
+            <td>".int_en_to_bn($Gpa)."</td>
 
-            <td>$total</td>
+            <td>".int_en_to_bn($total)."</td>
         </tr>
         ";
         }

@@ -24,6 +24,109 @@ use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 class studentsController extends Controller
 {
 
+
+
+    public function allReports(Request $request)
+    {
+
+
+
+
+
+    }
+
+    public function getStudents(Request $request)
+    {
+        $StudentStatus = $request->StudentStatus;
+        $class = $request->class;
+
+        $group = $request->group;
+
+        $filter = [
+            'StudentClass'=>$class,
+            'StudentStatus'=>$StudentStatus,
+        ];
+
+        if($class=='Nine' || $class=='Ten'){
+            $filter['StudentGroup'] = $group;
+        }
+
+
+        return student::where($filter)->get();
+    }
+
+
+    public function approveStudents(Request $request)
+    {
+        $studentDatas = $request->studentDatas;
+        $actioncheck = $request->actioncheck;
+        $status = $request->status;
+        foreach ($studentDatas as $value) {
+            $student = student::find($value);
+
+            if (in_array($value, $actioncheck)){
+                $student->update(['StudentStatus'=>$status]);
+            }else{
+                $student->update(['StudentStatus'=>'Reject']);
+            }
+
+
+        }
+        return $request->all();
+    }
+
+
+
+
+    public function reports(Request $request)
+    {
+        // return $request->all();
+
+        $class = $request->class;
+        $rowName = $request->type;
+        $rowData = $request->rowData;
+        $filter = [
+            $rowName=>$rowData,
+            'StudentStatus'=>'Active',
+        ];
+        if($class!='all'){
+            $filter['StudentClass'] = $class;
+        }
+
+        if($rowName=='stipend'){
+            $filter2 = [
+                'stipend'=>'Yes',
+                'StudentStatus'=>'Active',
+            ];
+            if($class!='all'){
+                $filter2['StudentClass'] = $class;
+            }
+            $students =  student::where($filter2)->orderBy('StudentRoll','asc')->get();
+            $rowData = 'উপবৃত্তি';
+        }else{
+
+            $students = student::where($filter)->orderBy('StudentRoll','asc')->get();
+        }
+
+
+
+        if($request->t=='pdf'){
+            $fileName = "Studnents-report" ;
+            $pdf = LaravelMpdf::loadView('admin/pdfReports.students_report', compact('students','rowData','class'));
+            return $pdf->stream("$fileName.pdf");
+        }
+
+
+        return $students;
+
+
+
+    }
+
+
+
+
+
     public function import(Request $request)
     {
 
@@ -794,11 +897,12 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 // return $this->invoice($payment,$student);
 
-        $fileName = 'Invoice-'.date('Y-m-d H:m:s');
-        $data['fileName'] = $fileName;
-        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4-L','default_font' => 'bangla',]);
-        $mpdf->WriteHTML( $this->invoice($payment,$student));
-      return   $mpdf->Output($fileName,'I');
+        $pdfFileName = 'Invoice-'.date('Y-m-d H:m:s').'.pdf';
+
+        return PdfMaker('A4-L',$student->school_id,$this->invoice($payment,$student),$pdfFileName,false);
+
+
+
     }
 
 
@@ -814,6 +918,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
         $amount  = $payment->amount;
         $created_at  = $payment->date;
         $studentClass  = $payment->studentClass;
+        $studentRoll  = $payment->studentRoll;
         $studentRoll  = $payment->studentRoll;
         $StudentName  = $student->StudentName;
         $StudentFatherName  = $student->StudentFatherNameBn;
@@ -840,7 +945,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
         <style>
         @page {
-            margin: 10px;
+            margin: 25px;
            }
 
         .memoborder{
@@ -1054,8 +1159,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
                             $khat = [
                                    'Admission_fee'=>'ভর্তি ফরম ফি',
+                                   'session_fee'=>'ভর্তি/সেশন ফি',
                                    'monthly_fee'=>'মাসিক বেতন',
-                                   'session_fee'=>'সেশন ফি',
                                    'exam_fee'=>'পরীক্ষার ফি',
                                    'registration_fee'=>'রেজিস্ট্রেশন ফি',
                                    'form_filup_fee'=>'ফরম পূরণ ফি',
@@ -1070,9 +1175,18 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                                     $index = 1;
                                 foreach ($khat as $key=>$value) {
 
-                                  $html .="  <tr class='tr items'>
+                                    if($value=='মাসিক বেতন'){
+                                        $html .="  <tr class='tr items'>
                                         <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
                                         <td class='td  defaltfont'>$value</td>";
+                                    }else{
+                                        $html .="  <tr class='tr items'>
+                                        <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
+                                        <td class='td  defaltfont'>$value</td>";
+                                    }
+
+
+
 
                                         if($key==$payment->type){
                                             $html .=" <td class='td  defaltfont'>".int_en_to_bn($amount)."</td>";
@@ -1236,13 +1350,13 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
                             $khat = [
-                                'Admission_fee'=>'ফরম ফর্ম ফি',
+                                'Admission_fee'=>'ভর্তি ফরম ফি',
+                                'session_fee'=>'ভর্তি/সেশন ফি',
                                 'monthly_fee'=>'মাসিক বেতন',
-                                'session_fee'=>'সেশন ফি',
                                 'exam_fee'=>'পরীক্ষার ফি',
                                 'registration_fee'=>'রেজিস্ট্রেশন ফি',
                                 'form_filup_fee'=>'ফরম পূরণ ফি',
-                            ];
+                         ];
 
                             $kahts = json_decode(json_encode($khat));
                             print_r($kahts);
@@ -1263,8 +1377,6 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                                             $html .=" <td class='td  defaltfont'>".int_en_to_bn(0)."</td>";
 
                                         };
-
-
 
                                   $html.="  </tr>";
 
@@ -1339,13 +1451,12 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
         public function applicant_copy($applicant_id)
         {
-    // return $this->applicant_copy_html($applicant_id);
-    $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4','default_font' => 'bangla','margin_left' => 5,
-    'margin_right' => 5,
-    'margin_top' => 6,
-    'margin_bottom' => 6,]);
-    $mpdf->WriteHTML($this->applicant_copy_html($applicant_id));
-    $mpdf->Output("applicant-copy-$applicant_id.pdf","I");
+            $student =  student::where('AdmissionID',$applicant_id)->latest()->first();
+
+            $Filename = "applicant-copy-$applicant_id.pdf";
+         return   PdfMaker('A4',$student->school_id,$this->applicant_copy_html($applicant_id),$Filename,false);
+
+
         }
 
 
@@ -1367,12 +1478,16 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 	<meta charset='UTF-8'>
 	<title>applicant-copy-$student->AdmissionID.pdf</title>
     <style>
+    @page {
+        margin: 25px;
+        margin-top:30px;
+       }
         *{
             margin: 0;
             padding: 0;
         }
         .rootContainer {
-            margin: 25px;
+            margin: 5px;
             border: 1px solid;
             padding: 5px 21px;
         }
@@ -1404,7 +1519,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 <body>
     <div class='rootContainer'>
         <div class='headerSection'>
-            <table width='100%'>
+
+              <table width='100%'>
                 <tr>
                     <td width='110px'>
                         <img width='75px'  style='overflow:hidden;float:right' src='".base64($schoolDetails->logo)."' alt=''>
@@ -1412,8 +1528,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td>
                         <p class='fontsize2'>$schoolDetails->SCHOLL_NAME</p>
                         <p class='fontsize1'>$schoolDetails->SCHOLL_ADDRESS </p>
+                        <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
                     </td>
-
                     <td style='text-align: right'>
                     <div class='imgdiv'>
                     <img width='100px'  style='overflow:hidden;float:right' src='".base64($student->StudentPicture)."' alt=''>
@@ -1421,6 +1537,10 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     </td>
                 </tr>
             </table>
+
+
+
+
             <p style='    border-bottom: 3px solid #808080;    margin-top: 10px; margin-bottom: 20px;'></p>
 
 
@@ -1459,7 +1579,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                 <tr>
 
                     <td class='tableRowHead' >Nationality</td>
-                    <td colspan='3'>Banglideshi</td>
+                    <td colspan='3'>Bangladeshi</td>
                 </tr>
                 <tr>
                     <td class='tableRowHead' >Gender</td>

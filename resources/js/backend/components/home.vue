@@ -15,6 +15,72 @@
                 <div class="row gutters-20"  v-show="$localStorage.getItem('role')=='admin' || $localStorage.getItem('role')=='teacher' ? true : false " style="display:none">
 
 
+
+
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-yellow">
+                                        <i class="flaticon-couple text-orange"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">Visitor</div>
+                                        <div class="item-number"><span  >{{visitorcount}}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-red">
+                                        <i class="flaticon-money text-red"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">Total Balance</div>
+                                        <div class="item-number"><span>৳</span><span  >{{totalearns}}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-yellow">
+                                        <i class="flaticon-couple text-orange"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">New Applications</div>
+                                        <div class="item-number"><span  >{{newstudents}}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <div class="col-xl-3 col-sm-6 col-12">
                         <div class="dashboard-summery-one mg-b-20">
                             <div class="row align-items-center">
@@ -52,63 +118,8 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="dashboard-summery-one mg-b-20">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <div class="item-icon bg-light-yellow">
-                                        <i class="flaticon-couple text-orange"></i>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="item-content">
-                                        <div class="item-title">New Applications</div>
-                                        <div class="item-number"><span  >{{newstudents}}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
 
-
-
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="dashboard-summery-one mg-b-20">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <div class="item-icon bg-light-red">
-                                        <i class="flaticon-money text-red"></i>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="item-content">
-                                        <div class="item-title">Earnings</div>
-                                        <div class="item-number"><span>৳</span><span  >{{totalearns}}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="dashboard-summery-one mg-b-20">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <div class="item-icon bg-light-yellow">
-                                        <i class="flaticon-couple text-orange"></i>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="item-content">
-                                        <div class="item-title">Visitor</div>
-                                        <div class="item-number"><span  >{{visitorcount}}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
 
 
@@ -158,7 +169,187 @@
 
 
 
+
                 </div>
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <a target="_blank" style="float: right;font-size: 18px;margin-bottom: 10px;" :href="'/dashboard/download/student/reports?school_id='+school_id+'&type=pdf'" class="btn btn-info">Download Reports</a>
+
+
+
+<div class="table-responsive">
+
+<table class="table mb-5">
+<tr align="center">
+    <td>শ্রেণী</td>
+    <td>ছাত্র</td>
+    <td>ছাত্রী</td>
+    <td>ইসলাম</td>
+    <td>হিন্দু</td>
+    <td>উপবৃত্তি</td>
+    <td>মোট</td>
+</tr>
+<tr align="center" v-for="(report,key) in reports.data">
+    <td>{{ key }}</td>
+    <td>{{ report.maleStudent }}</td>
+    <td>{{ report.FemaleStudent }}</td>
+    <td>{{ report.IslamStudent }}</td>
+    <td>{{ report.HinduStudent }}</td>
+    <td>{{ report.stipendStudent }}</td>
+    <td>{{ report.totalStudent }}</td>
+</tr>
+<tr align="center">
+    <td>মোট</td>
+    <td>{{ reports.maleStudent }}</td>
+    <td>{{ reports.FemaleStudent }}</td>
+    <td>{{ reports.IslamStudent }}</td>
+    <td>{{ reports.HinduStudent }}</td>
+    <td>{{ reports.stipendStudent }}</td>
+    <td>{{ reports.totalStudent }}</td>
+</tr>
+</table>
+</div>
+
+
+<!--
+<div class="table-responsive">
+<table class="table mb-5">
+<tr align="center">
+    <td colspan="7"><h4 class="mb-0">শিক্ষার্থীর ধরন</h4></td>
+
+</tr>
+<tr align="center">
+    <td>শ্রেণী</td>
+    <td>কর্মজীবী শিক্ষার্থী</td>
+    <td>ভূমিহীন অভিভাবকের সন্তান</td>
+    <td>ক্ষুদ্র নৃ-গোষ্ঠী শিক্ষার্থী</td>
+    <td>বিশেষ চাহিদা সম্পন্ন শিক্ষার্থী</td>
+    <td>অনাথ/এতিম শিক্ষার্থী</td>
+    <td>অন্যান্য</td>
+</tr>
+<tr align="center" v-for="(report,key) in reports.data">
+    <td>{{ key }}</td>
+    <td>{{ report.WorkingStudent }}</td>
+    <td>{{ report.landless_guardiansStudent }}</td>
+    <td>{{ report.MinorityStudent }}</td>
+    <td>{{ report.special_needsStudent }}</td>
+    <td>{{ report.OrphanStudent }}</td>
+    <td>{{ report.categoryOtherStudent }}</td>
+</tr>
+<tr align="center">
+    <td>মোট</td>
+    <td>{{ reports.WorkingStudent }}</td>
+    <td>{{ reports.landless_guardiansStudent }}</td>
+    <td>{{ reports.MinorityStudent }}</td>
+    <td>{{ reports.special_needsStudent }}</td>
+    <td>{{ reports.OrphanStudent }}</td>
+    <td>{{ reports.categoryOtherStudent }}</td>
+</tr>
+</table>
+
+</div>
+
+
+<div class="table-responsive">
+<table class="table mb-5">
+<tr align="center">
+    <td colspan="5"><h4 class="mb-0">কোটা</h4></td>
+
+</tr>
+<tr align="center">
+    <td>শ্রেণী</td>
+    <td>মুক্তিযোদ্ধার সন্তান/নাতী-নাতনী</td>
+    <td>অত্র বিদ্যালয়ে কর্মরত শিক্ষক, কর্মচারী ও ম্যানেজিং কমিটির সন্তান</td>
+    <td>প্রতিবন্ধী</td>
+    <td>কোনো কোটা নেই</td>
+
+</tr>
+<tr align="center" v-for="(report,key) in reports.data">
+    <td>{{ key }}</td>
+    <td>{{ report.freedom_fightersStudent }}</td>
+    <td>{{ report.committeeStudent }}</td>
+    <td>{{ report.disabledStudent }}</td>
+    <td>{{ report.There_is_no_quotaStudent }}</td>
+</tr>
+<tr align="center">
+    <td>মোট</td>
+    <td>{{ reports.freedom_fightersStudent }}</td>
+    <td>{{ reports.committeeStudent }}</td>
+    <td>{{ reports.disabledStudent }}</td>
+    <td>{{ reports.There_is_no_quotaStudent }}</td>
+</tr>
+</table>
+
+</div>
+
+
+<div class="table-responsive">
+<table class="table mb-5">
+<tr align="center">
+    <td colspan="13"><h4 class="mb-0">অভিভাবকের পেশা</h4></td>
+
+</tr>
+<tr align="center">
+    <td>শ্রেণী</td>
+    <td>ব্যবসায়ি</td>
+    <td>কৃষক</td>
+    <td>কৃষি শ্রমিক</td>
+    <td>ডাক্তার</td>
+    <td>জেলে</td>
+    <td>সরকারি চাকুরি</td>
+    <td>কামার/কুমোর</td>
+    <td>প্রবাসি</td>
+    <td>ক্ষুদ্র ব্যবসায়ি</td>
+    <td>শিক্ষক</td>
+    <td>অকৃষি শ্রমিক</td>
+    <td>অন্যান্য</td>
+
+</tr>
+<tr align="center" v-for="(report,key) in reports.data">
+    <td>{{ key }}</td>
+    <td>{{ report.businessmanStudent }}</td>
+    <td>{{ report.farmerStudent }}</td>
+    <td>{{ report.agricultural_laborerStudent }}</td>
+    <td>{{ report.doctorStudent }}</td>
+    <td>{{ report.fishermanStudent }}</td>
+    <td>{{ report.Government_jobStudent }}</td>
+    <td>{{ report.blacksmith_potterStudent }}</td>
+    <td>{{ report.expatriateStudent }}</td>
+    <td>{{ report.small_businessStudent }}</td>
+    <td>{{ report.teacherStudent }}</td>
+    <td>{{ report.Non_agricultural_workersStudent }}</td>
+    <td>{{ report.Occupation_of_guardian_otherStudent }}</td>
+</tr>
+<tr align="center">
+    <td>মোট</td>
+    <td>{{ reports.businessmanStudent }}</td>
+    <td>{{ reports.farmerStudent }}</td>
+    <td>{{ reports.agricultural_laborerStudent }}</td>
+    <td>{{ reports.doctorStudent }}</td>
+    <td>{{ reports.fishermanStudent }}</td>
+    <td>{{ reports.Government_jobStudent }}</td>
+    <td>{{ reports.blacksmith_potterStudent }}</td>
+    <td>{{ reports.expatriateStudent }}</td>
+    <td>{{ reports.small_businessStudent }}</td>
+    <td>{{ reports.teacherStudent }}</td>
+    <td>{{ reports.Non_agricultural_workersStudent }}</td>
+    <td>{{ reports.Occupation_of_guardian_otherStudent }}</td>
+</tr>
+</table>
+
+</div> -->
+
+
+</div>
+
+                </div>
+
+
+
+
 
 
 <!--
@@ -197,6 +388,7 @@ export default {
 
     },
     async created() {
+        this.getReports();
         this.getmonth();
          this.totalstudent();
          this.newstudent();
@@ -278,17 +470,15 @@ export default {
             visitorcount:0,
             month:'',
             year:new Date().getFullYear(),
-
-
-
-      chartData: {
-        labels: [],
-        datasets: [ { data: [40, 20, 12] } ]
-      },
+            chartData: {
+                labels: [],
+                datasets: [ { data: [40, 20, 12] } ]
+            },
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
             },
+            reports:{}
 
 
         };
@@ -367,6 +557,20 @@ this.totalabsent = data.absent.data.reduce((a, b) => a + b, 0);
                 })
                 .catch();
         },
+
+        async getReports(){
+            var res = await this.callApi('get',`/api/student_at_a_glance?school_id=${this.school_id}&front=front`,[]);
+            this.reports = res.data;
+
+
+
+
+
+
+        },
+
+
+
 
     },
 };

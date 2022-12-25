@@ -115,6 +115,21 @@
 
                     </div>
                     </div>
+
+                <div class="col-md-4 mt-3" v-if="form.StudentClass=='Nine' || form.StudentClass=='Ten'" id="Sgsroup" >
+                    <div class="form-group">
+                        <label class="form_label">চতুর্থ বিষয়</label>
+                        <select class="form-control" style="width: 100%;" v-model="form.StudentSubject" >
+                            <option value="Agriculture">কৃষি শিক্ষা</option>
+                            <option value="Higher_Mathematics">উচ্চতর গণিত</option>
+
+                        </select>
+
+                    </div>
+                    </div>
+
+
+
                 <div class="col-md-4 mt-3">
                     <div class="form-group">
                         <label class="form_label">রোল</label>
@@ -736,6 +751,7 @@ export default {
             bigBroSisName:null,
             bigBroSisClass:'',
             bigBroSisGroup:'Humanities',
+            StudentSubject:'Agriculture',
             bigBroSisRoll:null,
             StudentGroup:'Humanities',
             StudentAddress:null,
@@ -866,6 +882,9 @@ console.log(event.target.result)
                                 .then(({data}) => {
                                     //  console.log(data)
                                     this.form = data[0]
+
+                                    this.form.StudentPicture = this.$asseturl+data[0].StudentPicture
+
                                               this.preloader = false;
                                 })
                                 .catch(() => {
@@ -927,7 +946,14 @@ console.log(event.target.result)
             }else{
                 this.preloader = true;
                 var res = await this.callApi('post',`/api/students/form/submit?submit_type=data_entry`,this.form);
-                this.$router.push({name: 'students'})
+
+                // this.$router.push({name: 'students'})
+
+
+                this.$router.go(-1)
+
+
+
                 Notification.success();
 
             }

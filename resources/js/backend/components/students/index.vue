@@ -55,6 +55,9 @@
                                 <option value="Pending">
                                     New Applications
                                 </option>
+                                <option value="Failed">
+                                    Failed
+                                </option>
                                 <option value="Reject">
                                     Reject
                                 </option>
@@ -123,11 +126,14 @@
                                         </div>
                                     </th>
                                     <th>ছবি</th>
-                                    <th @click="sortby('StudentName')">নাম</th>
-                                    <th class="tablecolhide" @click="sortby('StudentClass')">শ্রেণী</th>
-                                    <th class="tablecolhide" @click="sortby('StudentFatherName')">অভিভাবক</th>
-                                    <th class="tablecolhide" @click="sortby('StudentAddress')">ঠিকানা</th>
-                                    <th class="tablecolhide" @click="sortby('StudentPhoneNumber')">ফোন</th>
+                                    <th>নাম</th>
+                                    <th class="tablecolhide">শ্রেণী</th>
+                                    <th class="tablecolhide">পিতার নাম</th>
+                                    <th class="tablecolhide">মাতার নাম</th>
+
+                                  <th class="tablecolhide">উপবৃত্তি</th>
+                                  <th class="tablecolhide" v-if="$route.params.status=='Pending'">আবেদনের তারিখ</th>
+                                    <!-- <th class="tablecolhide" @click="sortby('StudentPhoneNumber')">ফোন</th>  -->
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -137,14 +143,26 @@
         background: #042954;
         color: wheat;">Looding...</td>
                                 </tr>
-                                <tr v-else v-for="student in students.data" :key="student.id">
-                                    <td>
+                                <tr v-else v-for="(student,index) in students.data" :key="student.id">
+
+
+                                    <td v-if="$route.params.status=='Pending'">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" v-model="actioncheck"
+                                                :value="student.id">
+                                            <label class="form-check-label">{{ index+pageNO }}</label>
+                                        </div>
+                                    </td>
+
+                                    <td v-else>
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input" v-model="actioncheck"
                                                 :value="student.id">
                                             <label class="form-check-label">{{ student.StudentRoll }}</label>
                                         </div>
                                     </td>
+
+
                                     <td class="text-center">
                                         <router-link :to="{ name: 'studentImage', params: { id: student.id } }">
                                             <img :id="'student_image' + student.id" class='student_image'
@@ -155,9 +173,11 @@
                                     </td>
                                     <td>{{ student.StudentName }}</td>
                                     <td class="tablecolhide">{{ student.StudentClass }}</td>
-                                    <td class="tablecolhide">{{ student.StudentFatherName }}</td>
-                                    <td class="tablecolhide">{{ student.StudentAddress }}</td>
-                                    <td class="tablecolhide">{{ student.StudentPhoneNumber }}</td>
+                                    <td class="tablecolhide" style="text-transform: uppercase;">{{ student.StudentFatherNameBn }}</td>
+                                    <td class="tablecolhide" style="text-transform: uppercase;">{{ student.StudentMotherNameBn }}</td>
+                                    <td class="tablecolhide">{{ student.stipend }}</td>
+                                    <td class="tablecolhide" v-if="$route.params.status=='Pending'">{{ dateformatGlobal(student.JoiningDate)[3] }}</td>
+                                    <!-- <td class="tablecolhide">{{ student.StudentPhoneNumber }}</td> -->
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-info dropdown-toggle" type="button"
@@ -241,6 +261,7 @@ export default {
             Totalpage: [],
             RouteName:'',
             RouteParams:{},
+            pageNO: 1,
 
         }
     },
@@ -300,8 +321,16 @@ export default {
 
             clearTimeout(this.timeout);
             var url = '';
-            var sort = '';
+            var sort = 'id';
+
             var classsearch = '';
+
+            if(this.$route.params.status=='Pending'){
+                this.sorttype = '-';
+                this.field = 'id';
+            }
+
+
             if (this.field != '') {
                 sort = `sort=${this.sorttype}${this.field}`;
             }
@@ -335,6 +364,14 @@ export default {
 
                 this.RouteName = 'students'
             }
+
+            if(page==1){
+
+                this.pageNO = 1;
+                }else{
+                this.pageNO = (page-1)*this.PerPageData+1;
+
+                }
 
             this.looding = false
              this.preloader = false;

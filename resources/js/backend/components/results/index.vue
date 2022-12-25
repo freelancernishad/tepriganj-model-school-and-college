@@ -126,16 +126,23 @@
                             <td>{{ result.class }}</td>
 
                             <td v-if="result.class=='Nine' || result.class=='Ten'">{{ result.class_group, }}</td>
-                            <td v-else ></td>
+                            <td v-else >N/A</td>
 
                             <td>{{ result.exam_name }}</td>
                             <td>{{ result.year }}</td>
                             <td>
 
-                            <button class="btn btn-success btn-sm" v-if="result.status=='Draft'" @click="publishNow(result.class,result.year,result.exam_name,'Published')">Publish Now</button>
-                            <button class="btn btn-danger btn-sm"  v-if="result.status=='Published'"  @click="publishNow(result.class,result.year,result.exam_name,'Draft')">Draft Now</button>
+                            <!-- <button class="btn btn-success btn-sm" v-if="result.status=='Draft'" @click="publishNow(result.class,result.year,result.exam_name,'Published')">Publish Now</button> -->
 
-                            <router-link  class="btn btn-info btn-sm mb-3" :to="{ name: 'resultview', params: { school_id: school_id, student_class: result.class, group: result.class_group, religion: 'All', subject: 'All', examType: result.exam_name, date: result.year } }">View</router-link>
+                            <!-- <button class="btn btn-danger btn-sm"  v-if="result.status=='Published'"  @click="publishNow(result.class,result.year,result.exam_name,'Draft')">Draft Now</button> -->
+
+                            <button class="btn btn-danger btn-sm"  @click="publishNow(result.class,result.year,result.exam_name,'Draft',result.class_group)">Calculate</button>
+
+                            <router-link  class="btn btn-info btn-sm" :to="{ name: 'resultview', params: { school_id: school_id, student_class: result.class, group: result.class_group, religion: 'All', subject: 'All', examType: result.exam_name, date: result.year } }">View</router-link>
+
+                            <a class="btn btn-info btn-sm" :href="'/dashboard/results/publish/'+school_id+'/'+result.class+'/'+result.class_group+'/'+result.exam_name+'/'+result.year">Publish Now</a>
+
+                            <a class="btn btn-info btn-sm" :href="'/dashboard/results/promotion/'+school_id+'/'+result.class+'/'+result.class_group+'/'+result.exam_name+'/'+result.year">Promotion</a>
 
 
 
@@ -259,12 +266,13 @@ export default {
             this.preloader=false
         },
 
-        async publishNow(className,year,exam_name,Resultstatus){
+        async publishNow(className,year,exam_name,Resultstatus,class_group){
             this.preloader=true
             this.form['school_id'] = this.school_id;
             this.form['class'] = className;
             this.form['year'] = year;
             this.form['exam_name'] = exam_name;
+            this.form['class_group'] = class_group;
             this.form['status'] = Resultstatus;
 
             var res = await this.callApi('post',`/api/results/publish`,this.form);
@@ -272,7 +280,7 @@ export default {
 
                 Notification.customSuccess(`Class ${className} এর ফলাফল সফল ভাবে পাবলিশ হয়েছে`);
             }else{
-                Notification.customSuccess(`Class ${className} এর ফলাফল সফল ভাবে পাবলিশ বাতিল হয়েছে`);
+                Notification.customSuccess(`Success`);
 
             }
 

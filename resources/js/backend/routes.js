@@ -10,10 +10,11 @@ let logout = require('./components/auth/logout.vue').default;
 let home = require('./components/home.vue').default;
 
 let fileupload = require('./components/fileupload.vue').default;
-
+let profile = require('./components/profile.vue').default;
 
 // Students Components
 let students = require('./components/students/index.vue').default;
+let studentsReports = require('./components/students/reports.vue').default;
 let studentimage = require('./components/students/studentimage.vue').default;
 let studentCard = require('./components/students/card.vue').default;
 let studentedit = require('./components/students/form.vue').default;
@@ -40,6 +41,7 @@ let staffs_attendance_monthly = require('./components/staffs/attendance/monthly.
 
 // payment Components
 let payment = require('./components/payments/index.vue').default;
+let payment_reports = require('./components/payments/reports.vue').default;
 let paymentsearch = require('./components/payments/list.vue').default;
 let paymentcreate = require('./components/payments/create.vue').default;
 
@@ -58,6 +60,9 @@ let noticeForm = require('./components/notice/form.vue').default;
 
 // results Components
 let results = require('./components/results/index.vue').default;
+let resultlog = require('./components/results/log.vue').default;
+let applicationResult = require('./components/results/applicationResult.vue').default;
+let resultpublish = require('./components/results/resultpublish.vue').default;
 let marksheet = require('./components/results/marksheet.vue').default;
 let resultfilter = require('./components/results/list.vue').default;
 let resultview = require('./components/results/fullsheetbyApi.vue').default;
@@ -143,8 +148,13 @@ export const routes = [
 
   { path: `${prefix}`, component: home, name:'home',meta: { layout: adminlayout } },
 
+  { path:  `${prefix}/profile`, component: profile, name:'profile',meta: { layout: adminlayout } },
+
+
+
   // students Routes
   { path: `${prefix}/students`, component: students, name:'students',meta: { layout: adminlayout } },
+  { path: `${prefix}/students/reports`, component: studentsReports, name:'studentsReports',meta: { layout: adminlayout } },
   { path: `${prefix}/students/image/:id`, component: studentimage, name:'studentImage',meta: { layout: adminlayout } },
   { path: `${prefix}/students/edit/:id`, component: studentedit, name:'studentedit',meta: { layout: adminlayout } },
   { path: `${prefix}/students/view/:id`, component: studentview, name:'studentview',meta: { layout: adminlayout } },
@@ -172,6 +182,7 @@ export const routes = [
 
   // payment Routes
   { path: `${prefix}/payment`, component: payment, name:'payment',meta: { layout: adminlayout } },
+  { path: `${prefix}/payment/reports`, component: payment_reports, name:'payment_reports',meta: { layout: adminlayout } },
   { path: `${prefix}/payment/:classname/:year/:month/:type`, component: paymentsearch, name:'paymentsearch',meta: { layout: adminlayout } },
   { path: `${prefix}/payment/:create/:classname/:year/:month/:type/:id`, component: paymentcreate, name:'paymentcreate',meta: { layout: adminlayout } },
   { path: `${prefix}/payment/:create/:id`, component: paymentcreate, name:'paymentedit',meta: { layout: adminlayout } },
@@ -198,6 +209,11 @@ export const routes = [
 
   // result Routes
   { path: `${prefix}/results`, component: results, name:'results',meta: { layout: adminlayout } },
+  { path: `${prefix}/results/log`, component: resultlog, name:'resultlog',meta: { layout: adminlayout } },
+  { path: `${prefix}/results/application/Result`, component: applicationResult, name:'applicationResult',meta: { layout: adminlayout } },
+
+//   { path: `${prefix}/results/publish/:school_id/:student_class/:group/:religion/:subject/:examType/:date`, component: resultpublish, name:'resultpublish',meta: { layout: adminlayout } },
+
   { path: `${prefix}/results/marksheet`, component: marksheet, name:'marksheet',meta: { layout: adminlayout } },
   { path: `${prefix}/results/:school_id/:student_class/:group/:religion/:subject/:examType/:date`, component: resultfilter, name:'resultfilter',meta: { layout: adminlayout } },
   { path: `${prefix}/results/view/:school_id/:student_class/:group/:religion/:subject/:examType/:date`, component: resultview, name:'resultview',meta: { layout: blanklayout } },

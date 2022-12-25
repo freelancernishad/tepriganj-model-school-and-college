@@ -68,7 +68,7 @@
                             <div class="item-content">
                                 <ul class="settings-list">
                                     <li>
-                                        <router-link class="dropdown-item" to="">
+                                        <router-link class="dropdown-item" :to="{name:'profile'}">
                                             <img :src="$asseturl + 'dashboard_asset/img/figure/admin.jpg'" alt="Admin">
                                             Profile
                                         </router-link>
@@ -150,6 +150,10 @@
                                     <li class="nav-item">
                                         <router-link :to="{ name: 'studentsform' }" class="nav-link"><i class="fas fa-angle-right"></i> Admission Form </router-link>
                                     </li>
+
+                                    <li class="nav-item">
+                                        <router-link :to="{ name: 'studentsReports' }" class="nav-link"><i class="fas fa-angle-right"></i> Reports </router-link>
+                                    </li>
                                     <!-- <li class="nav-item">
                                         <router-link :to="{ name: 'students' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Promotion </router-link>
                                     </li> -->
@@ -184,6 +188,11 @@
     <a href="javascript:void(0)" class="nav-link" @click="submenu(3)"><i class="flaticon-technological"></i><span>Acconunt</span></a>
     <transition name="slide">
     <ul class="nav sub-group-menu menu-open child" v-if="selected == 3" style="display:block">
+
+        <li class="nav-item">
+            <router-link   :to="{name:'payment_reports'}" class="nav-link"><i class="fas fa-angle-right"></i> Payment Reports</router-link>
+        </li>
+
         <li class="nav-item">
             <router-link   :to="{name:'payment'}" class="nav-link"><i class="fas fa-angle-right"></i> Payments</router-link>
         </li>
@@ -212,16 +221,25 @@
 
 
 <li class="nav-item sidebar-nav-item"  :class="{ active: selected == 4 }">
-    <a href="javascript:void(0)" class="nav-link" @click="submenu(4)"><i class="flaticon-shopping-list"></i><span>Exam</span></a>
+    <a href="javascript:void(0)" class="nav-link" @click="submenu(4)"><i class="flaticon-shopping-list"></i><span>Result</span></a>
     <transition name="slide">
     <ul class="nav sub-group-menu menu-open child" v-if="selected == 4" style="display:block">
 
         <li class="nav-item">
-            <router-link   :to="{name:'results'}" class="nav-link"><i class="fas fa-angle-right"></i> Result</router-link>
+            <router-link   :to="{name:'results'}" class="nav-link"><i class="fas fa-angle-right"></i> Result Sheet</router-link>
         </li>
 
         <li class="nav-item">
             <router-link   :to="{name:'marksheet'}" class="nav-link"><i class="fas fa-angle-right"></i> Mark Sheet</router-link>
+        </li>
+
+        <li class="nav-item">
+            <router-link   :to="{name:'resultlog'}" class="nav-link"><i class="fas fa-angle-right"></i> Result Log</router-link>
+        </li>
+
+
+        <li class="nav-item">
+            <router-link   :to="{name:'applicationResult'}" class="nav-link"><i class="fas fa-angle-right"></i> Application Result</router-link>
         </li>
 
     </ul>

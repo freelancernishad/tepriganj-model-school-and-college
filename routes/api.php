@@ -2,9 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\api\smsController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\api\BlogController;
 use App\Http\Controllers\frontendController;
 use  App\Http\Controllers\api\authController;
@@ -19,10 +21,10 @@ use App\Http\Controllers\api\PaymentController;
 use App\Http\Controllers\api\RoutineController;
 use App\Http\Controllers\api\HomeworkController;
 use App\Http\Controllers\api\studentsController;
+
 use App\Http\Controllers\QuestionbankController;
 use App\Http\Controllers\api\SchoolDetailController;
-
-use App\Http\Controllers\VisitorController;
+use App\Http\Controllers\ResultLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,12 +74,13 @@ Route::get('/gotoUnion', [countryApiController::class,'gotoUnion']);
 
 
 
-
+Route::post('update/users',[RoleController::class,'updateuser']);
 
 Route::post('/ipn',[PaymentController::class ,'ipn']);
 
 
 
+Route::post('/payment/report',[PaymentController::class ,'reports']);
 Route::post('/payment/data/search',[PaymentController::class ,'Search']);
 
 Route::get('student/applicant/copy/{applicant_id}',[studentsController::class , 'applicant_copy_html']);
@@ -103,7 +106,14 @@ Route::get('/school/settings',[SchoolDetailController::class , 'index']);
 Route::post('/school/settings/submit',[SchoolDetailController::class , 'school_update']);
 
 //student routes
+Route::post('/students/reports',[studentsController::class , 'reports']);
+Route::get('/students/all/reports',[studentsController::class , 'allReports']);
 Route::get('/students/list',[studentsController::class , 'list']);
+
+Route::get('/get/pending/student',[studentsController::class , 'getStudents']);
+Route::post('/approve/pending/student',[studentsController::class , 'approveStudents']);
+
+
 Route::get('/students/image/get',[studentsController::class , 'imageget']);
 Route::post('/students/image/upload',[studentsController::class , 'imageupload']);
 Route::get('/students/single',[studentsController::class , 'singlestudent']);
@@ -148,6 +158,9 @@ Route::post('/routines/submit',[RoutineController::class , 'submit']);
 
 
 //result routes
+Route::get('/results',[resultController::class , 'Result']);
+
+
 Route::post('/results/submit',[resultController::class , 'submit']);
 
 Route::get('/all/results/list',[resultController::class , 'AllResultList']);
@@ -158,6 +171,7 @@ Route::get('/results/check',[resultController::class , 'checkResult']);
 Route::get('/public/result/search',[resultController::class , 'searchResult']);
 Route::get('/results/single',[resultController::class , 'checkSingleResult']);
 Route::post('/results/publish',[resultController::class , 'publishResult']);
+Route::post('/results/publish/list',[resultController::class , 'ResultPublish']);
 
 
 
@@ -234,6 +248,9 @@ Route::post('visitorcreate',[VisitorController::class, 'visitorcreate']);
 Route::get('visitorcount',[VisitorController::class, 'visitorCount']);
 
 
+Route::post('resultlogCount',[ResultLogController::class,'index']);
+Route::post('result/edit/mode',[ResultLogController::class,'editmode']);
+Route::get('result/log',[ResultLogController::class,'indexlist']);
 
 
 Route::get('/answeres',[OnlineexamController::class , 'answeres']);

@@ -8,7 +8,8 @@ use App\Models\routine;
 use App\Models\staff;
 use App\Models\Event;
 use App\Models\blog;
-
+use App\Models\school_detail;
+use App\Models\StudentResult;
 use Mail;
 
 
@@ -48,6 +49,26 @@ class frontendController extends Controller
         $data['rows'] = DB::table('staff')->where('school_id',$school_id)->get();
         return view(sitedetails()->theme.'.teacher', $data);
     }
+
+
+
+    public function studentCount($school_id,$rowName,$rowValue,$StudentClass)
+    {
+
+            //IslamStudent
+            $whereFemale = [
+                'school_id'=>$school_id,
+                $rowName => $rowValue,
+                'StudentStatus' => 'Active',
+                'StudentClass' => $StudentClass,
+            ];
+          return $IslamStudentcount = DB::table('students')->where($whereFemale)->count();
+
+    }
+
+
+
+
     public function student_at_a_glance(Request $request)
     {
 
@@ -63,6 +84,34 @@ class frontendController extends Controller
         $totalStudent = 0;
         $maleStudent = 0;
         $FemaleStudent = 0;
+        $IslamStudent = 0;
+        $HinduStudent = 0;
+        $stipendStudent = 0;
+        $WorkingStudent = 0;
+        $landless_guardiansStudent = 0;
+        $MinorityStudent = 0;
+        $special_needsStudent = 0;
+        $OrphanStudent = 0;
+        $categoryOtherStudent = 0;
+        $freedom_fightersStudent = 0;
+        $committeeStudent = 0;
+        $disabledStudent = 0;
+        $There_is_no_quotaStudent = 0;
+
+        $businessmanStudent = 0;
+        $farmerStudent = 0;
+        $agricultural_laborerStudent = 0;
+        $doctorStudent = 0;
+        $fishermanStudent = 0;
+        $Government_jobStudent = 0;
+        $blacksmith_potterStudent = 0;
+        $expatriateStudent = 0;
+        $small_businessStudent = 0;
+        $teacherStudent = 0;
+        $Non_agricultural_workersStudent = 0;
+        $Occupation_of_guardian_otherStudent = 0;
+
+
         $scienceStudent = 0;
         $HumanitiesStudent = 0;
         $CommerceStudent = 0;
@@ -75,69 +124,186 @@ class frontendController extends Controller
                 'StudentStatus' => 'Active',
                 'StudentClass' => $class[$i],
             ];
-            // $totalStudent[$class[$i]] = DB::table('students')->where($whereTotal)->count();
-
-$totalStudentcount = DB::table('students')->where($whereTotal)->count();
-$students[class_en_to_bn($class[$i])]['totalStudent'] = $totalStudentcount;
+            $totalStudentcount = DB::table('students')->where($whereTotal)->count();
+            $students[class_en_to_bn($class[$i])]['totalStudent'] = $totalStudentcount;
             $totalStudent += $totalStudentcount;
 
+
             //maleStudent
-            $wheremale = [
-                'school_id'=>$school_id,
-                'StudentGender' => 'Male',
-                'StudentStatus' => 'Active',
-                'StudentClass' => $class[$i],
-            ];
-            // $maleStudent[$class[$i]] = DB::table('students')->where($wheremale)->count();
-            $maleStudentcount = DB::table('students')->where($wheremale)->count();
+            $maleStudentcount = $this->studentCount($school_id,'StudentGender','Male',$class[$i]);
             $students[class_en_to_bn($class[$i])]['maleStudent'] = $maleStudentcount;
             $maleStudent += $maleStudentcount;
             //FemaleStudent
-            $whereFemale = [
-                'school_id'=>$school_id,
-                'StudentGender' => 'Female',
-                'StudentStatus' => 'Active',
-                'StudentClass' => $class[$i],
-            ];
-            // $FemaleStudent[$class[$i]] = DB::table('students')->where($whereFemale)->count();
-            $FemaleStudentcount = DB::table('students')->where($whereFemale)->count();
+            $FemaleStudentcount = $this->studentCount($school_id,'StudentGender','Female',$class[$i]);
             $students[class_en_to_bn($class[$i])]['FemaleStudent'] =$FemaleStudentcount;
             $FemaleStudent += $FemaleStudentcount;
-            //science
+
+
+
+            //IslamStudent
+            $IslamStudentcount = $this->studentCount($school_id,'StudentReligion','Islam',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['IslamStudent'] =$IslamStudentcount;
+            $IslamStudent += $IslamStudentcount;
+            //HinduStudent
+            $HinduStudentcount = $this->studentCount($school_id,'StudentReligion','Hindu',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['HinduStudent'] =$HinduStudentcount;
+            $HinduStudent += $HinduStudentcount;
+
+
+
+            //stipendStudent
+            $stipendStudentcount = $this->studentCount($school_id,'stipend','Yes',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['stipendStudent'] =$stipendStudentcount;
+            $stipendStudent += $stipendStudentcount;
+
+
+            // শিক্ষার্থীর ধরন
+            //WorkingStudent
+            $WorkingStudentcount = $this->studentCount($school_id,'StudentCategory','কর্মজীবী শিক্ষার্থী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['WorkingStudent'] =$WorkingStudentcount;
+            $WorkingStudent += $WorkingStudentcount;
+
+            //landless_guardiansStudent
+            $landless_guardiansStudentcount = $this->studentCount($school_id,'StudentCategory','ভূমিহীন অভিভাবকের সন্তান',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['landless_guardiansStudent'] =$landless_guardiansStudentcount;
+            $landless_guardiansStudent += $landless_guardiansStudentcount;
+
+
+            //MinorityStudent
+            $MinorityStudentcount = $this->studentCount($school_id,'StudentCategory','ক্ষুদ্র নৃ-গোষ্ঠী শিক্ষার্থী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['MinorityStudent'] =$MinorityStudentcount;
+            $MinorityStudent += $MinorityStudentcount;
+
+
+            //special_needsStudent
+            $special_needsStudentcount = $this->studentCount($school_id,'StudentCategory','বিশেষ চাহিদা সম্পন্ন শিক্ষার্থী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['special_needsStudent'] =$special_needsStudentcount;
+            $special_needsStudent += $special_needsStudentcount;
+
+
+            //OrphanStudent
+            $OrphanStudentcount = $this->studentCount($school_id,'StudentCategory','অনাথ/এতিম শিক্ষার্থী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['OrphanStudent'] =$OrphanStudentcount;
+            $OrphanStudent += $OrphanStudentcount;
+
+            //categoryOtherStudent
+            $categoryOtherStudentcount = $this->studentCount($school_id,'StudentCategory','অন্যান্য',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['categoryOtherStudent'] =$categoryOtherStudentcount;
+            $categoryOtherStudent += $categoryOtherStudentcount;
+            // শিক্ষার্থীর ধরন
+
+
+
+            // কোটা
+            //freedom_fightersStudent
+            $freedom_fightersStudentcount = $this->studentCount($school_id,'StudentKota','মুক্তিযোদ্ধার সন্তান/নাতী-নাতনী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['freedom_fightersStudent'] =$freedom_fightersStudentcount;
+            $freedom_fightersStudent += $freedom_fightersStudentcount;
+
+
+            //committeeStudent
+            $committeeStudentcount = $this->studentCount($school_id,'StudentKota','অত্র বিদ্যালয়ে কর্মরত শিক্ষক, কর্মচারী ও ম্যানেজিং কমিটির সন্তান',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['committeeStudent'] =$committeeStudentcount;
+            $committeeStudent += $committeeStudentcount;
+
+
+            //OrphanStudent
+            $disabledStudentcount = $this->studentCount($school_id,'StudentKota','প্রতিবন্ধী',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['disabledStudent'] =$disabledStudentcount;
+            $disabledStudent += $disabledStudentcount;
+
+            //There_is_no_quotaStudent
+            $There_is_no_quotaStudentcount = $this->studentCount($school_id,'StudentKota','কোনো কোটা নেই',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['There_is_no_quotaStudent'] =$There_is_no_quotaStudentcount;
+            $There_is_no_quotaStudent += $There_is_no_quotaStudentcount;
+            // কোটা
+
+
+
+            // অভিভাবকের পেশা
+
+            //businessmanStudent
+            $businessmanStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','ব্যবসায়ি',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['businessmanStudent'] =$businessmanStudentcount;
+            $businessmanStudent += $businessmanStudentcount;
+
+            //farmerStudent
+            $farmerStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','কৃষক',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['farmerStudent'] =$farmerStudentcount;
+            $farmerStudent += $farmerStudentcount;
+
+            //agricultural_laborerStudent
+            $agricultural_laborerStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','কৃষি শ্রমিক',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['agricultural_laborerStudent'] =$agricultural_laborerStudentcount;
+            $agricultural_laborerStudent += $agricultural_laborerStudentcount;
+
+            //doctorStudent
+            $doctorStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','ডাক্তার',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['doctorStudent'] =$doctorStudentcount;
+            $doctorStudent += $doctorStudentcount;
+
+            //fishermanStudent
+            $fishermanStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','জেলে',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['fishermanStudent'] =$fishermanStudentcount;
+            $fishermanStudent += $fishermanStudentcount;
+
+            //Government_jobStudent
+            $Government_jobStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','সরকারি চাকুরি',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['Government_jobStudent'] =$Government_jobStudentcount;
+            $Government_jobStudent += $Government_jobStudentcount;
+
+            //blacksmith_potterStudent
+            $blacksmith_potterStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','কামার/কুমোর',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['blacksmith_potterStudent'] =$blacksmith_potterStudentcount;
+            $blacksmith_potterStudent += $blacksmith_potterStudentcount;
+
+            //expatriateStudent
+            $expatriateStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','প্রবাসি',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['expatriateStudent'] =$expatriateStudentcount;
+            $expatriateStudent += $expatriateStudentcount;
+
+            //small_businessStudent
+            $small_businessStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','ক্ষুদ্র ব্যবসায়ি',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['small_businessStudent'] =$small_businessStudentcount;
+            $small_businessStudent += $small_businessStudentcount;
+
+            //teacherStudent
+            $teacherStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','শিক্ষক',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['teacherStudent'] =$teacherStudentcount;
+            $teacherStudent += $teacherStudentcount;
+
+            //There_is_no_quotaStudent
+            $Non_agricultural_workersStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','অকৃষি শ্রমিক',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['Non_agricultural_workersStudent'] =$Non_agricultural_workersStudentcount;
+            $Non_agricultural_workersStudent += $Non_agricultural_workersStudentcount;
+
+            //There_is_no_quotaStudent
+            $Occupation_of_guardian_otherStudentcount = $this->studentCount($school_id,'StudentFatherOccupation','অন্যান্য',$class[$i]);
+            $students[class_en_to_bn($class[$i])]['Occupation_of_guardian_otherStudent'] =$Occupation_of_guardian_otherStudentcount;
+            $Occupation_of_guardian_otherStudent += $Occupation_of_guardian_otherStudentcount;
+
+            // অভিভাবকের পেশা
+
+
+
+
+
+
             if($class[$i]=='Nine' || $class[$i]=='Ten'){
 
 
-            $wherescience = [
-                'school_id'=>$school_id,
-                'StudentGroup' => 'Science',
-                'StudentStatus' => 'Active',
-                'StudentClass' => $class[$i],
-            ];
-            // $scienceStudent[$class[$i]] = DB::table('students')->where($wherescience)->count();
-            $scienceStudentcount = DB::table('students')->where($wherescience)->count();
-
+            //science
+            $scienceStudentcount = $this->studentCount($school_id,'StudentGroup','Science',$class[$i]);
             $students[class_en_to_bn($class[$i])]['scienceStudent'] = $scienceStudentcount;
             $scienceStudent += $scienceStudentcount;
+
             //HumanitiesStudent
-            $whereHumanities = [
-                'school_id'=>$school_id,
-                'StudentGroup' => 'Humanities',
-                'StudentStatus' => 'Active',
-                'StudentClass' => $class[$i],
-            ];
-            // $HumanitiesStudent[$class[$i]] = DB::table('students')->where($whereHumanities)->count();
-            $HumanitiesStudentcount = DB::table('students')->where($whereHumanities)->count();
+            $HumanitiesStudentcount = $this->studentCount($school_id,'StudentGroup','Humanities',$class[$i]);
             $students[class_en_to_bn($class[$i])]['HumanitiesStudent'] = $HumanitiesStudentcount;
             $HumanitiesStudent += $HumanitiesStudentcount;
+
             //CommerceStudent
-            $whereCommerce = [
-                'school_id'=>$school_id,
-                'StudentGroup' => 'Commerce',
-                'StudentStatus' => 'Active',
-                'StudentClass' => $class[$i],
-            ];
-            // $CommerceStudent[$class[$i]] = DB::table('students')->where($whereCommerce)->count();
-            $CommerceStudentcount = DB::table('students')->where($whereCommerce)->count();
+            $CommerceStudentcount = $this->studentCount($school_id,'StudentGroup','Commerce',$class[$i]);
             $students[class_en_to_bn($class[$i])]['CommerceStudent'] = $CommerceStudentcount;
             $CommerceStudent += $CommerceStudentcount;
         }
@@ -145,16 +311,61 @@ $students[class_en_to_bn($class[$i])]['totalStudent'] = $totalStudentcount;
         }
 
 
-$data['data'] = $students;
-$data['countdata']['মোট শিক্ষার্থীর সংখ্যা'] = $totalStudent;
-$data['countdata']['ছাত্র'] = $maleStudent;
-$data['countdata']['ছাত্রী'] = $FemaleStudent;
-$data['countdata']['বিজ্ঞান বিভাগ'] = $scienceStudent;
-$data['countdata']['মানবিক বিভাগ'] = $HumanitiesStudent;
-// $data['countdata']['ব্যবসায় শিক্ষা বিভাগ'] = $CommerceStudent;
+        $data['data'] = $students;
+        $data['countdata']['মোট শিক্ষার্থীর সংখ্যা'] = $totalStudent;
+        $data['countdata']['ছাত্র'] = $maleStudent;
+        $data['countdata']['ছাত্রী'] = $FemaleStudent;
+        $data['countdata']['বিজ্ঞান বিভাগ'] = $scienceStudent;
+        $data['countdata']['মানবিক বিভাগ'] = $HumanitiesStudent;
 
-       return response()->json($data);
-        // return view(sitedetails()->theme.'.student_at_a_glance', $data);
+
+
+        $data['totalStudent'] = $totalStudent;
+        $data['maleStudent'] = $maleStudent;
+        $data['FemaleStudent'] = $FemaleStudent;
+        $data['scienceStudent'] = $scienceStudent;
+        $data['HumanitiesStudent'] = $HumanitiesStudent;
+        $data['IslamStudent'] = $IslamStudent;
+        $data['HinduStudent'] = $HinduStudent;
+        $data['stipendStudent'] = $stipendStudent;
+        $data['WorkingStudent'] = $WorkingStudent;
+        $data['landless_guardiansStudent'] = $landless_guardiansStudent;
+        $data['MinorityStudent'] = $MinorityStudent;
+        $data['special_needsStudent'] = $special_needsStudent;
+        $data['OrphanStudent'] = $OrphanStudent;
+        $data['categoryOtherStudent'] = $categoryOtherStudent;
+        $data['freedom_fightersStudent'] = $freedom_fightersStudent;
+        $data['committeeStudent'] = $committeeStudent;
+        $data['disabledStudent'] = $disabledStudent;
+        $data['There_is_no_quotaStudent'] = $There_is_no_quotaStudent;
+        $data['businessmanStudent'] = $businessmanStudent;
+        $data['farmerStudent'] = $farmerStudent;
+        $data['agricultural_laborerStudent'] = $agricultural_laborerStudent;
+        $data['doctorStudent'] = $doctorStudent;
+        $data['fishermanStudent'] = $fishermanStudent;
+        $data['Government_jobStudent'] = $Government_jobStudent;
+        $data['blacksmith_potterStudent'] = $blacksmith_potterStudent;
+        $data['expatriateStudent'] = $expatriateStudent;
+        $data['small_businessStudent'] = $small_businessStudent;
+        $data['teacherStudent'] = $teacherStudent;
+        $data['Non_agricultural_workersStudent'] = $Non_agricultural_workersStudent;
+        $data['Occupation_of_guardian_otherStudent'] = $Occupation_of_guardian_otherStudent;
+
+
+        $type = $request->type;
+        if($type=='pdf'){
+            $fileName = 'students-'.date('Y-m-d H:m:s');
+
+            $data['fileName'] = $fileName;
+            $data['school_id'] = $school_id;
+
+            // return view('admin/pdfReports.studentAllReport', $data);
+            $pdf = LaravelMpdf::loadView('admin/pdfReports.studentAllReport', $data);
+            return $pdf->stream("$fileName.pdf");
+        }
+
+        return response()->json($data);
+
     }
 
 
@@ -275,19 +486,55 @@ $data['year'] = $year;
 
 
     }
-    public function view_result_pdf(Request $r,$school_id, $class, $roll, $year, $exam_name,$group)
+
+    public function PublicMarkSheet($marksheetCode)
+    {
+        // return $marksheetCode;
+
+         $restultCount =  StudentResult::where('marksheetCode',$marksheetCode)->count();
+        if($restultCount>0){
+
+        $restult =  StudentResult::where('marksheetCode',$marksheetCode)->first();
+
+        // return $this->view_result_pdf($restult->school_id, $restult->class, $restult->roll, $restult->year, $restult->exam_name,$restult->group);
+
+        $wd = [
+            'school_id'=>$restult->school_id,
+            'class' => $restult->class,
+            'roll' => $restult->roll,
+            'year' => $restult->year,
+            'exam_name' => $restult->exam_name,
+            'class_group' => $restult->class_group,
+        ];
+        $check = DB::table('student_results')->where($wd)->count();
+        if ($check > 0) {
+            $results = StudentResult::where($wd)->first();
+
+            $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4','default_font' => 'bangla','margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 6,
+            'margin_bottom' => 6,]);
+
+            // $mpdf = new \Mpdf\Mpdf([
+            //     'mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'bangla', 'margin_left' => 5,
+            //     'margin_right' => 5,
+            //     'margin_top' => 6,
+            //     'margin_bottom' => 6,
+            // ]);
+            $mpdf->WriteHTML($this->pdfmarksheet($results));
+           $mpdf->Output('markSheet.pdf', 'I');
+
+        }
+        }else{
+            echo "<h1 style='text-align:center'>পেমেন্ট করে মার্কশীট ডাউনলোড করুন</h1>";
+        }
+
+    }
+
+
+    public function view_result_pdf($school_id, $class, $roll, $year, $exam_name,$group)
     {
 
-
-
-
-
-        $data['types'] = 'pdf';
-        $data['class'] = $class;
-        $data['roll'] = $roll;
-        $data['year'] = $year;
-        $data['exam_name'] = $exam_name;
-        $data['class_group'] = $group;
         $wd = [
             'school_id'=>$school_id,
             'class' => $class,
@@ -296,27 +543,161 @@ $data['year'] = $year;
             'exam_name' => $exam_name,
             'class_group' => $group,
         ];
-        $data['check'] = DB::table('student_results')->where($wd)->count();
-        if ($data['check'] > 0) {
-            $data['rows'] = DB::table('student_results')->where($wd)->get();
-            $StudentID = $data['rows'][0]->stu_id;
-            $wds = [
-                'StudentID' => $StudentID,
-            ];
-            $data['stdata'] = DB::table('students')->where($wds)->get();
+        $check = DB::table('student_results')->where($wd)->count();
+        if ($check > 0) {
+            $results = StudentResult::where($wd)->first();
+
+            $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4','default_font' => 'bangla','margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 6,
+            'margin_bottom' => 6,]);
+
+            // $mpdf = new \Mpdf\Mpdf([
+            //     'mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'bangla', 'margin_left' => 5,
+            //     'margin_right' => 5,
+            //     'margin_top' => 6,
+            //     'margin_bottom' => 6,
+            // ]);
+            $mpdf->WriteHTML($this->pdfmarksheet($results));
+           $mpdf->Output('markSheet.pdf', 'I');
+
+
+
+            // return view('admin/pdfReports.view_result', compact('results'));
+            // $pdf = LaravelMpdf::loadView('admin/pdfReports.view_result', compact('results'));
+            // return $pdf->stream('document.pdf');
         }
-        //in Controller
-        $paths = env('FILE_PATH').'frontend/sing.png';
-        $types = pathinfo($paths, PATHINFO_EXTENSION);
-        $datais = file_get_contents($paths);
-        $logos = 'data:image/' . $types . ';base64,' . base64_encode($datais);
-        $data['sign'] = $logos;
 
 
-        $pdf = LaravelMpdf::loadView('admin/pdfReports.view_result', $data);
-        return $pdf->stream('document.pdf');
-        // return view('view_result', $data);
+
+
     }
+
+    function pdfmarksheet($results)
+    {
+
+
+
+        $schoolDetails = school_detail::where('school_id',$results->school_id)->first();
+        $html="
+
+
+        <!DOCTYPE HTML>
+        <html lang='en-US'>
+        <head>
+            <meta charset='UTF-8'>
+            <title>markSheet.pdf</title>
+            <style>
+            @page{
+                margin: 60px 80px;
+            }
+            .m-0{
+                margin: 0;
+            }    .text-center{
+                text-align:center;
+            }
+        td{
+            border: 1px solid black;
+            padding:4px 10px;
+            font-size: 16px;
+        }    th{
+            border: 1px solid black;
+            padding:4px 10px;
+            font-size: 12px;
+        }
+
+        .li{
+            font-size: 10px;
+        }
+
+
+
+        table{
+            border-collapse: collapse;
+            width:100%
+        }
+        section.view.about--part1 {
+        margin: 15px 0 50px 0;
+    }
+        </style>
+
+        </head>
+        <body style='font-family: 'bangla', sans-serif;'>
+            <div class='rootContainer'>
+                <div class='headerSection'>
+
+
+
+
+
+
+    ".SchoolPad($results->school_id)."
+
+
+    <div>
+
+        <p style='width:220px;border:1px solid #4a4a4a;background:#4a4a4a;color:white;font-size:25px;text-align:center;margin:5px auto;border-radius: 50px;padding:5px;font-family: cursive;'>Result sheet</p>
+
+    </div>
+
+
+
+
+
+        ";
+
+        $html .= resultDetails($results,'pdf');
+        $html .= ResultGradeList($results,'pdf');
+
+        $html .="
+
+
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+//         $html .="
+
+
+// <table width='100%' style='margin-top:50px'>
+
+// <tr>
+
+// <td style='  border: 0px dotted black;
+// padding:20px 10px 10px 10px;
+// font-size: 12px;'></td>
+// <td style='  border: 0px dotted black;
+// padding:20px 10px 10px 10px;
+// font-size: 12px;'></td>
+// <td style='  border: 0px dotted black;
+// padding:20px 10px 10px 10px;
+// font-size: 12px;text-align:center;font-size:20px' width='35%'>
+
+
+
+//     <h3 style='margin:0;text-align:center;font-weight: 500;'>স্বাক্ষর</h3>
+//     <h4 style='margin:0;text-align:center;font-size:16px;    font-weight: 500;'>প্রধান শিক্ষক</h4>
+//     <h4 style='margin:0;text-align:center;font-size:16px;    font-weight: 500;'>$schoolDetails->Principals_name</h4>
+//     <h4 style='margin:0;text-align:center;font-size:16px;    font-weight: 500;'>$schoolDetails->SCHOLL_NAME</h4>
+// </td>
+
+// </tr>
+
+// </table>
+//         ";
+
+
+        return $html;
+
+    }
+
+
+
+
+
+
+
     public function weakly_result(Request $r)
     {
         $school_id = sitedetails()->school_id;

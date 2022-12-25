@@ -4,16 +4,16 @@
             <router-link style="float: right;padding: 0 31px;" :to="{ name: 'logout' }"><i class="flaticon-turn-off"></i>Logout</router-link>
         <div class="card height-auto">
             <div class="card-body">
-                <form id="form" enctype="multipart/form-data" method="POST" v-on:submit.prevent="formsubmit">
+                <form id="form" enctype="multipart/form-data" method="POST" v-on:submit.prevent="formsubmit('final')">
                     <div class="d-flex justify-content-between">
                        <a class="btn-fill-md radius-4 text-light bg-orange-red mb-3" @click="$router.go(-1)"
                            href="javascript:void(0)">
                             GO BACK
                         </a>
-                        <router-link v-if="edit=='edit'" class="btn-fill-lmd text-light gradient-dodger-blue mb-3"
+                        <!-- <router-link v-if="edit=='edit'" class="btn-fill-lmd text-light gradient-dodger-blue mb-3"
                             :to="{ name: 'resultsoparetorresultview', params: { school_id: form.school_id, student_class: form.classname, group: form.group, religion: form.religion, subject: this.$route.params.subject, examType: this.$route.params.examType, date: form.date } }">
                             Full Result View
-                        </router-link>
+                        </router-link> -->
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -51,7 +51,7 @@
                                     <th scope="col" class="textwrap" width="15%">নাম</th>
                                     <th scope="col">লিখিত</th>
                                     <th scope="col">বহুনির্বাচনী</th>
-                                    <th scope="col">অতিরিক্ত</th>
+                                    <th scope="col">ব্যাবহারিক</th>
                                     <th scope="col" width="20%">মোট</th>
                                 </tr>
                             </thead>
@@ -59,15 +59,15 @@
                                 <tr v-for="student in students">
                                     <td scope="col">{{ student.StudentRoll }}</td>
                                     <td scope="col" class="textwrap">{{ student.StudentName }}</td>
-                                    <td scope="col"><input type="number" min="0" max="100" class="form-control"
+                                    <td scope="col"><input type="number" min="0" max="100" onClick="this.select();"   class="form-control"
                                             v-model="form.number[student.StudentRoll]['CQ']" required></td>
-                                    <td scope="col"><input type="number" min="0" max="100"
+                                    <td scope="col"><input type="number" min="0" max="100" onClick="this.select();"
                                             v-model="form.number[student.StudentRoll]['MCQ']" class="form-control"
                                             required></td>
-                                    <td scope="col"><input type="number" min="0" max="100" vl
+                                    <td scope="col"><input type="number" min="0" max="100" onClick="this.select();"
                                             v-model="form.number[student.StudentRoll]['EXTRA']" class="form-control"
                                             required></td>
-                                    <td scope="col"><input type="text"
+                                    <td scope="col"><input type="text" onClick="this.select();"
                                             :value="Number(form.number[student.StudentRoll]['CQ']) + Number(form.number[student.StudentRoll]['MCQ']) + Number(form.number[student.StudentRoll]['EXTRA'])"
                                             class="form-control" readonly></td>
                                 </tr>
@@ -227,13 +227,22 @@ export default {
                 })
                 .catch()
         },
-        formsubmit() {
-            this.preloader = true;
+        formsubmit(type='entry') {
+          if(type=='final')this.preloader = true;
             axios.post(`/api/results/submit`, this.form)
                 .then(({ data }) => {
                         this.allstudents();
                       this.checkResult();
                         this.getformdata()
+
+
+
+
+
+                        window.open(`/download/mark?class=${this.form.classname}&year=${this.form.year}&exam_name=${this.form.exam_name}&subject=${this.form.subject}&group=${this.form.group}&religion=${this.form.religion}`, "_blank");
+
+
+                    this.$router.push({name: 'resultsoparetor'})
                     Notification.success();
                     this.preloader = false;
                 })
