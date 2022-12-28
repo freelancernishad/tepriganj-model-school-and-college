@@ -81,6 +81,7 @@ Route::post('/ipn',[PaymentController::class ,'ipn']);
 
 
 Route::post('/payment/report',[PaymentController::class ,'reports']);
+Route::get('/payment/counting',[PaymentController::class ,'paymentCounting']);
 Route::post('/payment/data/search',[PaymentController::class ,'Search']);
 
 Route::get('student/applicant/copy/{applicant_id}',[studentsController::class , 'applicant_copy_html']);
@@ -111,7 +112,10 @@ Route::get('/students/all/reports',[studentsController::class , 'allReports']);
 Route::get('/students/list',[studentsController::class , 'list']);
 
 Route::get('/get/pending/student',[studentsController::class , 'getStudents']);
+
 Route::post('/approve/pending/student',[studentsController::class , 'approveStudents']);
+
+Route::post('/student/permission',[studentsController::class , 'permissionAction']);
 
 
 Route::get('/students/image/get',[studentsController::class , 'imageget']);
@@ -127,8 +131,11 @@ Route::get('/student/admissionid/genarate',[studentsController::class , 'Admissi
 Route::get('/student/attendance',[studentsController::class , 'student_attendance']);
 Route::get('/student/attendance/count',[studentsController::class , 'student_attendance_count']);
 Route::post('/student/attendance/submit',[studentsController::class , 'student_attendance_submit']);
-
 Route::get('/student/attendance/row',[studentsController::class , 'student_attendance_row']);
+
+
+
+Route::post('/student/transferto/old',[studentsController::class , 'transertoOld']);
 
 
 

@@ -2823,7 +2823,7 @@ function SchoolPad($school_id)
             <td style='border:0 !important'>
                 <p class='fontsize2' style='font-size:30px'> $schoolDetails->SCHOLL_NAME </p>
                 <p class='fontsize1' style='font-size:20px'> $schoolDetails->SCHOLL_ADDRESS  </p>
-                <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
+                <p class='fontsize1' style='font-size:12px'>website: www.tmscedu.com </p>
             </td>
 
 

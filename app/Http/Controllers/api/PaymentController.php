@@ -16,6 +16,16 @@ use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 class PaymentController extends Controller
 {
 
+
+    public function paymentCounting(Request $request)
+    {
+        $type=$request->type;
+        $status=$request->status;
+        return payment::where(['type'=>$type,'status'=>$status])->count();
+    }
+
+
+
     public function reports(Request $request)
     {
 
@@ -70,10 +80,10 @@ class PaymentController extends Controller
 
 
 
-$AdmissionID = '';
-$StudentClass = 'Six';
-$studentid = '';
-$student = '';
+        $AdmissionID = '';
+        $StudentClass = 'Six';
+        $studentid = '';
+        $student = '';
 
         if($type=='Admission_fee'){
             $student = student::where(['AdmissionID' => $adminssionId])->latest()->first();
@@ -86,11 +96,45 @@ $student = '';
                 if($ApliedStudentCount>0){
                     $ApliedStudent = student::where(['AdmissionID' => $adminssionId])->latest()->first();
                     if($ApliedStudent->StudentStatus=='Approve'){
+                        // $message = "
+                        // <h2 style='color:green;text-align:center;font-size: 25px; green;margin-bottom: 22px;margin-top: 22px;'>আবেদনটি অনুমোদন করা হয়েছে। ভর্তির জন্য প্রয়োজনীয় কাগজপত্র বিদ্যালয়ে জমা দিন</h2>
+
+                        // <h2 style='text-align:center;font-size: 23px'>প্রয়োজনীয় কাগজপত্র</h2>
+
+                        // <h2 style='font-size: 20px'>৬ষ্ঠ শ্রেণির জন্য</h2>
+                        // <ul style='    list-style: circle !important;    padding: 0px 28px;'>
+                        //     <li>জন্মনিবন্ধনের ফটোকপি</li>
+                        //     <li>৫ম শ্রেণি পাশের মূল প্রশংসা পত্র </li>
+                        //     <li>পিতা মাতার জাতীয় পরিচয় পত্রের ফটোকপি</li>
+                        // </ul>
+
+                        // <h2 style='font-size: 20px;margin-top: 22px;'>৭ম থেকে ৯ম শ্রেণির জন্য </h2>
+                        // <ul style='    list-style: circle !important;    padding: 0px 28px;'>
+                        //     <li>জন্মনিবন্ধনের ফটোকপি</li>
+                        //     <li>৫ম শ্রেণি পাশের মূল প্রশংসা পত্র </li>
+                        //     <li>পিতা মাতার জাতীয় পরিচয় পত্রের ফটোকপি</li>
+                        //     <li>অবশ্যই TC বা ছাড়পত্র লাগবে</li>
+                        // </ul>
+
+                        // ";
+
+                        // $StudentStatus = 'Approve';
+                        // $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
+                        // $AdmissionID = $student->AdmissionID;
+                        // $StudentClass = $student->StudentClass;
+                        // $studentid = $student->id;
+
+
+
+                        // $message = 'এপ্লিকেশনটি অনুমোদন করা হয়েছে ';
+
                         $StudentStatus = 'Approve';
                         $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
                         $AdmissionID = $student->AdmissionID;
                         $StudentClass = $student->StudentClass;
                         $studentid = $student->id;
+
+
                     }elseif($ApliedStudent->StudentStatus=='active'){
                         $StudentStatus = 'active';
                         $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
@@ -209,7 +253,7 @@ $student = '';
             $session_feeGet =    $this->PaymentCount(['type' => 'session_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'get');
             $session_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$session_feeGet->trxid'>রশিদ ডাউনলোড</a>";
         }else{
-            $session_feeButton = "<a target='_blank' href='/payment?studentId=$studentid&type=session_fee' class='btn btn-info'>Pay Now</a>";
+            $session_feeButton = "<a href='/payment?studentId=$studentid&type=session_fee' class='btn btn-info'>Pay Now</a>";
         }
 
       $registration_feeCount =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'count');
@@ -217,7 +261,7 @@ $student = '';
             $registration_feeGet =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'get');
             $registration_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$registration_feeGet->trxid'>রশিদ ডাউনলোড</a>";
         }else{
-            $registration_feeButton = "<a target='_blank' href='/payment?studentId=$studentid&type=registration_fee' class='btn btn-info'>Pay Now</a>";
+            $registration_feeButton = "<a  href='/payment?studentId=$studentid&type=registration_fee' class='btn btn-info'>Pay Now</a>";
         }
 
       $form_filup_feeCount =    $this->PaymentCount(['type' => 'form_filup_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'count');
@@ -225,7 +269,7 @@ $student = '';
             $form_filup_feeGet =    $this->PaymentCount(['type' => 'form_filup_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'get');
             $form_filup_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$form_filup_feeGet->trxid'>রশিদ ডাউনলোড</a>";
         }else{
-            $form_filup_feeButton = "<a target='_blank' href='/payment?studentId=$studentid&type=form_filup_fee' class='btn btn-info'>Pay Now</a>";
+            $form_filup_feeButton = "<a  href='/payment?studentId=$studentid&type=form_filup_fee' class='btn btn-info'>Pay Now</a>";
         }
 
 
@@ -400,25 +444,29 @@ $student = '';
 
             $paymentType = $payment->type;
 
+            // if($student->StudentStatus=='permited'){
+
+            //     $paymentYear = $payment->year;
+            //      $previousStudentCount =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->count();
+
+            //     if($previousStudentCount>0){
+            //           $previousStudent =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->orderBy('StudentRoll','desc')->latest()->first();
+            //           $newRoll = $previousStudent->StudentRoll+1;
+            //     }else{
+            //         $newRoll = '1';
+            //     }
+            //     $StudentID = StudentId($student->StudentClass, $newRoll,$student->school_id,$student->StudentGroup,date("y", strtotime('01-01-'.$paymentYear)));
+
+            //     $student->update(['StudentRoll' => $newRoll,'StudentID' => $StudentID,'Year' => $paymentYear,'StudentStatus' => 'active']);
+
+            //     $Insertdata['studentRoll'] = $newRoll;
+            //     $Insertdata['studentId'] = $StudentID;
+
+            // }
+
+
             if($student->StudentStatus=='Approve'){
-
-                $paymentYear = $payment->year;
-                 $previousStudentCount =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->count();
-
-                if($previousStudentCount>0){
-
-                      $previousStudent =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->orderBy('StudentRoll','desc')->latest()->first();
-                      $newRoll = $previousStudent->StudentRoll+1;
-                }else{
-                    $newRoll = '1';
-                }
-
-                $StudentID = StudentId($student->StudentClass, $newRoll,$student->school_id,$student->StudentGroup,date("y", strtotime($paymentYear)));
-                $student->update(['StudentRoll' => $newRoll,'StudentID' => $StudentID,'Year' => $paymentYear,'StudentStatus' => 'active']);
-
-                $Insertdata['studentRoll'] = $newRoll;
-                $Insertdata['studentId'] = $StudentID;
-
+                $student->update(['StudentStatus' => 'permited']);
             }
 
             if($paymentType=='Admission_fee'){
@@ -488,12 +536,20 @@ $student = '';
             $studentId = $student->StudentID;
         }
 
+        $currentmonth = date("F");
+
+
         $amountYear = date("Y");
         $paymentYear = $amountYear;
 
-        if($student->StudentStatus=='Approve'){
+        // if($student->StudentStatus=='Approve'){
+        //     $paymentYear = $amountYear+1;
+        // }
+
+        if($currentmonth=='December'){
             $paymentYear = $amountYear+1;
         }
+
 
 
 

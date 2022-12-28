@@ -26,6 +26,65 @@ class studentsController extends Controller
 
 
 
+
+    public function permissionAction(Request $request)
+    {
+        $id =  $request->id;
+
+        $student = student::find($id);
+        $group = 'Humanities';
+        if($student->StudentClass=='Nine' || $student->StudentClass=='Ten'){
+            $group = $student->StudentGroup;
+
+        }
+
+
+
+
+
+                $currentmonth = date("F");
+                $amountYear = date("Y");
+                $paymentYear = $amountYear;
+                if($currentmonth=='December'){
+                    $paymentYear = $amountYear+1;
+                }
+
+
+                 $previousStudentCount =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->count();
+
+                if($previousStudentCount>0){
+                      $previousStudent =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->orderBy('StudentRoll','desc')->latest()->first();
+                      $newRoll = $previousStudent->StudentRoll+1;
+                }else{
+                    $newRoll = '1';
+                }
+                $StudentID = StudentId($student->StudentClass, $newRoll,$student->school_id,$student->StudentGroup,date("y", strtotime('01-01-'.$paymentYear)));
+
+                $student->update(['StudentRoll' => $newRoll,'StudentID' => $StudentID,'Year' => $paymentYear,'StudentStatus' => 'active']);
+                return $student;
+
+
+
+    }
+
+    public function transertoOld(Request $request)
+    {
+
+        $Year = date('Y');
+        $student = student::where(['StudentClass'=>'Ten','Year'=>$Year,'StudentStatus'=>'active'])->get();
+
+        foreach ($student as $value) {
+            $upStudent = student::find($value->id);
+            $upStudent->update(['StudentStatus'=>'old']);
+        }
+
+
+
+
+
+    }
+
+
     public function allReports(Request $request)
     {
 
@@ -37,8 +96,21 @@ class studentsController extends Controller
 
     public function getStudents(Request $request)
     {
+        $AdmissionID = $request->search;
+
+
         $StudentStatus = $request->StudentStatus;
+        $StudentStatus2 = $request->StudentStatus2;
+
         $class = $request->class;
+
+        if($AdmissionID){
+            return student::where(['StudentStatus'=>$StudentStatus,'AdmissionID'=>$AdmissionID])->get();
+        }
+
+        if(!$class){
+            return student::where('StudentStatus',$StudentStatus)->get();
+        }
 
         $group = $request->group;
 
@@ -63,6 +135,17 @@ class studentsController extends Controller
         $status = $request->status;
         foreach ($studentDatas as $value) {
             $student = student::find($value);
+
+           $StudentPhoneNumber =  int_bn_to_en($student->StudentPhoneNumber);
+
+        //    echo  "Congratulations ".strtoupper($student->StudentNameEn).", Your admission application has been accepted. Contact the school with required documents by 29-12-2022 to confirm admission. Head Master,Tepriganj High School";
+
+            smsSend("Congratulations ".strtoupper($student->StudentNameEn).", Your admission application has been accepted. Contact the school with required documents by 29-12-2022 to confirm admission. Head Master,Tepriganj Model School And School", $StudentPhoneNumber);
+
+
+            // smsSend('অভিনন্দন, আপনার ভর্তির আবেদনটি গ্রহন করা হয়েছে। ভর্তি নিশ্চিত করতে 29-12-2022 এর মধ্যে প্রয়োজনীয় কাগজপত্র নিয়ে বিদ্যালয়ে যোগাযোগ করুন', $StudentPhoneNumber);
+
+            // smsSend('হেলো', $StudentPhoneNumber);
 
             if (in_array($value, $actioncheck)){
                 $student->update(['StudentStatus'=>$status]);
@@ -385,6 +468,14 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 }
     public function student_submit(Request $r)
     {
+
+
+        if(sitedetails()->application=='Off'){
+
+            return 444;
+        }
+
+
         $submit_type = $r->submit_type;
         $id = $r->id;
         $data = $r->except('AdmissionID','StudentID','StudentPicture');
@@ -916,7 +1007,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
         $status  = $payment->status;
         $invoiceId  = $payment->trxid;
         $amount  = $payment->amount;
-        $created_at  = $payment->date;
+        $created_at  = date("d-m-Y",strtotime($payment->date));
         $studentClass  = $payment->studentClass;
         $studentRoll  = $payment->studentRoll;
         $studentRoll  = $payment->studentRoll;
@@ -925,7 +1016,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
         $mobile_no  = $student->StudentPhoneNumber;
         $AdmissionID  = $student->AdmissionID;
 
-        $studentAddress  = "$student->district ,$student->upazila , $student->union , $student->StudentAddress";
+        $studentAddress  = "$student->StudentAddress, $student->union, $student->upazila, $student->district";
 
         $amounts = $amount;
 
@@ -1066,7 +1157,9 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
             <p style='text-align:right;font-size:16px'>অফিস কপি</p>
 
             <h2 style='font-weight: 500;' class='companiname'>$full_name</h2>
-            <p class='defalttext'>$address</p>";
+            <p class='defalttext'>$address</p>
+            <p class='defalttext' style='font-size:12px'>Website: www.tmscedu.com</p>
+            ";
 
             if($status=='Paid'){
                 $html .="            <h2 class='companiname' style='width: 160px;
@@ -1098,7 +1191,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
         <table style='width:100%'>
         <tr>
-            <td >এডমিশন আইডিঃ- ".int_en_to_bn($AdmissionID)." </td>
+            <td>অ্যাপ্লিকেশন আইডিঃ- ".int_en_to_bn($AdmissionID)." </td>
             <td class='defaltfont' style='text-align:right'>রশিদ নং- ".int_en_to_bn($invoiceId)."</td>
         <tr>
 
@@ -1258,7 +1351,8 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
             <p style='text-align:right;font-size:16px'>শিক্ষার্থীর কপি</p>
             <h2 style='font-weight: 500;' class='companiname'>$full_name</h2>
-            <p class='defalttext'>$address</p>";
+            <p class='defalttext'>$address</p>
+            <p class='defalttext' style='font-size:12px'>Website: www.tmscedu.com</p>";
 
             if($status=='Paid'){
                 $html .="            <h2 class='companiname' style='width: 160px;
@@ -1290,7 +1384,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
         <table style='width:100%'>
         <tr>
-            <td >এডমিশন আইডিঃ- ".int_en_to_bn($AdmissionID)." </td>
+            <td >অ্যাপ্লিকেশন আইডিঃ- ".int_en_to_bn($AdmissionID)." </td>
             <td class='defaltfont' style='text-align:right'>রশিদ নং- ".int_en_to_bn($invoiceId)."</td>
         <tr>
 
@@ -1528,7 +1622,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                     <td>
                         <p class='fontsize2'>$schoolDetails->SCHOLL_NAME</p>
                         <p class='fontsize1'>$schoolDetails->SCHOLL_ADDRESS </p>
-                        <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
+                        <p class='fontsize1' style='font-size:12px'>website: www.tmscedu.com </p>
                     </td>
                     <td style='text-align: right'>
                     <div class='imgdiv'>
