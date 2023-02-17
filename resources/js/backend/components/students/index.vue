@@ -207,6 +207,7 @@
 
                                         <button @click="studentView(student, index, $event.target)" class="btn btn-info"><i class="fas fa-eye"></i> View</button>
                                         <router-link class="btn btn-success" :to="{ name: 'studentedit', params: { id: student.id } }"><i class="fas fa-cogs"></i> Edit</router-link>
+                                        <a class="btn btn-info" target="_blank" :href="'/dashboard/student/card/single/' + student.id + '/' + student.school_id" ><i class="fas fa-card"></i> Card</a>
 
                                         <!-- <div class="dropdown">
                                             <button class="btn btn-info dropdown-toggle" type="button"

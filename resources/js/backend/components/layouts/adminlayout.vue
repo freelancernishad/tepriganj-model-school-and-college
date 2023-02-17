@@ -158,9 +158,9 @@
                                         <router-link :to="{ name: 'students' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Promotion </router-link>
                                     </li> -->
 
-                                    <!-- <li class="nav-item">
+                                    <li class="nav-item">
                                         <router-link :to="{ name: 'studentCard' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Card </router-link>
-                                    </li> -->
+                                    </li>
 
                                 </ul>
                             </transition>
