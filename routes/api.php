@@ -111,6 +111,7 @@ Route::post('/students/reports',[studentsController::class , 'reports']);
 Route::get('/students/all/reports',[studentsController::class , 'allReports']);
 Route::get('/students/list',[studentsController::class , 'list']);
 
+Route::get('/students/for/change/group',[studentsController::class , 'listforGroup']);
 Route::get('/get/pending/student',[studentsController::class , 'getStudents']);
 
 Route::post('/approve/pending/student',[studentsController::class , 'approveStudents']);

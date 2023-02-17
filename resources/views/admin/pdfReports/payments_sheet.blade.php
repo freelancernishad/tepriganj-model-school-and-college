@@ -13,14 +13,14 @@
             text-align:center;
         }
     .td{
-        border: 1px dotted black;
+        border: 1px solid black;
         padding:4px 10px;
-        font-size: 15px;
+        font-size: 11px;
     }
        th{
-        border: 1px dotted black;
+        border: 1px solid black;
         padding:4px 10px;
-        font-size: 15px;
+        font-size: 11px;
     }
 
     .li{
@@ -34,7 +34,7 @@
 		width:100%
 	}
     .result{
-        border-bottom: 1px dotted black;
+        border-bottom: 1px solid black;
         margin-left:10px !important;
     }
     </style>
@@ -61,23 +61,24 @@
 
                     <tr class="bg-tomato">
 
-                        <th scope="col">রোল</th>
-                        <th scope="col">নাম</th>
+                        <th scope="col" width="5%">রোল</th>
+                        <th scope="col" width="20%">নাম</th>
 
 
-                            <th scope="col" >{{ month_en_to_bn('January') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('February') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('March') }} </th>
-                            <th scope="col" >{{ month_en_to_bn('April') }} </th>
-                            <th scope="col" >{{ month_en_to_bn('May') }} </th>
-                            <th scope="col" >{{ month_en_to_bn('June') }} </th>
-                            <th scope="col" >{{ month_en_to_bn('July') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('August') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('September') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('October') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('November') }}</th>
-                            <th scope="col" >{{ month_en_to_bn('December') }} </th>
-                            <th scope="col" >মোট </th>
+                            <th scope="col" width="5%">সে.ফি</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('January') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('February') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('March') }} </th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('April') }} </th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('May') }} </th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('June') }} </th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('July') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('August') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('September') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('October') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('November') }}</th>
+                            <th scope="col" width="5%">{{ month_en_to_bn('December') }} </th>
+                            <th scope="col" width="5%">মোট </th>
 
 
 
@@ -98,8 +99,24 @@
 @php
 
     $studentId = $row->StudentID;
+    $admissionId = $row->AdmissionID;
 
     $PDO = \DB::connection()->getPdo();
+
+
+//session_fee
+$session_fee_QUERY = $PDO->prepare("SELECT DISTINCT * FROM `payments` WHERE `admissionId`='$admissionId' && `studentClass`='$class' && `year`='$year' && `type`='session_fee'");
+$session_fee_QUERY->execute();
+ $session_fee_count = $session_fee_QUERY->rowCount();
+$session_fee_fetch=$session_fee_QUERY->fetchAll(PDO::FETCH_OBJ);
+if($session_fee_count>0){
+    $session_fee_amount= $session_fee_fetch[0]->amount;
+
+}else{
+    $session_fee_amount = 0;
+}
+
+
 
 
 //January
@@ -258,13 +275,14 @@ if($December_count>0){
 }
 
 
-$totalAmount = $January_amount+$February_amount+$March_amount+$April_amount+$May_amount+$June_amount+$July_amount+$August_amount+$September_amount+$October_amount+$November_amount+$December_amount;
+$totalAmount = $session_fee_amount+$January_amount+$February_amount+$March_amount+$April_amount+$May_amount+$June_amount+$July_amount+$August_amount+$September_amount+$October_amount+$November_amount+$December_amount;
 
 @endphp
 
                             <tr>
                                 <th scope="col">{{ int_en_to_bn($row->StudentRoll) }}</th>
                                 <th scope="col">{{ $row->StudentName }}</th>
+                                <th scope="col" >{{ int_en_to_bn($session_fee_amount) }}</th>
                                 <th scope="col" >{{ int_en_to_bn($January_amount) }}</th>
                                 <th scope="col" >{{ int_en_to_bn($February_amount) }}</th>
                                 <th scope="col" > {{ int_en_to_bn($March_amount) }}</th>
@@ -309,7 +327,7 @@ $totalAmount = $January_amount+$February_amount+$March_amount+$April_amount+$May
                 <img width="75px" src="{{ $sign }}" alt="">
 
 
-                    <h3 style="margin:0;text-align:center;">স্বাক্ষর</h3>
+
                     <h4 style="margin:0;text-align:center;font-size:16px">অধ্যক্ষ</h4>
                     <h4 style="margin:0;text-align:center;font-size:16px">{{ sitedetails()->Principals_name}}</h4>
                     <h4 style="margin:0;text-align:center;font-size:16px">{{ sitedetails()->SCHOLL_NAME}}</h4>

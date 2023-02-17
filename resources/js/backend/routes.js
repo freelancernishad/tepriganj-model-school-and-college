@@ -28,6 +28,8 @@ let students_attendance_daily = require('./components/students/attendance/daily.
 let students_attendance_edit = require('./components/students/attendance/edit.vue').default;
 let students_attendance_monthly = require('./components/students/attendance/monthly.vue').default;
 
+let setGroup = require('./components/students/setGroup.vue').default;
+
 
 // Staffs Components
 let staffs = require('./components/staffs/index.vue').default;
@@ -41,7 +43,6 @@ let staffs_attendance_edit = require('./components/staffs/attendance/edit.vue').
 let staffs_attendance_monthly = require('./components/staffs/attendance/monthly.vue').default;
 // let staffsattendanceview = require('./components/staffs/attendance.vue').default;
 
-let setGroup = require('./components/students/setGroup.vue').default;
 
 // payment Components
 let payment = require('./components/payments/index.vue').default;

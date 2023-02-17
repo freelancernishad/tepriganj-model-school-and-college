@@ -250,6 +250,46 @@ function subjectCol($subject)
     }
 
 
+   function paymentKhat($name){
+        if($name=='Admission_fee'){
+            return 'ভর্তি ফরম ফি';
+        }elseif($name=='session_fee'){
+            return 'ভর্তি/সেশন ফি';
+        }elseif($name=='monthly_fee'){
+            return 'মাসিক বেতন';
+        }elseif($name=='exam_fee'){
+            return 'পরীক্ষার ফি';
+
+        }elseif($name=='registration_fee'){
+            return 'রেজিস্ট্রেশন ফি';
+        }elseif($name=='form_filup_fee'){
+            return 'ফরম পূরণ ফি';
+        }elseif($name=='marksheet'){
+            return 'মার্কসীট ফি';
+        }
+
+    }
+
+
+   function paymentKhaten($name){
+        if($name=='ভর্তি ফরম ফি'){
+            return 'Admission_fee';
+        }elseif($name=='ভর্তি/সেশন ফি'){
+            return 'session_fee';
+        }elseif($name=='মাসিক বেতন'){
+            return 'monthly_fee';
+        }elseif($name=='পরীক্ষার ফি'){
+            return 'exam_fee';
+
+        }elseif($name=='রেজিস্ট্রেশন ফি'){
+            return 'registration_fee';
+        }elseif($name=='ফরম পূরণ ফি'){
+            return 'form_filup_fee';
+        }elseif($name=='মার্কসীট ফি'){
+            return 'marksheet';
+        }
+
+    }
 
 
 function int_en_to_bn($number)
@@ -286,6 +326,16 @@ function month_en_to_bn($month)
 
 
     return str_replace($en_month, $bn_month, $month);
+}
+
+function month_bn_to_en($month)
+{
+
+    $bn_month = array('জানুয়ারি', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগষ্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর');
+    $en_month = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+
+
+    return str_replace($bn_month,$en_month, $month);
 }
 function exam_en_to_bn($month)
 {
@@ -1393,7 +1443,43 @@ function smsSend($deccription = '', $applicant_mobile = '01909756552')
     } catch (Exception $e) {
         array_push($responsemessege, $e->getMessage());
     }
+}
 
+
+function SmsNocSmsSend($deccription = '', $applicant_mobile = '01909756552')
+{
+
+    $smsnocapikey = env('SMSNOCAPYKEY');
+    $smsnocsenderid = env('SMSNOCSENDERID');
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://app.smsnoc.com/api/v3/sms/send',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS =>'{
+"recipient":"88'.$applicant_mobile.'",
+"sender_id":"'.$smsnocsenderid.'",
+"type":"plain",
+"message":"'.$deccription.'"
+}',
+  CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json',
+    'Accept: application/json',
+    'Authorization: Bearer '.$smsnocapikey.''
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
 
 }
 

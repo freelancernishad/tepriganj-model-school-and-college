@@ -25,6 +25,11 @@ class studentsController extends Controller
 {
 
 
+    public function listforGroup(Request $request)
+    {
+        $StudentClass = $request->StudentClass;
+       return $HumanitiesStudnets = student::where(['StudentClass'=>$StudentClass,'Year'=>date('Y'),'StudentStatus'=>'Active'])->orderBy('StudentRoll','asc')->get();
+    }
 
 
     public function permissionAction(Request $request)
@@ -38,7 +43,7 @@ class studentsController extends Controller
 
         }
 
-
+        $student->update(['StudentGroup' => $group]);
 
 
 
@@ -50,17 +55,22 @@ class studentsController extends Controller
                 }
 
 
-                 $previousStudentCount =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->count();
+                 $previousStudentCount =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$group])->count();
 
                 if($previousStudentCount>0){
-                      $previousStudent =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$student->StudentGroup])->orderBy('StudentRoll','desc')->latest()->first();
+                      $previousStudent =  student::where(['StudentClass'=>$student->StudentClass,'Year'=>$paymentYear,'StudentGroup'=>$group])->orderBy('StudentRoll','desc')->latest()->first();
                       $newRoll = $previousStudent->StudentRoll+1;
                 }else{
                     $newRoll = '1';
                 }
-                $StudentID = StudentId($student->StudentClass, $newRoll,$student->school_id,$student->StudentGroup,date("y", strtotime('01-01-'.$paymentYear)));
+                $StudentID = StudentId($student->StudentClass, $newRoll,$student->school_id,$group,date("y", strtotime('01-01-'.$paymentYear)));
 
                 $student->update(['StudentRoll' => $newRoll,'StudentID' => $StudentID,'Year' => $paymentYear,'StudentStatus' => 'active']);
+
+                $StudentPhoneNumber =  int_bn_to_en($student->StudentPhoneNumber);
+
+                smsSend(strtoupper($student->StudentName)." এর ".class_en_to_bn($student->StudentClass)."তে ভর্তি নিশ্চিত হয়েছে। রোল ".int_en_to_bn($student->StudentRoll), $StudentPhoneNumber);
+
                 return $student;
 
 
@@ -109,7 +119,7 @@ class studentsController extends Controller
         }
 
         if(!$class){
-            return student::where('StudentStatus',$StudentStatus)->get();
+            return student::where('StudentStatus',$StudentStatus)->orderBy('updated_at','desc')->get();
         }
 
         $group = $request->group;
@@ -470,6 +480,19 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
     {
 
 
+        $id = $r->id;
+        $data = $r->except('AdmissionID','StudentID','StudentPicture');
+
+        if($id){
+            $student = student::find($r->id);
+           return $student->update($data);
+        }
+
+
+
+
+
+
         if(sitedetails()->application=='Off'){
 
             return 444;
@@ -497,13 +520,10 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                 return $resp;
             }
             }
+                $data['StudentID'] = (string)StudentId($StudentClass,$StudentRoll,$school_id,$StudentGroup);
+            }
 
-
-
-             $data['StudentID'] = (string)StudentId($StudentClass,$StudentRoll,$school_id,$StudentGroup);
-        }
-
-$AdmissionID = (string)StudentAdmissionId('',$school_id);
+            $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
 
@@ -989,6 +1009,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 // return $this->invoice($payment,$student);
 
         $pdfFileName = 'Invoice-'.date('Y-m-d H:m:s').'.pdf';
+        // return $this->invoice($payment,$student);
 
         return PdfMaker('A4-L',$student->school_id,$this->invoice($payment,$student),$pdfFileName,false);
 
@@ -1006,10 +1027,11 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
         $address  = $school_details->SCHOLL_ADDRESS;
         $status  = $payment->status;
         $invoiceId  = $payment->trxid;
+
         $amount  = $payment->amount;
+
         $created_at  = date("d-m-Y",strtotime($payment->date));
         $studentClass  = $payment->studentClass;
-        $studentRoll  = $payment->studentRoll;
         $studentRoll  = $payment->studentRoll;
         $StudentName  = $student->StudentName;
         $StudentFatherName  = $student->StudentFatherNameBn;
@@ -1020,8 +1042,6 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
         $amounts = $amount;
 
-        $numto = new NumberToBangla();
-         $amountText = $numto->bnMoney($amounts);
          $qrurl = url("/inviceverify?trx=$invoiceId");
 
          // $qrurl = url("/verification/sonod/$row->id");
@@ -1250,6 +1270,13 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
 
+
+
+
+
+
+
+
                             $khat = [
                                    'Admission_fee'=>'ভর্তি ফরম ফি',
                                    'session_fee'=>'ভর্তি/সেশন ফি',
@@ -1260,14 +1287,78 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                             ];
 
                             $kahts = json_decode(json_encode($khat));
-                            print_r($kahts);
+                            // print_r($kahts);
 
 
-                                    // $totalpay = $orders->pay;
-                                    // $totaldue = $orders->due;
-                                    $index = 1;
+                            $paymentCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->count();
+                            if($paymentCount>1){
+
+
+                                $sessionFee = 0;
+                                $paymentSessionCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'session_fee'])->count();
+                                if($paymentSessionCount>0){
+                                    $paymentSession = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'session_fee'])->first();
+                                   $sessionFee  = $paymentSession->amount;
+                                }
+
+
+                                 $paymentss = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->get();
+
+                                 $monthname = "";
+                                 $monthlyAmount = 0;
+                                 foreach ($paymentss as $paymentSingle) {
+                                    if($paymentSingle->type=='monthly_fee'){
+                                        // array_push($monthname,month_en_to_bn($paymentSingle->month));
+                                        $monthname .= month_en_to_bn($paymentSingle->month).",";
+                                        $monthlyAmount += $paymentSingle->amount;
+                                    }
+                                 }
+
+                                $html .="
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(1)."</td>
+                                <td class='td  defaltfont'>ভর্তি ফরম ফি</td>
+                                <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                                </tr>
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(2)."</td>
+                                <td class='td  defaltfont'>ভর্তি/সেশন ফি</td>
+                                <td class='td  defaltfont'>".int_en_to_bn($sessionFee)."</td>
+                                </tr>
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(3)."</td>
+                                <td class='td  defaltfont'>মাসিক বেতন  ($monthname)</td>
+                                <td class='td  defaltfont'>".int_en_to_bn($monthlyAmount)."</td>
+                                </tr>
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(4)."</td>
+                                <td class='td  defaltfont'>পরীক্ষার ফি</td>
+                                <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                                </tr>
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(5)."</td>
+                                <td class='td  defaltfont'>রেজিস্ট্রেশন ফি</td>
+                                <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                                </tr>
+
+                                <tr class='tr items'>
+                                <td class='td  defaltfont'>".int_en_to_bn(6)."</td>
+                                <td class='td  defaltfont'>ফরম পূরণ ফি</td>
+                                <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                                </tr>
+
+                                ";
+                                 $totalAmount = $sessionFee+$monthlyAmount;
+
+
+                            }else{
+                                $index = 1;
                                 foreach ($khat as $key=>$value) {
-
                                     if($value=='মাসিক বেতন'){
                                         $html .="  <tr class='tr items'>
                                         <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
@@ -1277,26 +1368,23 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                                         <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
                                         <td class='td  defaltfont'>$value</td>";
                                     }
+                                    if($key==$payment->type){
+                                        $html .=" <td class='td  defaltfont'>".int_en_to_bn($amount)."</td>";
+                                    }else{
+                                        $html .=" <td class='td  defaltfont'>".int_en_to_bn(0)."</td>";
+                                    };
+                                    $html.="  </tr>";
+                                    $index++;
+                                }
+                                $totalAmount = $amount;
+                            }
 
 
 
 
-                                        if($key==$payment->type){
-                                            $html .=" <td class='td  defaltfont'>".int_en_to_bn($amount)."</td>";
-                                        }else{
-                                            $html .=" <td class='td  defaltfont'>".int_en_to_bn(0)."</td>";
 
-                                        };
-
-
-
-                                  $html.="  </tr>";
-
-                                        $index++;
-
-
-                                    }
-
+                            $numto = new NumberToBangla();
+                            $amountText = $numto->bnMoney($totalAmount);
 
 
 
@@ -1313,7 +1401,7 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                             $html .="
                             <tr class='tr'>
                             <td colspan='2' class='defalttext td defaltfont'style='text-align:right;    padding: 0 13px;'><p> মোট </p></td>
-                            <td class='td defaltfont'>".int_en_to_bn($amount)."</td>
+                            <td class='td defaltfont'>".int_en_to_bn($totalAmount)."</td>
                     </tr>
 
 
@@ -1443,6 +1531,11 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
 
 
 
+
+
+
+
+
                             $khat = [
                                 'Admission_fee'=>'ভর্তি ফরম ফি',
                                 'session_fee'=>'ভর্তি/সেশন ফি',
@@ -1452,55 +1545,129 @@ $AdmissionID = (string)StudentAdmissionId('',$school_id);
                                 'form_filup_fee'=>'ফরম পূরণ ফি',
                          ];
 
-                            $kahts = json_decode(json_encode($khat));
-                            print_r($kahts);
+                         $kahts = json_decode(json_encode($khat));
+                         // print_r($kahts);
 
 
-                                    // $totalpay = $orders->pay;
-                                    // $totaldue = $orders->due;
-                                    $index = 1;
-                                foreach ($khat as $key=>$value) {
-
-                                  $html .="  <tr class='tr items'>
-                                        <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
-                                        <td class='td  defaltfont'>$value</td>";
-
-                                        if($key==$payment->type){
-                                            $html .=" <td class='td  defaltfont'>".int_en_to_bn($amount)."</td>";
-                                        }else{
-                                            $html .=" <td class='td  defaltfont'>".int_en_to_bn(0)."</td>";
-
-                                        };
-
-                                  $html.="  </tr>";
-
-                                        $index++;
+                         $paymentCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->count();
+                         if($paymentCount>1){
 
 
-                                    }
+                            $sessionFee = 0;
+                            $paymentSessionCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'session_fee'])->count();
+                            if($paymentSessionCount>0){
+                                $paymentSession = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'session_fee'])->first();
+                               $sessionFee  = $paymentSession->amount;
+                            }
 
 
+                             $paymentss = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->get();
 
-
-
-
-
-                                $html .=" </tbody>
-                            <tfoot class='tfoot'>";
-
-
-
-
+                             $monthname = "";
+                             $monthlyAmount = 0;
+                             foreach ($paymentss as $paymentSingle) {
+                                if($paymentSingle->type=='monthly_fee'){
+                                    // array_push($monthname,month_en_to_bn($paymentSingle->month));
+                                    $monthname .= month_en_to_bn($paymentSingle->month).",";
+                                    $monthlyAmount += $paymentSingle->amount;
+                                }
+                             }
 
                             $html .="
-                            <tr class='tr'>
-                            <td colspan='2' class='defalttext td defaltfont'style='text-align:right;    padding: 0 13px;'><p> মোট </p></td>
-                            <td class='td defaltfont'>".int_en_to_bn($amount)."</td>
-                    </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(1)."</td>
+                            <td class='td  defaltfont'>ভর্তি ফরম ফি</td>
+                            <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                            </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(2)."</td>
+                            <td class='td  defaltfont'>ভর্তি/সেশন ফি</td>
+                            <td class='td  defaltfont'>".int_en_to_bn($sessionFee)."</td>
+                            </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(3)."</td>
+                            <td class='td  defaltfont'>মাসিক বেতন  ($monthname)</td>
+                            <td class='td  defaltfont'>".int_en_to_bn($monthlyAmount)."</td>
+                            </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(4)."</td>
+                            <td class='td  defaltfont'>পরীক্ষার ফি</td>
+                            <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                            </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(5)."</td>
+                            <td class='td  defaltfont'>রেজিস্ট্রেশন ফি</td>
+                            <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                            </tr>
+
+                            <tr class='tr items'>
+                            <td class='td  defaltfont'>".int_en_to_bn(6)."</td>
+                            <td class='td  defaltfont'>ফরম পূরণ ফি</td>
+                            <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                            </tr>
+
+                            ";
+                             $totalAmount = $sessionFee+$monthlyAmount;
 
 
-                      ";
+                        }else{
+                            $index = 1;
+                            foreach ($khat as $key=>$value) {
+                                if($value=='মাসিক বেতন'){
+                                    $html .="  <tr class='tr items'>
+                                    <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
+                                    <td class='td  defaltfont'>$value</td>";
+                                }else{
+                                    $html .="  <tr class='tr items'>
+                                    <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
+                                    <td class='td  defaltfont'>$value</td>";
+                                }
+                                if($key==$payment->type){
+                                    $html .=" <td class='td  defaltfont'>".int_en_to_bn($amount)."</td>";
+                                }else{
+                                    $html .=" <td class='td  defaltfont'>".int_en_to_bn(0)."</td>";
+                                };
+                                $html.="  </tr>";
+                                $index++;
+                            }
+                            $totalAmount = $amount;
+                        }
 
+
+
+
+
+                        $numto = new NumberToBangla();
+                        $amountText = $numto->bnMoney($totalAmount);
+
+
+
+
+
+
+
+
+
+                             $html .=" </tbody>
+                         <tfoot class='tfoot'>";
+
+
+
+
+
+                         $html .="
+                         <tr class='tr'>
+                         <td colspan='2' class='defalttext td defaltfont'style='text-align:right;    padding: 0 13px;'><p> মোট </p></td>
+                         <td class='td defaltfont'>".int_en_to_bn($totalAmount)."</td>
+                 </tr>
+
+
+                   ";
 
 
 
