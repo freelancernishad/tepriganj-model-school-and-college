@@ -73,8 +73,8 @@
 <div class="studentDetails"  style="position:fixed;top:125px;left:230px">
 
     <div style="font-size:12px;margin-top:12px"> <b> নামঃ </b> {{ $row->StudentName }}</div>
-     <div style="font-size:12px;margin-top:12px"> <b> পিতার নামঃ </b> {{ $row->StudentFatherName }}</div>
-     <div style="font-size:12px;margin-top:12px"> <b> মাতার নামঃ </b> {{ $row->StudentMotherName }}  </div>
+     <div style="font-size:12px;margin-top:12px"> <b> পিতার নামঃ </b> {{ $row->StudentFatherNameBn }}</div>
+     <div style="font-size:12px;margin-top:12px"> <b> মাতার নামঃ </b> {{ $row->StudentMotherNameBn }}  </div>
      <div style="font-size:12px;margin-top:12px"> <b> ঠিকানাঃ </b>{{ $row->StudentAddress }} </div>
 
     <div style="font-size:12px;margin-top:12px"> <b> শ্রেণীঃ </b> {{ class_en_to_bn($row->StudentClass) }}</div>
