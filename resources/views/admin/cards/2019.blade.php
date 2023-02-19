@@ -65,7 +65,7 @@
 <img width="410" height="325" src="{!! $card !!}" alt="">
 
 <div class="frontSide" style="position:absolute;top:229px;left:91px">
-    <img width="94" height="105" style="    z-index: 9999;" src="{!! base64(env('FILE_PATH').$row->StudentPicture) !!}" alt="">
+    <img width="94" height="105" style="    z-index: 9999;" src="{!! base64($row->StudentPicture) !!}" alt="">
 </div>
 
 
