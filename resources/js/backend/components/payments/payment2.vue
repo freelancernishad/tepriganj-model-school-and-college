@@ -2,28 +2,20 @@
     <div>
         <loader v-if="preloader" object="#ff9633" color1="#ffffff" color2="#17fd3d" size="25" speed="2"
             bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="loading"></loader>
-        <section class="inner-header divider layer-overlay overlay-theme-colored-7">
-            <div class="container">
-                <!-- Section Content -->
-                <div class="section-content">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h1 class="text-theme-colored2 font-36">পেমেন্ট
-                            </h1>
-                            <ol class="breadcrumb text-left mt-10 white">
-                                <li><a href="">Home</a></li>
-                                <li class="active">পেমেন্ট</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            <div class="breadcrumbs-area">
+            <h3>Payment</h3>
+            <ul>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li>Payment</li>
+            </ul>
+        </div>
         <!-- Main Start -->
         <main class="container-fluid">
             <div class="row">
                 <!-- Left Main -->
-                <div class="col-lg-9 my-3">
+                <div class="col-lg-12 my-3">
                     <div class="container">
 
 
@@ -67,7 +59,7 @@
                                 </div>
 
 
-                                <div class='form-group' v-if="student.StudentClass=='Nine' || form.student_class == 'Ten'">
+                                <div class='form-group' v-if="form.student_class == 'Nine' || form.student_class == 'Ten'">
                                     <label>গ্রুপ</label>
                                     <select class='form-control' style='width: 100%;' v-model='form.StudentGroup'
                                         id='group' required>
@@ -166,7 +158,7 @@
 
                     </div>
                 </div>
-                <side-bar class-name="col-md-3"></side-bar>
+
             </div>
         </main>
         <!-- Main End -->

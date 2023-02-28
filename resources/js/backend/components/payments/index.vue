@@ -33,14 +33,22 @@
                 <div class="row gutters-8">
 
 
+
                     <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
                         <select class="form-control" v-model="payment_class" id="payment_class" required>
                             <option value="">SELECT CLASS</option>
-     <option v-for="classlist in classess">{{ classlist }}</option>
+                            <option v-for="classlist in classess">{{ classlist }}</option>
                         </select>
-
-
                     </div>
+
+
+                    <!-- <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group"v-if="payment_class == 'Nine' || payment_class == 'Ten'">
+                        <select class='form-control' style='width: 100%;' v-model='StudentGroup' id='group' required>
+                                        <option value=''>select</option>
+                                        <option v-for="(group, ind) in groups" :key="'group' + ind">{{ group }}</option>
+                                    </select>
+                    </div> -->
+
 
 
 
@@ -158,6 +166,7 @@ created() {
        month:null,
        type:null,
        examType:'',
+       StudentGroup:'',
 
        exams: {},
        months: {},
@@ -168,7 +177,7 @@ created() {
 	methods: {
             filter(){
                 // console.log(this.$router.currentRoute.path)
-                if(this.$router.currentRoute.path==`/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?type_name=${this.examType}`){
+                if(this.$router.currentRoute.path==`/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?type_name=${this.examType}?StudentGroup=${this.StudentGroup}`){
 
                 }else{
 this.newsearch ='oldsearch',
@@ -182,7 +191,7 @@ this.newsearch ='oldsearch',
 
 	},
 	mounted(){
-
+        this.all_list('groups');
 
        this.payment_class = ''
        this.year = ''

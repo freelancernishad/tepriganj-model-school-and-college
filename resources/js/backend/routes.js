@@ -138,13 +138,13 @@ let onlineexamView = require('./components/onlineexam/view.vue').default;
 let onlineexamnew = require('./components/onlineexam/form.vue').default;
 let PageNotFound = require('./components/404.vue').default;
 
-
+let paymentSingle = require('./components/payments/payment2.vue').default;
 
 let prefix = '/dashboard'
 export const routes = [
 
   //Auth Routes
-
+  { path: `${prefix}/student/payment`, component: paymentSingle, name:'paymentSingle' ,meta: { layout: adminlayout } },
 
 
   { path: `${prefix}/logout`, component: logout, name:'logout',meta: { layout: adminlayout } },
