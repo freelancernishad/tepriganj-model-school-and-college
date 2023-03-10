@@ -53,6 +53,7 @@ class PaymentController extends Controller
 
     }
 
+
     public function Search(Request $request)
     {
          $type = $request->type;
@@ -136,6 +137,12 @@ class PaymentController extends Controller
 
                     }elseif($ApliedStudent->StudentStatus=='active'){
                         $StudentStatus = 'active';
+                        $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
+                        $AdmissionID = $student->AdmissionID;
+                        $StudentClass = $student->StudentClass;
+                        $studentid = $student->id;
+                    }elseif($ApliedStudent->StudentStatus=='permited'){
+                        $StudentStatus = 'permited';
                         $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
                         $AdmissionID = $student->AdmissionID;
                         $StudentClass = $student->StudentClass;
@@ -230,7 +237,13 @@ class PaymentController extends Controller
 
 
         $session_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'session_fee'])->first()->fees;
-        $monthly_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'monthly_fee'])->first()->fees;
+
+        if($student->stipend=='No'){
+            $monthly_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'monthly_fee'])->first()->fees;
+        }else{
+            $monthly_fee = 0;
+        }
+
         $exam_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee'])->first()->fees;
         $registration_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee'])->first()->fees;
         $form_filup_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'form_filup_fee'])->first()->fees;
@@ -251,8 +264,13 @@ class PaymentController extends Controller
         if($session_feeCount>0){
             $session_feeGet =    $this->PaymentCount(['type' => 'session_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'get');
             $session_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$session_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+
+            $session_feeStatus = 'Paid';
+
         }else{
             $session_feeButton = "<a href='/payment?studentId=$studentid&type=session_fee' class='btn btn-info'>Pay Now</a>";
+            $session_feeStatus = 'Unpaid';
+
         }
 
       $registration_feeCount =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'count');
@@ -272,120 +290,306 @@ class PaymentController extends Controller
         }
 
 
+
+
+
+        $paymentHtml = "";
+
+
+
+
+        $cuddentdata = date('d');
+        $cuddentMonth =  date('F');
+
+        $monthlyPaid = [];
+
+        if($session_feeStatus=='Unpaid'){
+            array_push($monthlyPaid,[
+                'key'=>'ভর্তি/সেশন ফি',
+                'amount'=>$session_fee,
+            ]);
+        }
+        foreach ($allMonth as $value) {
+
+
+            $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','month' => $value],'count');
+
+            if($monthly_feeCount>0){
+
+            }else{
+
+                array_push($monthlyPaid,[
+                    'key'=>month_en_to_bn($value),
+                    'amount'=>$monthly_fee,
+                ]);
+            }
+
+            $CurrenMonthNumber = month_to_number($cuddentMonth);
+            $valueMonthNumber = month_to_number($value);
+
+
+            if($cuddentdata<11){
+                $CurrenMonthNumber = $CurrenMonthNumber-1;
+                if($CurrenMonthNumber==$valueMonthNumber){
+                    break;
+                }
+            }else{
+                if($cuddentMonth==$value){
+                    break;
+                }
+            }
+
+
+        }
+
+
+
+
         $paymentHtml = "
+        <h2 class='text-center' style='font-size: 30px;'>বকেয়া</h2>
+        <hr/>
 
         <table class='table' width='100%'>
             <thead>
                 <tr>
                     <th>Payment Type</th>
                     <th>Fee</th>
-                    <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-
-
+            <tbody>";
+        $totalAmount = 0;
+            foreach ($monthlyPaid as $value) {
+                $totalAmount += $value['amount'];
+                $paymentHtml .="
                 <tr style='text-align:center'>
-                    <td>ভর্তি/সেশন ফি</td>
-                    <td>$session_fee</td>
-                    <td>$session_feeButton</td>
-
-                </tr>";
-
-
-
-                if($session_feeCount>0){
-
-
-                $paymentHtml .= " <tr style='text-align:center'>
-                    <td colspan='3' style='text-align:center;font-size: 26px;'><h3>মাসিক বেতন</h3></td>
-
-                </tr>";
-
-                $monthSl = 1;
-                foreach ($allMonth as $value) {
-                    // echo number_to_month($monthSl);
-
-
-                    $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'count');
-                    if($monthly_feeCount>0){
-                        $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'get');
-                        $monthly_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$monthly_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-                        $paymentHtml .="<tr style='text-align:center'>
-                        <td>".month_en_to_bn($value)."</td>
-                        <td>$monthly_fee</td>
-                        <td>$monthly_feeButton</td>
-                    </tr>";
-                    $monthSl++;
-
-                    }
-                }
-
-
-                if($monthSl>12){
-
-                }else{
-                    $monthName = number_to_month($monthSl);
-                    $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>".month_en_to_bn($monthName)."</td>
-                    <td>$monthly_fee</td>
-                    <td>$monthly_feeButton</td>
-                    </tr>";
-                }
-
-
-
-
-
-                $paymentHtml .="<tr style='text-align:center'>
-                    <td colspan='3' style='text-align:center;font-size: 26px;'><h3>পরীক্ষার ফি</h3></td>
-
-                </tr>";
-
-                foreach ($allExams as $value) {
-
-
-
-                    $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'count');
-                    if($exam_feeCount>0){
-                        $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'get');
-                        $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-                    }else{
-
-                        $exam_feeButton = "<a href='' class='btn btn-info'>Pay Now</a>";
-
-                    }
-
-
-
-                    $paymentHtml .="<tr style='text-align:center'>
-                        <td>".exam_en_to_bn($value)."</td>
-                        <td>$exam_fee</td>
-                        <td>$exam_feeButton</td>
-                    </tr>";
-                }
-
-
-                $paymentHtml .="<tr style='text-align:center'>
-                    <td>রেজিস্ট্রেশন ফি</td>
-                    <td>$registration_fee</td>
-                    <td>$registration_feeButton</td>
+                <td>".$value['key']."</td>
+                <td>".$value['amount']."</td>
                 </tr>
-                <tr style='text-align:center'>
-                    <td>ফরম পূরণ ফি</td>
-                    <td>$form_filup_fee</td>
-                    <td>$form_filup_feeButton</td>
-                </tr>";
-
+                ";
             }
 
 
+            $paymentHtml .= "</tbody>
+            <tfoot>
+
+            <tr>
+                <td class='text-right'>মোট বকেয়া :</td>
+                <td class='text-left'>$totalAmount</td>
+            </tr>";
+
+
+            if($totalAmount){
+
+                $paymentHtml .= " <tr>
+                <td colspan='2' class='text-center'><a  href='/payment?studentId=$studentid&type=allBokeya' class='btn btn-info' style='font-size: 30px;'>ফি পরিশোধ করুন</a></td>
+                </tr>";
+            }
+
+
+            $paymentHtml .= " </tfoot>
+
+        </table> ";
+
+
+
+
+            $paidPayments =  payment::where(['admissionId'=>$AdmissionID,'status'=>'Paid'])->get();
+
+
+
+
+
+
+        $paymentHtml .= "
+        <h2 class='text-center' style='font-size: 30px;'>পরিশোধিত</h2>
+        <hr/>
+
+        <table class='table' width='100%'>
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Payment Type</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>";
+
+            foreach ($paidPayments as $paidPayment) {
+                $paymentHtml .="
+                <tr style='text-align:center'>
+
+                <td>".date('d-m-Y h:i A',strtotime($paidPayment->updated_at))."</td>
+
+                ";
+
+                if($paidPayment->type=='session_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }elseif($paidPayment->type=='marksheet'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }elseif($paidPayment->type=='Admission_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }else{
+                    $paymentHtml .="<td>".month_en_to_bn($paidPayment->month)."</td>";
+                }
+
+                $paymentHtml .="<td>$paidPayment->amount</td>
+                </tr>
+                ";
+            }
 
 
             $paymentHtml .= "</tbody>
-
         </table> ";
+
+
+
+
+// return $monthlyPaid;
+
+//         return;
+
+
+
+
+
+
+
+
+        // $paymentHtml = "
+
+        // <table class='table' width='100%'>
+        //     <thead>
+        //         <tr>
+        //             <th>Payment Type</th>
+        //             <th>Fee</th>
+        //             <th>Status</th>
+        //         </tr>
+        //     </thead>
+        //     <tbody>
+
+
+        //         <tr style='text-align:center'>
+        //             <td>ভর্তি/সেশন ফি</td>
+        //             <td>$session_fee</td>
+        //             <td>$session_feeButton</td>
+        //         </tr>";
+
+
+
+
+
+
+
+
+
+
+
+        //         if($session_feeCount>0){
+        //         $paymentHtml .= " <tr style='text-align:center'>
+        //             <td colspan='3' style='text-align:center;font-size: 26px;'><h3>মাসিক বেতন</h3></td>
+        //         </tr>";
+        //         $monthSl = 1;
+        //         foreach ($allMonth as $value) {
+
+        //             $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'count');
+        //             if($monthly_feeCount>0){
+        //                 $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'get');
+        //                 $monthly_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$monthly_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+        //                 $paymentHtml .="<tr style='text-align:center'>
+        //                 <td>".month_en_to_bn($value)."</td>
+        //                 <td>$monthly_fee</td>
+        //                 <td>$monthly_feeButton</td>
+        //             </tr>";
+        //             $monthSl++;
+        //             }else{
+        //                 if($monthSl>12){
+
+        //                 }else{
+        //                     $monthName = number_to_month($monthSl);
+        //                     $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
+        //                     $paymentHtml .="<tr style='text-align:center'>
+        //                     <td>".month_en_to_bn($monthName)."</td>
+        //                     <td>$monthly_fee</td>
+        //                     <td>$monthly_feeButton</td>
+        //                     </tr>";
+        //                 }
+        //             }
+
+
+
+
+
+
+        //         }
+
+
+
+
+
+        //         if($monthSl>12){
+
+        //         }else{
+        //             $monthName = number_to_month($monthSl);
+        //             $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
+        //             $paymentHtml .="<tr style='text-align:center'>
+        //             <td>".month_en_to_bn($monthName)."</td>
+        //             <td>$monthly_fee</td>
+        //             <td>$monthly_feeButton</td>
+        //             </tr>";
+        //         }
+
+
+
+
+
+        //         $paymentHtml .="<tr style='text-align:center;display:none'>
+        //             <td colspan='3' style='text-align:center;font-size: 26px;'><h3>পরীক্ষার ফি</h3></td>
+
+        //         </tr>";
+
+        //         foreach ($allExams as $value) {
+
+
+
+        //             $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'count');
+        //             if($exam_feeCount>0){
+        //                 $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'get');
+        //                 $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+        //             }else{
+
+        //                 $exam_feeButton = "<a href='' class='btn btn-info'>Pay Now</a>";
+
+        //             }
+
+
+
+        //             $paymentHtml .="<tr style='text-align:center;display:none' >
+        //                 <td>".exam_en_to_bn($value)."</td>
+        //                 <td>$exam_fee</td>
+        //                 <td>$exam_feeButton</td>
+        //             </tr>";
+        //         }
+
+
+        //         $paymentHtml .="<tr style='text-align:center;display:none'>
+        //             <td>রেজিস্ট্রেশন ফি</td>
+        //             <td>$registration_fee</td>
+        //             <td>$registration_feeButton</td>
+        //         </tr>
+        //         <tr style='text-align:center;display:none'>
+        //             <td>ফরম পূরণ ফি</td>
+        //             <td>$form_filup_fee</td>
+        //             <td>$form_filup_feeButton</td>
+        //         </tr>";
+
+            // }
+
+
+
+
+        //     $paymentHtml .= "</tbody>
+
+        // </table> ";
 
 
 
