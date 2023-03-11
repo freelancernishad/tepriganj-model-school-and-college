@@ -307,9 +307,9 @@ class PaymentController extends Controller
                     // echo number_to_month($monthSl);
 
 
-                    $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'count');
+                    $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $$yearSession,'month' => $value],'count');
                     if($monthly_feeCount>0){
-                        $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'get');
+                        $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $$yearSession,'month' => $value],'get');
                         $monthly_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$monthly_feeGet->trxid'>রশিদ ডাউনলোড</a>";
                         $paymentHtml .="<tr style='text-align:center'>
                         <td>".month_en_to_bn($value)."</td>
@@ -347,9 +347,9 @@ class PaymentController extends Controller
 
 
 
-                    $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'count');
+                    $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'type_name' => $value],'count');
                     if($exam_feeCount>0){
-                        $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'get');
+                        $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'type_name' => $value],'get');
                         $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
                     }else{
 
