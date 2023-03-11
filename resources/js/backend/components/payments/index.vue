@@ -83,8 +83,8 @@
                             <option value="">
                                 SELECT
                             </option>
-                            <option value="Monthly_fee">মাসিক বেতন</option>
-                            <option value="Session_fee">সেশন ফি</option>
+                            <option value="monthly_fee">মাসিক বেতন</option>
+                            <option value="session_fee">সেশন ফি</option>
                             <option value="Exam_fee">পরিক্ষার ফি</option>
                             <option value="Other">অন্যান্য</option>
 

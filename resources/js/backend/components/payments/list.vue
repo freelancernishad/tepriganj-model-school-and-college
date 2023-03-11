@@ -58,8 +58,8 @@
                             <option value="">
                                 SELECT
                             </option>
-                            <option value="Monthly_fee">মাসিক বেতন</option>
-                            <option value="Session_fee">সেশন ফি</option>
+                            <option value="monthly_fee">মাসিক বেতন</option>
+                            <option value="session_fee">সেশন ফি</option>
                             <option value="Exam_fee">পরিক্ষার ফি</option>
                             <option value="Other">অন্যান্য</option>
                         </select>
@@ -213,7 +213,7 @@ export default {
         },
         allpayments() {
             var url = '';
-            url = `/api/students/payments?filter[studentClass]=${this.payment_class}&filter[year]=${this.year}&filter[month]=${this.month}&filter[school_id]=${this.school_id}&filter[type]=${this.feesconvert(this.type)}&filter[type_name]=${this.examType}`;
+            url = `/api/students/payments?filter[studentClass]=${this.payment_class}&filter[year]=${this.year}&filter[month]=${this.month}&filter[school_id]=${this.school_id}&filter[type]=${this.type}&filter[type_name]=${this.examType}`;
             axios.get(url)
                 .then(({ data }) => {
                     this.payments = data
