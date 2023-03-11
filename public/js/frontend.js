@@ -6788,7 +6788,7 @@ var render = function render() {
     return _c("option", {
       key: "class" + index
     }, [_vm._v(_vm._s(classlist))]);
-  })], 2)]), _vm._v(" "), _vm.student.StudentClass == "Nine" || _vm.form.student_class == "Ten" ? _c("div", {
+  })], 2)]), _vm._v(" "), _vm.form.student_class == "Nine" || _vm.form.student_class == "Ten" ? _c("div", {
     staticClass: "form-group"
   }, [_c("label", [_vm._v("গ্রুপ")]), _vm._v(" "), _c("select", {
     directives: [{
