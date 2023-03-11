@@ -270,7 +270,7 @@ export default {
                 this.form['StudentID'] = data[0].studentId;
                 this.form['AdmissionID'] = data[0].admissionId;
                 this.form['StudentName'] = data[0].Name;
-                this.form['type'] = data[0].type;
+                this.form['type'] = this.session_fee(data[0].type);
 
                 this.form['year'] = data[0].year;
                 this.form['month'] = data[0].month;
