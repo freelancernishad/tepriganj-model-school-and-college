@@ -10689,7 +10689,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     paymentamount: function paymentamount(type, classname) {
       var needAmount;
 
-      if (type == 'Monthly_fee') {
+      if (type == 'monthly_fee') {
         if (classname == 'Eight') {
           needAmount = 500;
         } else if (classname == 'Nine') {
@@ -10699,7 +10699,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         } else {
           needAmount = 400;
         }
-      } else if (type == 'Session_fee') {
+      } else if (type == 'session_fee') {
         needAmount = 500;
       } else if (type == 'Exam_fee') {
         needAmount = 200;
@@ -10712,14 +10712,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     feesconvert: function feesconvert(text) {
       var result;
 
-      if (text == 'Monthly_fee') {
+      if (text == 'monthly_fee') {
         result = 'মাসিক বেতন';
       } else if (text == 'মাসিক বেতন') {
-        result = 'Monthly_fee';
-      } else if (text == 'Session_fee') {
+        result = 'monthly_fee';
+      } else if (text == 'session_fee') {
         result = 'সেশন ফি';
       } else if (text == 'সেশন ফি') {
-        result = 'Session_fee';
+        result = 'session_fee';
       } else if (text == 'Exam_fee') {
         result = 'পরিক্ষার ফি';
       } else if (text == 'পরিক্ষার ফি') {
