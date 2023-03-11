@@ -338,7 +338,7 @@ class PaymentController extends Controller
 
 
 
-                $paymentHtml .="<tr style='text-align:center'>
+                $paymentHtml .="<tr style='text-align:center;display:none'>
                     <td colspan='3' style='text-align:center;font-size: 26px;'><h3>পরীক্ষার ফি</h3></td>
 
                 </tr>";
@@ -359,7 +359,7 @@ class PaymentController extends Controller
 
 
 
-                    $paymentHtml .="<tr style='text-align:center'>
+                    $paymentHtml .="<tr style='text-align:center;display:none'>
                         <td>".exam_en_to_bn($value)."</td>
                         <td>$exam_fee</td>
                         <td>$exam_feeButton</td>
@@ -367,12 +367,12 @@ class PaymentController extends Controller
                 }
 
 
-                $paymentHtml .="<tr style='text-align:center'>
+                $paymentHtml .="<tr style='text-align:center;display:none'>
                     <td>রেজিস্ট্রেশন ফি</td>
                     <td>$registration_fee</td>
                     <td>$registration_feeButton</td>
                 </tr>
-                <tr style='text-align:center'>
+                <tr style='text-align:center;display:none'>
                     <td>ফরম পূরণ ফি</td>
                     <td>$form_filup_fee</td>
                     <td>$form_filup_feeButton</td>
@@ -741,6 +741,11 @@ class PaymentController extends Controller
     }
     public function payments_submit(Request $r)
     {
+
+        // return paymentKhaten($r->type);
+
+
+
         $formtype = $r->formtype;
         $id = $r->id;
         $oldItem[0] = [
@@ -758,7 +763,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => $r->type,
+            'type' => paymentKhaten($r->type),
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,

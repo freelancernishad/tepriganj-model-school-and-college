@@ -271,6 +271,9 @@ function subjectCol($subject)
     }
 
 
+
+
+
    function paymentKhaten($name){
         if($name=='ভর্তি ফরম ফি'){
             return 'Admission_fee';
