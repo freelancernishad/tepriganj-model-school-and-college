@@ -291,6 +291,7 @@ export default {
 
         formsubmit(){
                  this.preloader = true;
+                 console.log(this.form)
                 axios.post(`/api/students/payments/submit`,this.form)
                 .then(({data}) => {
                     //  console.log(data)

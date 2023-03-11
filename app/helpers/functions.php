@@ -277,6 +277,8 @@ function subjectCol($subject)
    function paymentKhaten($name){
         if($name=='ভর্তি ফরম ফি'){
             return 'Admission_fee';
+        }elseif($name=='সেশন ফি'){
+            return 'session_fee';
         }elseif($name=='ভর্তি/সেশন ফি'){
             return 'session_fee';
         }elseif($name=='মাসিক বেতন'){

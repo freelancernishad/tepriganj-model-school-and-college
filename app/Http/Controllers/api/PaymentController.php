@@ -742,7 +742,7 @@ class PaymentController extends Controller
     public function payments_submit(Request $r)
     {
 
-        // return paymentKhaten($r->type);
+        //  return paymentKhaten($r->type);
 
 
 
