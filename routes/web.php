@@ -58,6 +58,10 @@ Route::get('genrate-sitemap', function () {
     // this will generate file mysitemap.xml to your public folder
     return redirect(url('sitemap.xml'));
 });
+
+
+
+
 Route::get('/smstest', function () {
     $details = [
         'title' => 'Mail from ItSolutionStuff.com',
@@ -67,6 +71,24 @@ Route::get('/smstest', function () {
     \Mail::to('freelancernishad123@gmail.com')->send(new \App\Mail\MyTestMail($details, $subject));
     dd("Email is Sent.");
 });
+
+
+
+    Route::get('/update/invoice', function () {
+        $payments = payment::where(['method'=>'Handcash'])->get();
+
+        foreach ($payments as $value) {
+            $payment = payment::find($value->id);
+            $payment->update(['trxid'=>rand(11111,99999).time()]);
+
+        }
+        return $payment;
+
+    });
+
+
+
+
 Route::get('details', [NotificationsController::class, 'details']);
 Route::get('/unioncreate', function () {
     return view('unioncreate');
