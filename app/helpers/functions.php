@@ -706,8 +706,6 @@ function feesconvert($text)
         $result = 'Monthly_fee';
     }elseif ($text == 'monthly_fee') {
         $result = 'মাসিক বেতন';
-    } elseif ($text == 'মাসিক বেতন') {
-        $result = 'monthly_fee';
     } elseif ($text == 'Session_fee') {
         $result = 'সেশন ফি';
     } elseif ($text == 'সেশন ফি') {
