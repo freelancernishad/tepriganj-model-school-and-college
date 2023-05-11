@@ -704,18 +704,19 @@ function feesconvert($text)
         $result = 'মাসিক বেতন';
     } elseif ($text == 'মাসিক বেতন') {
         $result = 'Monthly_fee';
-    } else
-if ($text == 'Session_fee') {
+    }elseif ($text == 'monthly_fee') {
+        $result = 'মাসিক বেতন';
+    } elseif ($text == 'মাসিক বেতন') {
+        $result = 'monthly_fee';
+    } elseif ($text == 'Session_fee') {
         $result = 'সেশন ফি';
     } elseif ($text == 'সেশন ফি') {
         $result = 'Session_fee';
-    } else
-if ($text == 'Exam_fee') {
+    } elseif ($text == 'Exam_fee') {
         $result = 'পরিক্ষার ফি';
     } elseif ($text == 'পরিক্ষার ফি') {
         $result = 'Exam_fee';
-    } else
-if ($text == 'Other') {
+    } elseif ($text == 'Other') {
         $result = 'অন্যান্য';
     } elseif ($text == 'অন্যান্য') {
         $result = 'Other';
