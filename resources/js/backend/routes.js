@@ -131,6 +131,12 @@ let questionbank = require('./components/questionbank/index.vue').default;
 let questionbanknew = require('./components/questionbank/form.vue').default;
 
 
+
+let fees = require('./components/fees/index.vue').default;
+let feesedit = require('./components/fees/edit.vue').default;
+
+
+
 let onlineexam = require('./components/onlineexam/index.vue').default;
 let onlineexamstart = require('./components/onlineexam/start.vue').default;
 let onlineexamresult = require('./components/onlineexam/result.vue').default;
@@ -303,6 +309,11 @@ export const routes = [
   { path: `${prefix}/onlineexam/edit/:id`, component: onlineexamnew, name:'onlineexamEdit',meta: { layout: adminlayout } },
   { path: `${prefix}/onlineexam/new`, component: onlineexamnew, name:'onlineexamnew',meta: { layout: adminlayout } },
 
+
+
+
+  { path: `${prefix}/fees/:name`, component: fees, name:'fees',meta: { layout: adminlayout } },
+  { path: `${prefix}/fees/edit/:id`, component: feesedit, name:'feesedit',meta: { layout: adminlayout } },
 
 
 

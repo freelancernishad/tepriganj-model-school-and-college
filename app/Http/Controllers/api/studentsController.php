@@ -1018,6 +1018,9 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
     }
 
 
+
+
+
     public function invoice($payment,$student){
 
         $school_id = $student->school_id;
@@ -1052,6 +1055,15 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
              $qrcode = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $qrcode);
 
         // <div style='text-align:right'>(ডিলারের কপি)</div>
+
+
+
+
+
+
+
+
+
         $html = "
 
         <style>
@@ -1178,7 +1190,7 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 
             <h2 style='font-weight: 500;' class='companiname'>$full_name</h2>
             <p class='defalttext'>$address</p>
-            <p class='defalttext' style='font-size:12px'>Website: www.tmscedu.com</p>
+            <p class='defalttext' style='font-size:12px'>Website: www.tepriganjhighschool.edu.bd</p>
             ";
 
             if($status=='Paid'){
@@ -1302,6 +1314,16 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                                 }
 
 
+                                $exam_fee = 0;
+                                $ex_name = '';
+                                $exam_feeCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->count();
+                                if($exam_feeCount>0){
+                                    $exam_feeTd = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->first();
+                                   $exam_fee  = $exam_feeTd->amount;
+                                   $ex_name  = $exam_feeTd->ex_name;
+                                }
+
+
                                  $paymentss = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->get();
 
                                  $monthname = "";
@@ -1336,8 +1358,8 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 
                                 <tr class='tr items'>
                                 <td class='td  defaltfont'>".int_en_to_bn(4)."</td>
-                                <td class='td  defaltfont'>পরীক্ষার ফি</td>
-                                <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                                <td class='td  defaltfont'>পরীক্ষার ফি (".ex_name($ex_name).")</td>
+                                <td class='td  defaltfont'>".int_en_to_bn($exam_fee)."</td>
                                 </tr>
 
                                 <tr class='tr items'>
@@ -1353,16 +1375,30 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                                 </tr>
 
                                 ";
-                                 $totalAmount = $sessionFee+$monthlyAmount;
+                                $totalAmount = $sessionFee+$monthlyAmount+$exam_fee;
 
 
                             }else{
                                 $index = 1;
+
+                                $exam_fee = 0;
+                                $ex_name = '';
+                                $exam_feeCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->count();
+                                if($exam_feeCount>0){
+                                    $exam_feeTd = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->first();
+                                   $exam_fee  = $exam_feeTd->amount;
+                                   $ex_name  = $exam_feeTd->ex_name;
+                                }
+
                                 foreach ($khat as $key=>$value) {
                                     if($value=='মাসিক বেতন'){
                                         $html .="  <tr class='tr items'>
                                         <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
                                         <td class='td  defaltfont'>$value</td>";
+                                    }else if($value=='পরীক্ষার ফি'){
+                                        $html .="  <tr class='tr items'>
+                                        <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
+                                        <td class='td  defaltfont'>$value  (".ex_name($ex_name).") </td>";
                                     }else{
                                         $html .="  <tr class='tr items'>
                                         <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
@@ -1440,7 +1476,7 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
             <p style='text-align:right;font-size:16px'>শিক্ষার্থীর কপি</p>
             <h2 style='font-weight: 500;' class='companiname'>$full_name</h2>
             <p class='defalttext'>$address</p>
-            <p class='defalttext' style='font-size:12px'>Website: www.tmscedu.com</p>";
+            <p class='defalttext' style='font-size:12px'>Website: www.tepriganjhighschool.edu.bd</p>";
 
             if($status=='Paid'){
                 $html .="            <h2 class='companiname' style='width: 160px;
@@ -1498,8 +1534,8 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 
        $html .=" <tr>
         <tr>
-            <td class='defaltfont'   >ঠিকানা: $studentAddress</td>
-            <td class='defaltfont' >মোবাইল: ".int_en_to_bn($mobile_no)."</td>
+            <td class='defaltfont'>ঠিকানা: $studentAddress</td>
+            <td class='defaltfont'>মোবাইল: ".int_en_to_bn($mobile_no)."</td>
 
         <tr>
 
@@ -1560,6 +1596,15 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                                $sessionFee  = $paymentSession->amount;
                             }
 
+                            $exam_fee = 0;
+                            $ex_name = '';
+                            $exam_feeCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->count();
+                            if($exam_feeCount>0){
+                                $exam_feeTd = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->first();
+                               $exam_fee  = $exam_feeTd->amount;
+                               $ex_name  = $exam_feeTd->ex_name;
+                            }
+
 
                              $paymentss = payment::where(['trxid'=>$invoiceId,'status'=>'Paid'])->get();
 
@@ -1593,11 +1638,13 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                             <td class='td  defaltfont'>".int_en_to_bn($monthlyAmount)."</td>
                             </tr>
 
+
                             <tr class='tr items'>
                             <td class='td  defaltfont'>".int_en_to_bn(4)."</td>
-                            <td class='td  defaltfont'>পরীক্ষার ফি</td>
-                            <td class='td  defaltfont'>".int_en_to_bn(0)."</td>
+                            <td class='td  defaltfont'>পরীক্ষার ফি (".ex_name($ex_name).")</td>
+                            <td class='td  defaltfont'>".int_en_to_bn($exam_fee)."</td>
                             </tr>
+
 
                             <tr class='tr items'>
                             <td class='td  defaltfont'>".int_en_to_bn(5)."</td>
@@ -1612,16 +1659,31 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
                             </tr>
 
                             ";
-                             $totalAmount = $sessionFee+$monthlyAmount;
+                             $totalAmount = $sessionFee+$monthlyAmount+$exam_fee;
 
 
                         }else{
                             $index = 1;
+
+                            $exam_fee = 0;
+                            $ex_name = '';
+                            $exam_feeCount = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->count();
+                            if($exam_feeCount>0){
+                                $exam_feeTd = payment::where(['trxid'=>$invoiceId,'status'=>'Paid','type'=>'exam_fee'])->first();
+                               $exam_fee  = $exam_feeTd->amount;
+                               $ex_name  = $exam_feeTd->ex_name;
+                            }
+
+
                             foreach ($khat as $key=>$value) {
                                 if($value=='মাসিক বেতন'){
                                     $html .="  <tr class='tr items'>
                                     <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
                                     <td class='td  defaltfont'>$value</td>";
+                                }else if($value=='পরীক্ষার ফি'){
+                                    $html .="  <tr class='tr items'>
+                                    <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
+                                    <td class='td  defaltfont'>$value  (".ex_name($ex_name).") </td>";
                                 }else{
                                     $html .="  <tr class='tr items'>
                                     <td class='td  defaltfont'>".int_en_to_bn($index)."</td>
@@ -1702,7 +1764,6 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 
         return $html;
     }
-
 
 
 
@@ -1971,4 +2032,226 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
             ";
 return $html;
         }
+
+
+
+
+        public function exam_admit($admissionId,$ex_name)
+        {
+
+
+            $paymentStatus =  payment::where(['admissionId'=>$admissionId,'type'=>'exam_fee','ex_name'=>$ex_name,'status'=>'Paid','year'=>date('Y')])->count();
+
+
+            if($paymentStatus>0){
+
+                $student = student::where(['AdmissionID'=>$admissionId])->first();
+                $pdfFileName = 'Admit-card-'.$student->AdmissionID.'.pdf';
+
+
+                return PdfMaker('A4',$student->school_id,$this->admitCard($student,$ex_name),$pdfFileName,true,'alpha="0.15" size="80,80" position="65,30"');
+            }else{
+                echo "
+                    <h1 style='text-align:center;color:red'>দয়া করে পেমেন্ট মেনু থেকে ".ex_name($ex_name)." এর ফি পরিশোধ করে প্রবেশ পত্র নিন।</h1>
+                    লিঙ্কঃ <a href='/student/payment'>এখানে ক্লিক করে পেমেন্ট মেনুতে যান।</a>
+                ";
+            }
+
+
+
+
+
+        }
+
+
+        public function admitCard($student,$ex_name)
+        {
+
+            $school_details = school_detail::where('school_id',$student->school_id)->first();
+
+
+            $qrurl = url("/student/exam/admit/$student->AdmissionID/$ex_name");
+
+            // $qrurl = url("/verification/sonod/$row->id");
+            //in Controller
+            $qrcode = \QrCode::size(70)
+                ->format('svg')
+                ->generate($qrurl);
+                $qrcode = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $qrcode);
+
+
+
+
+            $html = '';
+            $html="
+            <!DOCTYPE HTML>
+    <html lang='en-US'>
+    <head>
+    <meta charset='UTF-8'>
+    <title>Admit-card-$student->AdmissionID.pdf</title>
+    <style>
+    @page {
+        margin: 25px;
+        margin-top:30px;
+       }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .rootContainer {
+            margin: 5px;
+            border: 1px solid;
+            padding: 5px 21px;
+        }
+        .tableTag, .tableTag td, .tableTag th {
+        border: 1px solid #6c6c6c;
+        border-collapse: collapse;
+        padding: 3px 7px;
+        font-size:14px;
+        }
+        td.tableRowHead {
+            background: #e9e9e9;
+            color: black !important;
+            font-size:14px;
+        }
+        .fontsize1{
+            font-size:16px;
+        }
+        .fontsize2{
+            font-size:25px;
+        }
+        .copyTitle{
+            font-size:23px;
+            color:#3E4D5B;
+        }
+
+        .examNameHead{
+            width:200px;
+            text-align:center;
+            margin:0 auto;
+        }
+
+        .examNamePara{
+            border:1px solid #160089;
+            background:#160089;
+            color:white;
+            font-size:20px;
+            padding:5px 10px;
+            margin:0px;
+        }
+
+        .sileColor{
+            color:#9750c9;
+            z-index:-1'
+        }
+
+    </style>
+    </head>
+    <body>
+
+
+    <table width='100%'>
+    <tr>
+        <td width='110px'>
+            <img width='75px'  style='overflow:hidden;float:right' src='".base64($school_details->logo)."' alt=''>
+        </td>
+        <td>
+            <p class='fontsize2'>$school_details->SCHOLL_NAME</p>
+            <p class='fontsize1'>$school_details->SCHOLL_ADDRESS </p>
+            <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
+        </td>
+        <td style='text-align: right'>
+        <div class='imgdiv'>
+        <img width='100px'  style='overflow:hidden;float:right' src='".base64($student->StudentPicture)."' alt=''>
+        </div>
+        </td>
+    </tr>
+    </table>
+
+
+
+
+
+
+
+        <div class='examNameHead' style='margin-top:20px'>
+            <p class='examNamePara'>প্রবেশ পত্র</p>
+            <p style='margin:0px !important;margin-top:10px;font-size:18px'>".ex_name($ex_name)."- ২০২৩</p>
+        </div>
+
+
+        <table class='tableTag' width='100%' border='1'>
+
+            <tr>
+                <td width='17%'>রোল নং</td>
+                <td width='33%'>".int_en_to_bn($student->StudentRoll)."</td>
+                <td width='17%'>এডমিশন আইডি </td>
+                <td width='33%'>".int_en_to_bn($student->AdmissionID)."</td>
+            </tr>
+
+            <tr>
+                <td>নাম (বাংলা)</td>
+                <td>$student->StudentName</td>
+                <td>নাম (ইংরেজি)</td>
+                <td style='font-size:11px'>".strtoupper($student->StudentNameEn)."</td>
+
+            </tr>
+
+            <tr>
+                <td>শ্রেণি</td>
+                <td>".class_en_to_bn($student->StudentClass)."</td>
+                <td>লিঙ্গ</td>
+                <td>".genderConvert($student->StudentGender)."</td>
+
+            </tr>
+
+            <tr>
+                <td>পিতার নাম (বাংলা)</td>
+                <td>$student->StudentFatherNameBn</td>
+                <td>মাতার নাম (বাংলা)</td>
+                <td>$student->StudentMotherNameBn</td>
+            </tr>
+
+            <tr>
+                <td>পিতার নাম (ইংরেজি)</td>
+                <td style='font-size:11px'>".strtoupper($student->StudentFatherName)."</td>
+                <td>মাতার নাম (ইংরেজি)</td>
+                <td style='font-size:11px'>".strtoupper($student->StudentMotherName)."</td>
+            </tr>
+
+            <tr>
+                <td>ঠিকানা</td>
+                <td colspan='3'>গ্রামঃ- $student->StudentAddress, পোস্ট অফিসঃ- $student->post_office(".int_en_to_bn($student->AreaPostalCode)."), ইউনিয়নঃ- $student->union, উপজেলাঃ- $student->upazila, জেলাঃ- $student->district, বিভাগঃ- $student->division  </td>
+            </tr>
+
+
+
+        </table>
+
+        <table width='100%' style='margin-top:20px;margin-bottom:15px'>
+            <tr>
+                <td width='70%' style='text-align:left'>$qrcode</td>
+                <td widrh='30%' style='text-align:center'>
+                <img width='70px'  src='".base64($school_details->PRINCIPALS_Signature)."' />
+                    <p class='sileColor'>$school_details->Principals_name</p>
+                    <p class='sileColor'>প্রধান শিক্ষক</p>
+                    <p class='sileColor'>$school_details->SCHOLL_NAME</p>
+                    <p class='sileColor'>$school_details->SCHOLL_ADDRESS</p>
+
+                </td>
+            </tr>
+
+        </table>
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    </body>
+    </html>
+            ";
+    return $html;
+        }
+
+
+
+
+
 }
