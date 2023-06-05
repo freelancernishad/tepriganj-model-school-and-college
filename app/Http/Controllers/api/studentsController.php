@@ -2162,7 +2162,7 @@ return $html;
         </td>
         <td style='text-align: right'>
         <div class='imgdiv'>
-        <img width='100px'  style='overflow:hidden;float:right' src='".base64($student->StudentPicture)."' alt=''>
+    
         </div>
         </td>
     </tr>
