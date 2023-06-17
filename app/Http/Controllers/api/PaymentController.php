@@ -369,12 +369,12 @@ class PaymentController extends Controller
                 }
 
 
-                $paymentHtml .="<tr style='text-align:center;'>
+                $paymentHtml .="<tr style='text-align:center;display:none'>
                     <td>রেজিস্ট্রেশন ফি</td>
                     <td>$registration_fee</td>
                     <td>$registration_feeButton</td>
                 </tr>
-                <tr style='text-align:center;'>
+                <tr style='text-align:center;display:none'>
                     <td>ফরম পূরণ ফি</td>
                     <td>$form_filup_fee</td>
                     <td>$form_filup_feeButton</td>
