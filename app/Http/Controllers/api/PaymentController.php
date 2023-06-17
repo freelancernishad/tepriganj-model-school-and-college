@@ -369,18 +369,20 @@ class PaymentController extends Controller
                 }
 
 
-                $paymentHtml .="<tr style='text-align:center;display:none'>
+                $paymentHtml .="<tr style='text-align:center;'>
                     <td>রেজিস্ট্রেশন ফি</td>
                     <td>$registration_fee</td>
                     <td>$registration_feeButton</td>
                 </tr>
-                <tr style='text-align:center;display:none'>
+                <tr style='text-align:center;'>
                     <td>ফরম পূরণ ফি</td>
                     <td>$form_filup_fee</td>
                     <td>$form_filup_feeButton</td>
                 </tr>";
 
             }
+
+
             $Half_yearly_examinationExam_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Half_yearly_examination','status'=>1])->count();
 
             if($Half_yearly_examinationExam_feeCount){
@@ -395,7 +397,6 @@ class PaymentController extends Controller
                     <td>$exam_feeButton</td>
                     </tr>";
                 }else{
-
                     $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => 'Half_yearly_examination'],'get');
 
                     $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
@@ -404,6 +405,36 @@ class PaymentController extends Controller
                     <td>অর্ধ বার্ষিক পরীক্ষার ফি</td>
                     <td>$exam_feeGet->amount</td>
                     <td> <a class='btn btn-warning' target='_blank' href='/student/exam/admit/$exam_feeGet->admissionId/$exam_feeGet->ex_name'>প্রবেশ পত্র</a> $exam_feeButton</td>
+                    </tr>";
+
+                }
+            }
+
+
+
+
+            $registration_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee','status'=>1])->count();
+
+            if($registration_feeCount){
+                $registration_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee'])->first()->fees;
+
+                 $registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => 'Half_yearly_examination'],'count');
+                if(!$registration_feeStatusCount){
+                    $registration_feeButton = "<a href='/payment?studentId=$studentid&type=registration_fee' class='btn btn-info'>Pay Now</a>";
+                    $paymentHtml .="<tr style='text-align:center'>
+                    <td>রেজিস্ট্রেশন ফি</td>
+                    <td>$registration_fee</td>
+                    <td>$registration_feeButton</td>
+                    </tr>";
+                }else{
+                    $registration_feeGet =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => 'Half_yearly_examination'],'get');
+
+                    $registration_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$registration_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+
+                    $paymentHtml .="<tr style='text-align:center'>
+                    <td>রেজিস্ট্রেশন ফি</td>
+                    <td>$registration_feeGet->amount</td>
+                    <td> $registration_feeButton</td>
                     </tr>";
 
                 }
