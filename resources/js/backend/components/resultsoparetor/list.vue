@@ -48,6 +48,7 @@
                                 </tr>
                                 <tr id="changeTableHead">
                                     <th scope="col">রোল.</th>
+                                    <th scope="col">Admission Id</th>
                                     <th scope="col" class="textwrap" width="15%">নাম</th>
                                     <th scope="col">লিখিত</th>
                                     <th scope="col">বহুনির্বাচনী</th>
@@ -58,6 +59,7 @@
                             <tbody>
                                 <tr v-for="student in students">
                                     <td scope="col">{{ student.StudentRoll }}</td>
+                                    <td scope="col">{{ student.AdmissionID }}</td>
                                     <td scope="col" class="textwrap">{{ student.StudentName }}</td>
                                     <td scope="col"><input type="number" min="0" max="100" onClick="this.select();"   class="form-control"
                                             v-model="form.number[student.StudentRoll]['CQ']" required></td>
