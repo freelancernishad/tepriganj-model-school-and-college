@@ -249,11 +249,33 @@ function subjectCol($subject)
             return 'physics';
         }else if($subject=='উচ্চতর গণিত'){
             return 'Higher_Mathematics';
-        }else{
+        }  else if ($subject == 'বিজ্ঞান অনুসন্ধানী পাঠ') {
+           return "Science_Inquiry_Lessons";
+        } else if ($subject == 'বিজ্ঞান অনুশীলন বই') {
+           return "Science_practice_book";
+        } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ') {
+           return "History_and_Social_Science_Inquiry_Lessons";
+        } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই') {
+           return "History_and_Social_Science_Practice_Books";
+        } else if ($subject == 'ডিজিটাল প্রযুক্তি') {
+           return "Digital_technology";
+        } else if ($subject == 'স্বাস্থ্য সুরক্ষা') {
+           return "Health_protection";
+        } else if ($subject == 'জীবন ও জীবিকা') {
+           return "Life_and_livelihood";
+        } else if ($subject == 'শিল্প ও সংস্কৃতি') {
+           return "Art_and_Culture";
+        }
 
-            $orginal = array("বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান","পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়","ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা","ইসলাম-ধর্ম","হিন্দু-ধর্ম", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি");
 
-            $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","Biology","B_and_B","vugol","orthoniti","itihas","Religion","ReligionIslam","ReligionHindu","Agriculture","Higher_Mathematics","ICT","Physical_Education_and_Health","Arts_and_Crafts","Work_and_life_oriented_education","Career_Education");
+
+
+
+        else{
+
+            $orginal = array("বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান","পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়","ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা","ইসলাম-ধর্ম","হিন্দু-ধর্ম", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি" ,                      "বিজ্ঞান অনুসন্ধানী পাঠ",  "বিজ্ঞান অনুশীলন বই",  "ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ",  "ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই",  "ডিজিটাল প্রযুক্তি",  "স্বাস্থ্য সুরক্ষা",  "জীবন ও জীবিকা",  "শিল্প ও সংস্কৃতি");
+
+            $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","Biology","B_and_B","vugol","orthoniti","itihas","Religion","ReligionIslam","ReligionHindu","Agriculture","Higher_Mathematics","ICT","Physical_Education_and_Health","Arts_and_Crafts","Work_and_life_oriented_education","Career_Education",                   "Science_Inquiry_Lessons","Science_practice_book","History_and_Social_Science_Inquiry_Lessons","History_and_Social_Science_Practice_Books","Digital_technology","Health_protection","Life_and_livelihood","Art_and_Culture");
 
 
             // $orginal = array("বাংলা ১ম","বাংলা ২য়","ইংলিশ ১ম","ইংলিশ ২য়","গনিত","বিজ্ঞান","পদার্থ","রসায়ন","ভূগোল","অর্থনীতি","ইতিহাস","বাংলাদেশ ও বিশ্ব পরিচয়","ধর্ম","ইসলাম-ধর্ম","হিন্দু-ধর্ম","কৃষি","তথ্য ও যোগাযোগ প্রযোক্তি");
@@ -824,7 +846,14 @@ function allList($type = '', $class = '', $group = '')
         } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
             $data = ["বাংলা", "ইংরেজি", "গণিত", "বাংলাদেশ ও বিশ্ব পরিচয়", "বিজ্ঞান", "ধর্ম"];
         } elseif ($class == 'six' || $class == 'seven' ) {
-            $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
+
+
+
+            // $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
+
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান অনুসন্ধানী পাঠ", "বিজ্ঞান অনুশীলন বই", "ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ", "ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই", "ডিজিটাল প্রযুক্তি", "স্বাস্থ্য সুরক্ষা", "জীবন ও জীবিকা", "শিল্প ও সংস্কৃতি", "ধর্ম ও নৈতিক শিক্ষা",];
+
+
         } elseif ($class == 'eight') {
             $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
         }elseif ($class == 'nine' || $class == 'ten') {

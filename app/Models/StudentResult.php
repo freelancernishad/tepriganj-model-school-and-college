@@ -67,6 +67,36 @@ class StudentResult extends Model
         'Work_and_life_oriented_education_d',
         'Career_Education',
         'Career_Education_d',
+
+        'Science_Inquiry_Lessons',
+        'Science_Inquiry_Lessons_d',
+
+            'Science_practice_book',
+            'Science_practice_book_d',
+
+            'History_and_Social_Science_Inquiry_Lessons',
+            'History_and_Social_Science_Inquiry_Lessons_d',
+
+            'History_and_Social_Science_Practice_Books',
+            'History_and_Social_Science_Practice_Books_d',
+
+            'Digital_technology',
+            'Digital_technology_d',
+
+            'Health_protection',
+            'Health_protection_d',
+
+            'Life_and_livelihood',
+            'Life_and_livelihood_d',
+
+            'Art_and_Culture',
+            'Art_and_Culture_d',
+
+
+
+
+
+
         'failed',
         'total',
         'greed',

@@ -244,32 +244,29 @@ export default {
             } else if (str == 'ক্যারিয়ার শিক্ষা') {
                 str = "Career_Education";
             }
-            //         let banglaNumber=
-            //         {
-            //         "বাংলা":"Bangla",
-            //         "বাংলা ১ম":"Bangla_1st",
-            //         "বাংলা ২য়":"Bangla_2nd",
-            //         "ইংলিশ":"English",
-            //         "ইংলিশ ১ম":"English_1st",
-            //         "ইংলিশ ২য়":"English_2nd",
-            //         "গনিত":"Math",
-            //         "বিজ্ঞান":"Science",
-            //         "পদার্থ":"physics",
-            //         "রসায়ন":"Chemistry",
-            //         "জীব-বিজ্ঞান":"Biology",
-            //         "ভূগোল":"vugol",
-            //         "অর্থনীতি":"orthoniti",
-            //         "ইতিহাস":"itihas",
-            //         "বাংলাদেশ ও বিশ্ব পরিচয়":"B_and_B",
-            //         "ধর্ম":"Religion",
-            //         "ইসলাম-ধর্ম":"ReligionIslam",
-            //         "হিন্দু-ধর্ম":"ReligionHindu",
-            //         "কৃষি":"Agriculture",
-            //         "তথ্য ও যোগাযোগ প্রযুক্তি":"ICT",
-            // }
-            //     for (var x in banglaNumber) {
-            //         str = str.replace(new RegExp(x, 'g'), banglaNumber[x]);
-            //     }
+
+
+            else if (str == 'বিজ্ঞান অনুসন্ধানী পাঠ') {
+                str = "Science_Inquiry_Lessons";
+            } else if (str == 'বিজ্ঞান অনুশীলন বই') {
+                str = "Science_practice_book";
+            } else if (str == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ') {
+                str = "History_and_Social_Science_Inquiry_Lessons";
+            } else if (str == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই') {
+                str = "History_and_Social_Science_Practice_Books";
+            } else if (str == 'ডিজিটাল প্রযুক্তি') {
+                str = "Digital_technology";
+            } else if (str == 'স্বাস্থ্য সুরক্ষা') {
+                str = "Health_protection";
+            } else if (str == 'জীবন ও জীবিকা') {
+                str = "Life_and_livelihood";
+            } else if (str == 'শিল্প ও সংস্কৃতি') {
+                str = "Art_and_Culture";
+            }
+
+
+
+
             return str;
         },
         exam_comvert(str) {
@@ -354,33 +351,25 @@ export default {
                 str = "ক্যারিয়ার শিক্ষা";
             }
 
+            else if (str == 'Science_Inquiry_Lessons') {
+                str = "বিজ্ঞান অনুসন্ধানী পাঠ";
+            } else if (str == 'Science_practice_book') {
+                str = "বিজ্ঞান অনুশীলন বই";
+            } else if (str == 'History_and_Social_Science_Inquiry_Lessons') {
+                str = "ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ";
+            } else if (str == 'History_and_Social_Science_Practice_Books') {
+                str = "ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই";
+            } else if (str == 'Digital_technology') {
+                str = "ডিজিটাল প্রযুক্তি";
+            } else if (str == 'Health_protection') {
+                str = "স্বাস্থ্য সুরক্ষা";
+            } else if (str == 'Life_and_livelihood') {
+                str = "জীবন ও জীবিকা";
+            } else if (str == 'Art_and_Culture') {
+                str = "শিল্প ও সংস্কৃতি";
+            }
 
-            // let banglaNumber =
-            // {
-            //     "Bangla": "বাংলা",
-            //     "Bangla_1st": "বাংলা ১ম",
-            //     "Bangla_2nd": "বাংলা ২য়",
-            //     "English": "ইংলিশ",
-            //     "English_1st": "ইংলিশ ১ম",
-            //     "English_2nd": "ইংলিশ ২য়",
-            //     "Math": "গনিত",
-            //     "Science": "বিজ্ঞান",
-            //     "physics": "পদার্থ",
-            //     "Chemistry": "রসায়ন",
-            //     "Biology": "জীব-বিজ্ঞান",
-            //     "vugol": "ভূগোল",
-            //     "orthoniti": "অর্থনীতি",
-            //     "itihas": "ইতিহাস",
-            //     "B_and_B": "বাংলাদেশ ও বিশ্ব পরিচয়",
-            //     "Religion": "ধর্ম",
-            //     "ReligionIslam": "ইসলাম-ধর্ম",
-            //     "ReligionHindu": "হিন্দু-ধর্ম",
-            //     "Agriculture": "কৃষি",
-            //     "ICT": "তথ্য ও যোগাযোগ প্রযুক্তি"
-            // }
-            // for (var x in banglaNumber) {
-            //     str = str.replace(new RegExp(x, 'g'), banglaNumber[x]);
-            // }
+
             return str;
         },
         examcomvert(str) {

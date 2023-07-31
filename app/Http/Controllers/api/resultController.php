@@ -161,12 +161,22 @@ class resultController extends Controller
         }
         $i = 0;
         foreach ($request->number as $roll => $value) {
-            $students = student::where(['StudentRoll' => $roll, 'StudentClass' => $request->classname, 'StudentGroup' => $group, 'Year' => $request->year])->get();
+
+
+            if($request->classname=="Six" || $request->classname=="Seven"){
+                $students = student::where(['StudentRoll' => $roll, 'StudentClass' => $request->classname, 'Year' => $request->year])->first();
+            }else{
+                $students = student::where(['StudentRoll' => $roll, 'StudentClass' => $request->classname, 'StudentGroup' => $group, 'Year' => $request->year])->first();
+            }
+
+
+
+
             $data = [
-                'school_id' => $students[0]->school_id,
-                'stu_id' => $students[0]->StudentID,
-                'name' => $students[0]->StudentName,
-                'roll' => $students[0]->StudentRoll,
+                'school_id' => $students->school_id,
+                'stu_id' => $students->StudentID,
+                'name' => $students->StudentName,
+                'roll' => $students->StudentRoll,
                 'date' => $request->date,
                 'month' => date('F', strtotime($request->date)),
                 'year' => $request->year,
@@ -174,9 +184,11 @@ class resultController extends Controller
                 'exam_name' => $request->exam_name,
                 'class' => $request->classname,
                 'class_group' => $group,
-                'StudentReligion' => $students[0]->StudentReligion,
+                'StudentReligion' => $students->StudentReligion,
                 'status' => 'Draft',
             ];
+
+
             unset($value['TOTAL']);
             unset($value['SUBJECT_TOTAL']);
             $sum = 0;
@@ -189,9 +201,10 @@ class resultController extends Controller
             $value['TOTAL'] = $sum;
             $value['SUBJECT_TOTAL'] = $request->total;
             $data[$subject . '_d'] = json_encode($value);
+            // return $data;
             // print_r($data);
             if ($oldresultidcount > 0) {
-                $resultcount = StudentResult::where(['school_id' => $students[0]->school_id, 'class' => $request->classname, 'year' => $request->year, 'exam_name' => $request->exam_name, 'roll' => $students[0]->StudentRoll])->count();
+                $resultcount = StudentResult::where(['school_id' => $students->school_id, 'class' => $request->classname, 'year' => $request->year, 'exam_name' => $request->exam_name, 'roll' => $students->StudentRoll])->count();
                 if ($resultcount > 0) {
                     $StudentResult =  StudentResult::find($oldresultid[$roll]);
                     $result = $StudentResult->update($data);
