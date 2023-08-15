@@ -452,6 +452,9 @@ class resultController extends Controller
         }
 
 
+        // return $request->all();
+
+
 
         $result = QueryBuilder::for(StudentResult::class)
             ->allowedFilters([
@@ -471,7 +474,8 @@ class resultController extends Controller
                 AllowedFilter::exact('Bangla_1st'),
                 AllowedFilter::exact('id')
             ]);
-        $results = $result->first();
+         $results = $result->first();
+
 
         $count = $result->count();
         // return $results;
