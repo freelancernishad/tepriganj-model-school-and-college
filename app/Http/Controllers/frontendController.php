@@ -718,7 +718,7 @@ $data['year'] = $year;
         td{
             border: 1px solid black;
             padding:4px 10px;
-            font-size: 16px;
+            font-size: 14px;
         }    th{
             border: 1px solid black;
             padding:4px 10px;
