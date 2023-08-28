@@ -229,7 +229,29 @@ function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='paymen
             $data = 'Higher Mathematics';
         }elseif($banglaSubject=='তথ্য ও যোগাযোগ প্রযুক্তি'){
             $data = 'Information and Communication Technology';
+        }elseif($banglaSubject=='বিজ্ঞান অনুসন্ধানী পাঠ'){
+            $data = 'Science Inquiry Lessons';
+        }elseif($banglaSubject=='বিজ্ঞান অনুশীলন বই'){
+            $data = 'Science practice book';
+        }elseif($banglaSubject=='ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ'){
+            $data = 'History and Social Science Inquiry Lessons';
+        }elseif($banglaSubject=='ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই'){
+            $data = 'History and Social Science Practice Books';
+        }elseif($banglaSubject=='ডিজিটাল প্রযুক্তি'){
+            $data = 'Digital technology';
+        }elseif($banglaSubject=='স্বাস্থ্য সুরক্ষা'){
+            $data = 'Health protection';
+        }elseif($banglaSubject=='জীবন ও জীবিকা'){
+            $data = 'Life and livelihood';
+        }elseif($banglaSubject=='শিল্প ও সংস্কৃতি'){
+            $data = 'Art and Culture';
         }
+
+
+
+
+
+
 
         return $data;
     }
