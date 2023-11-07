@@ -19,7 +19,7 @@ use Intervention\Image\Facades\Image;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Rakibhstu\Banglanumber\NumberToBangla;
-use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
+// use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
 
 class studentsController extends Controller
 {
