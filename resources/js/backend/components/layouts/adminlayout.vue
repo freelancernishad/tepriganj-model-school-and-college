@@ -300,7 +300,20 @@
     <a href="javascript:void(0)" class="nav-link" @click="submenu(8)"><i class="flaticon-script"></i><span>Settings</span></a>
     <transition name="slide">
     <ul class="nav sub-group-menu menu-open child" v-if="selected == 8" style="display:block">
+
+
         <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'exam_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Exam Fees</router-link></li>
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'Admission_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Admission Fees</router-link></li>
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'monthly_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Monthly Fees</router-link></li>
+
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'session_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Session Fees</router-link></li>
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'registration_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Registration Fees</router-link></li>
+
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'form_filup_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Form Filup Fees</router-link></li>
+
+        <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'letter_of_appreciation'}}" class="nav-link"><i class="fas fa-angle-right"></i> প্রশংসা পত্রের ফি</router-link></li>
+
+
         <li class="nav-item">
             <router-link    :to="{name:'settings'}" class="nav-link"><i class="fas fa-angle-right"></i> School Profile</router-link>
         </li>

@@ -270,7 +270,7 @@ export default {
                 this.form['StudentID'] = data[0].studentId;
                 this.form['AdmissionID'] = data[0].admissionId;
                 this.form['StudentName'] = data[0].Name;
-                this.form['type'] = this.session_fee(data[0].type);
+                this.form['type'] = data[0].type;
 
                 this.form['year'] = data[0].year;
                 this.form['month'] = data[0].month;
@@ -291,7 +291,6 @@ export default {
 
         formsubmit(){
                  this.preloader = true;
-                 console.log(this.form)
                 axios.post(`/api/students/payments/submit`,this.form)
                 .then(({data}) => {
                     //  console.log(data)

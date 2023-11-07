@@ -1,18 +1,21 @@
 <?php
 namespace App\Http\Controllers\api;
-use App\Models\payment;
+use App\Models\TC;
 // use PDF;
+use App\Models\payment;
 use App\Models\student;
 use App\Models\SchoolFee;
 use Illuminate\Http\Request;
 use App\Models\school_detail;
+use App\Models\StudentResult;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Rakibhstu\Banglanumber\NumberToBangla;
-use Meneses\LaravelMpdf\Facades\LaravelMpdf;
+use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
+
 class PaymentController extends Controller
 {
 
@@ -53,6 +56,7 @@ class PaymentController extends Controller
 
     }
 
+
     public function Search(Request $request)
     {
          $type = $request->type;
@@ -82,6 +86,7 @@ class PaymentController extends Controller
         $AdmissionID = '';
         $StudentClass = 'Six';
         $studentid = '';
+        $StudentUID = '';
         $student = '';
 
         if($type=='Admission_fee'){
@@ -132,6 +137,7 @@ class PaymentController extends Controller
                         $AdmissionID = $student->AdmissionID;
                         $StudentClass = $student->StudentClass;
                         $studentid = $student->id;
+                        $StudentUID = $student->StudentID;
 
 
                     }elseif($ApliedStudent->StudentStatus=='active'){
@@ -140,6 +146,14 @@ class PaymentController extends Controller
                         $AdmissionID = $student->AdmissionID;
                         $StudentClass = $student->StudentClass;
                         $studentid = $student->id;
+                        $StudentUID = $student->StudentID;
+                    }elseif($ApliedStudent->StudentStatus=='permited'){
+                        $StudentStatus = 'permited';
+                        $student = student::where(['AdmissionID' => $adminssionId,'StudentStatus'=>$StudentStatus])->latest()->first();
+                        $AdmissionID = $student->AdmissionID;
+                        $StudentClass = $student->StudentClass;
+                        $studentid = $student->id;
+                        $StudentUID = $student->StudentID;
                     }elseif($ApliedStudent->StudentStatus=='Reject'){
                         $message = 'এপ্লিকেশনটি বাতিল করা হয়েছে';
                     }elseif($ApliedStudent->StudentStatus=='Pending'){
@@ -165,17 +179,20 @@ class PaymentController extends Controller
                 $AdmissionID = $student->AdmissionID;
                 $StudentClass = $student->StudentClass;
                 $studentid = $student->id;
+                $StudentUID = $student->StudentID;
             }elseif($paymenttype=='other'){
                 if($student_class=='Nine' || $student_class=='Ten'){
                     $student = student::where(['StudentClass' => $student_class,'StudentGroup' => $StudentGroup,'StudentRoll' => $StudentRoll,'StudentStatus'=>'active'])->latest()->first();
                     $AdmissionID = $student->AdmissionID;
                     $StudentClass = $student->StudentClass;
                     $studentid = $student->id;
+                    $StudentUID = $student->StudentID;
                 }else{
                     $student = student::where(['StudentClass' => $student_class,'StudentRoll' => $StudentRoll,'StudentStatus'=>'active'])->latest()->first();
                     $AdmissionID = $student->AdmissionID;
                     $StudentClass = $student->StudentClass;
                     $studentid = $student->id;
+                    $StudentUID = $student->StudentID;
                 }
             }else{
                 if($student_class=='Nine' || $student_class=='Ten'){
@@ -183,11 +200,13 @@ class PaymentController extends Controller
                     $AdmissionID = $student->AdmissionID;
                     $StudentClass = $student->StudentClass;
                     $studentid = $student->id;
+                    $StudentUID = $student->StudentID;
                 }else{
                     $student = student::where(['StudentClass' => $student_class,'StudentRoll' => $StudentRoll,'StudentStatus'=>'active'])->latest()->first();
                     $AdmissionID = $student->AdmissionID;
                     $StudentClass = $student->StudentClass;
                     $studentid = $student->id;
+                    $StudentUID = $student->StudentID;
                 }
             }
 
@@ -230,8 +249,16 @@ class PaymentController extends Controller
 
 
         $session_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'session_fee'])->first()->fees;
-        $monthly_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'monthly_fee'])->first()->fees;
-        $exam_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee'])->first()->fees;
+
+        if($student->stipend=='No'){
+            $monthly_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'monthly_fee'])->first()->fees;
+        }else{
+            $monthly_fee = 0;
+        }
+
+
+
+
         $registration_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee'])->first()->fees;
         $form_filup_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'form_filup_fee'])->first()->fees;
 
@@ -251,8 +278,13 @@ class PaymentController extends Controller
         if($session_feeCount>0){
             $session_feeGet =    $this->PaymentCount(['type' => 'session_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'get');
             $session_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$session_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+
+            $session_feeStatus = 'Paid';
+
         }else{
             $session_feeButton = "<a href='/payment?studentId=$studentid&type=session_fee' class='btn btn-info'>Pay Now</a>";
+            $session_feeStatus = 'Unpaid';
+
         }
 
       $registration_feeCount =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $year],'count');
@@ -272,180 +304,472 @@ class PaymentController extends Controller
         }
 
 
+
+
+
+        $paymentHtml = "";
+
+
+
+
+        $cuddentdata = date('d');
+        $cuddentMonth =  date('F');
+
+        $monthlyPaid = [];
+
+        if($session_feeStatus=='Unpaid'){
+            array_push($monthlyPaid,[
+                'key'=>'ভর্তি/সেশন ফি',
+                'amount'=>$session_fee,
+            ]);
+        }
+        foreach ($allMonth as $value) {
+
+
+            $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','month' => $value],'count');
+
+            if($monthly_feeCount>0){
+
+            }else{
+
+                array_push($monthlyPaid,[
+                    'key'=>month_en_to_bn($value),
+                    'amount'=>$monthly_fee,
+                    'sub_type'=>'',
+                ]);
+            }
+
+            $CurrenMonthNumber = month_to_number($cuddentMonth);
+            $valueMonthNumber = month_to_number($value);
+
+        $Annual_assessment_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Annual_assessment','status'=>1])->count();
+
+        $Annual_Examination_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Annual_Examination','status'=>1])->count();
+
+        $Selective_Exam_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Selective_Exam','status'=>1])->count();
+
+
+
+            if($Annual_assessment_feeCount>0){
+            }elseif($Annual_Examination_feeCount>0){
+            }elseif($Selective_Exam_feeCount>0){
+            }else{
+
+                if($cuddentdata<11){
+                    $CurrenMonthNumber = $CurrenMonthNumber-1;
+                    if($CurrenMonthNumber==$valueMonthNumber){
+                        break;
+                    }
+                }else{
+                    if($cuddentMonth==$value){
+                        break;
+                    }
+                }
+
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+        $ex_name_list = ex_name_list();
+        foreach ($ex_name_list as $exName) {
+
+        $Exam_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>$exName,'status'=>1])->count();
+        if($Exam_feeCount){
+           $Schoolfee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>$exName])->first();;
+            $exFee = $Schoolfee->fees;
+            $index_number = $Schoolfee->index_number;
+            $Exam_feeStatusCount =  $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => $exName],'count');
+
+            if(!$Exam_feeStatusCount){
+                $insertedData = array(["key"=>ex_name($exName),"amount"=>$exFee,"sub_type"=>$exName]);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }
+        }
+        }
+
+
+
+        $Registration_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee','status'=>1])->count();
+        if($Registration_feeCount){
+           $Schoolfee = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee'])->first();;
+            $RegFee = $Schoolfee->fees;
+            $index_number = $Schoolfee->index_number;
+            $Registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'count');
+
+            if(!$Registration_feeStatusCount){
+                $insertedData = array(["key"=>'রেজিস্ট্রেশন ফি',"amount"=>$RegFee,"sub_type"=>'']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }
+        }
+
+
+
+        $Form_filup_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'form_filup_fee','status'=>1])->count();
+        if($Form_filup_feeCount){
+           $Schoolfee = SchoolFee::where(['class'=>$StudentClass,'type'=>'form_filup_fee'])->first();;
+            $FornFee = $Schoolfee->fees;
+            $index_number = $Schoolfee->index_number;
+            $Form_filup_feeStatusCount =  $this->PaymentCount(['type' => 'form_filup_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'count');
+
+            if(!$Form_filup_feeStatusCount){
+
+
+
+                 $studentRestult = StudentResult::where(['stu_id'=>$StudentUID,'exam_name'=>'Selective_Exam'])->first();
+
+                $greed = $studentRestult->greed;
+                if($greed=='F'){
+
+                    $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>'আপনি নির্বাচনী পরিক্ষায় পাস না করায় ফরম পূরণ ফি দিতে পারবেন না। দয়াকরে বিদ্যালয়ে যোগাযোগ করুন।',"sub_type"=>'']);
+                    array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                }else{
+
+
+                    if($StudentGroup=='Humanities'){
+                    $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2220,"sub_type"=>'']);
+                    array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                }else{
+                    $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2340,"sub_type"=>'']);
+                    array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                }
+            }
+
+
+
+
+
+
+
+                // $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>$FornFee,"sub_type"=>'']);
+                // array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
         $paymentHtml = "
+        <h2 class='text-center' style='font-size: 30px;'>বকেয়া</h2>
+        <hr/>
 
         <table class='table' width='100%'>
             <thead>
                 <tr>
                     <th>Payment Type</th>
                     <th>Fee</th>
-                    <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody>";
 
+        $totalAmount = 0;
+            foreach ($monthlyPaid as $value) {
 
-                <tr style='text-align:center'>
-                    <td>ভর্তি/সেশন ফি</td>
-                    <td>$session_fee</td>
-                    <td>$session_feeButton</td>
-
-                </tr>";
-
-
-
-                if($session_feeCount>0){
-
-
-                $paymentHtml .= " <tr style='text-align:center'>
-                    <td colspan='3' style='text-align:center;font-size: 26px;'><h3>মাসিক বেতন</h3></td>
-
-                </tr>";
-
-                $monthSl = 1;
-                foreach ($allMonth as $value) {
-                    // echo number_to_month($monthSl);
-
-
-                    $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => $value],'count');
-                    if($monthly_feeCount>0){
-                        $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => $value],'get');
-                        $monthly_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$monthly_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-                        $paymentHtml .="<tr style='text-align:center'>
-                        <td>".month_en_to_bn($value)."</td>
-                        <td>$monthly_fee</td>
-                        <td>$monthly_feeButton</td>
-                    </tr>";
-                    $monthSl++;
-
+                if (is_numeric($value['amount'])) {
+                        $totalAmount += $value['amount'];
                     }
-                }
-
-
-                if($monthSl>12){
-
-                }else{
-                    $monthName = number_to_month($monthSl);
-                    $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>".month_en_to_bn($monthName)."</td>
-                    <td>$monthly_fee</td>
-                    <td>$monthly_feeButton</td>
-                    </tr>";
-                }
-
-
-
-
-
-
-
-                $paymentHtml .="<tr style='text-align:center;display:none'>
-                    <td colspan='3' style='text-align:center;font-size: 26px;'><h3>পরীক্ষার ফি</h3></td>
-
-                </tr>";
-
-                foreach ($allExams as $value) {
-
-
-
-                    $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'type_name' => $value],'count');
-                    if($exam_feeCount>0){
-                        $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'type_name' => $value],'get');
-                        $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-                    }else{
-
-                        $exam_feeButton = "<a href='' class='btn btn-info'>Pay Now</a>";
-
-                    }
-
-
-
-                    $paymentHtml .="<tr style='text-align:center;display:none'>
-                        <td>".exam_en_to_bn($value)."</td>
-                        <td>$exam_fee</td>
-                        <td>$exam_feeButton</td>
-                    </tr>";
-                }
-
-
-                $paymentHtml .="<tr style='text-align:center;display:none'>
-                    <td>রেজিস্ট্রেশন ফি</td>
-                    <td>$registration_fee</td>
-                    <td>$registration_feeButton</td>
-                </tr>
-                <tr style='text-align:center;display:none'>
-                    <td>ফরম পূরণ ফি</td>
-                    <td>$form_filup_fee</td>
-                    <td>$form_filup_feeButton</td>
-                </tr>";
-
+                    $paymentHtml .="
+                    <tr style='text-align:center'>
+                    <td>".$value['key']."</td>
+                    <td>".$value['amount']."</td>
+                    </tr>
+                    ";
             }
-
-
-            $Half_yearly_examinationExam_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Half_yearly_examination','status'=>1])->count();
-
-            if($Half_yearly_examinationExam_feeCount){
-                $Half_yearly_examinationExam_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>'Half_yearly_examination'])->first()->fees;
-
-                 $Half_yearly_examinationExam_feeStatusCount =  $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => 'Half_yearly_examination'],'count');
-                if(!$Half_yearly_examinationExam_feeStatusCount){
-                    $exam_feeButton = "<a href='/payment?studentId=$studentid&type=exam_fee&sub_type=Half_yearly_examination' class='btn btn-info'>Pay Now</a>";
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>অর্ধ বার্ষিক পরীক্ষার ফি</td>
-                    <td>$Half_yearly_examinationExam_fee</td>
-                    <td>$exam_feeButton</td>
-                    </tr>";
-                }else{
-                    $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => 'Half_yearly_examination'],'get');
-
-                    $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>অর্ধ বার্ষিক পরীক্ষার ফি</td>
-                    <td>$exam_feeGet->amount</td>
-                    <td> <a class='btn btn-warning' target='_blank' href='/student/exam/admit/$exam_feeGet->admissionId/$exam_feeGet->ex_name'>প্রবেশ পত্র</a> $exam_feeButton</td>
-                    </tr>";
-
-                }
-            }
-
-
-
-
-            $registration_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee','status'=>1])->count();
-
-            if($registration_feeCount){
-                $registration_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'registration_fee'])->first()->fees;
-
-                 $registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'count');
-                if(!$registration_feeStatusCount){
-                    $registration_feeButton = "<a href='/payment?studentId=$studentid&type=registration_fee' class='btn btn-info'>Pay Now</a>";
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>রেজিস্ট্রেশন ফি</td>
-                    <td>$registration_fee</td>
-                    <td>$registration_feeButton</td>
-                    </tr>";
-                }else{
-                    $registration_feeGet =    $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'get');
-
-                    $registration_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$registration_feeGet->trxid'>রশিদ ডাউনলোড</a>";
-
-                    $paymentHtml .="<tr style='text-align:center'>
-                    <td>রেজিস্ট্রেশন ফি</td>
-                    <td>$registration_feeGet->amount</td>
-                    <td> $registration_feeButton</td>
-                    </tr>";
-
-                }
-            }
-
 
 
 
             $paymentHtml .= "</tbody>
+            <tfoot>
+
+            <tr>
+                <td class='text-right'>মোট বকেয়া :</td>
+                <td class='text-left'>$totalAmount</td>
+            </tr>";
+
+
+            if($totalAmount){
+
+                $paymentHtml .= " <tr>
+                <td colspan='2' class='text-center'><a  href='/payment?studentId=$studentid&type=allBokeya' class='btn btn-info' style='font-size: 30px;'>ফি পরিশোধ করুন</a></td>
+                </tr>";
+            }
+
+
+            $paymentHtml .= " </tfoot>
 
         </table> ";
+
+
+
+
+            $paidPayments =  payment::where(['admissionId'=>$AdmissionID,'status'=>'Paid'])->get();
+
+
+
+
+
+
+        $paymentHtml .= "
+        <h2 class='text-center' style='font-size: 30px;'>পরিশোধিত</h2>
+        <hr/>
+
+        <table class='table' width='100%'>
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Payment Type</th>
+                    <th>Fee</th>
+                    <th>Invoice</th>
+                </tr>
+            </thead>
+            <tbody>";
+
+            foreach ($paidPayments as $paidPayment) {
+
+
+                $paidPaymentDateD = strtotime($paidPayment->date);
+                $currentDateD = strtotime("now");
+                $twoDaysLater = strtotime("2 days", $paidPaymentDateD);
+                if($twoDaysLater>$currentDateD){
+
+
+
+                $paymentHtml .="
+                <tr style='text-align:center'>
+
+                <td>".date('d-m-Y h:i A',strtotime($paidPayment->updated_at))."</td>
+
+                ";
+
+                if($paidPayment->type=='session_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }elseif($paidPayment->type=='marksheet'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }elseif($paidPayment->type=='Admission_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)."</td>";
+                }elseif($paidPayment->type=='exam_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)." (".ex_name($paidPayment->ex_name).")</td>";
+                }elseif($paidPayment->type=='form_filup_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)." (".form_name($paidPayment->ex_name).")</td>";
+                }else{
+                    $paymentHtml .="<td>".month_en_to_bn($paidPayment->month)."</td>";
+                }
+
+                $paymentHtml .="<td>$paidPayment->amount</td>
+
+                <td>";
+                if($paidPayment->type=='exam_fee'){
+
+                    $paidPaymentDate = strtotime($paidPayment->date);
+                    $currentDate = strtotime("now");
+                    $twoMonthsLater = strtotime("1 months", $paidPaymentDate);
+                    if($twoMonthsLater>$currentDate){
+                        $paymentHtml .="
+                        <a class='btn btn-warning' target='_blank' href='/student/exam/admit/$paidPayment->admissionId/$paidPayment->ex_name'>প্রবেশ পত্র</a>";
+                    }
+                    $paymentHtml .="<a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$paidPayment->trxid'>রশিদ ডাউনলোড</a>
+
+                    ";
+                }elseif($paidPayment->type=='marksheet'){
+
+                    $restult = StudentResult::find($paidPayment->studentId);
+
+
+                        $paymentHtml .="
+                        <a class='btn btn-warning' target='_blank' href='/marksheet/$restult->marksheetCode'>মার্কসীট ডাউনলোড</a>";
+
+                    $paymentHtml .="<a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$paidPayment->trxid'>রশিদ ডাউনলোড</a>
+
+                    ";
+                }else{
+
+                    $paymentHtml .="<a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$paidPayment->trxid'>রশিদ ডাউনলোড</a>";
+                }
+
+
+                $paymentHtml .="</td>
+
+                </tr>
+                ";
+            }
+
+
+
+
+            }
+
+
+            $paymentHtml .= "</tbody>
+        </table> ";
+
+
+
+
+// return $monthlyPaid;
+
+//         return;
+
+
+
+
+
+
+
+
+        // $paymentHtml = "
+
+        // <table class='table' width='100%'>
+        //     <thead>
+        //         <tr>
+        //             <th>Payment Type</th>
+        //             <th>Fee</th>
+        //             <th>Status</th>
+        //         </tr>
+        //     </thead>
+        //     <tbody>
+
+
+        //         <tr style='text-align:center'>
+        //             <td>ভর্তি/সেশন ফি</td>
+        //             <td>$session_fee</td>
+        //             <td>$session_feeButton</td>
+        //         </tr>";
+
+
+
+
+
+
+
+
+
+
+
+        //         if($session_feeCount>0){
+        //         $paymentHtml .= " <tr style='text-align:center'>
+        //             <td colspan='3' style='text-align:center;font-size: 26px;'><h3>মাসিক বেতন</h3></td>
+        //         </tr>";
+        //         $monthSl = 1;
+        //         foreach ($allMonth as $value) {
+
+        //             $monthly_feeCount =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'count');
+        //             if($monthly_feeCount>0){
+        //                 $monthly_feeGet =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','month' => $value],'get');
+        //                 $monthly_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$monthly_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+        //                 $paymentHtml .="<tr style='text-align:center'>
+        //                 <td>".month_en_to_bn($value)."</td>
+        //                 <td>$monthly_fee</td>
+        //                 <td>$monthly_feeButton</td>
+        //             </tr>";
+        //             $monthSl++;
+        //             }else{
+        //                 if($monthSl>12){
+
+        //                 }else{
+        //                     $monthName = number_to_month($monthSl);
+        //                     $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
+        //                     $paymentHtml .="<tr style='text-align:center'>
+        //                     <td>".month_en_to_bn($monthName)."</td>
+        //                     <td>$monthly_fee</td>
+        //                     <td>$monthly_feeButton</td>
+        //                     </tr>";
+        //                 }
+        //             }
+
+
+
+
+
+
+        //         }
+
+
+
+
+
+        //         if($monthSl>12){
+
+        //         }else{
+        //             $monthName = number_to_month($monthSl);
+        //             $monthly_feeButton = "<a href='/payment?studentId=$studentid&type=monthly_fee&month=$monthName' class='btn btn-info'>Pay Now</a>";
+        //             $paymentHtml .="<tr style='text-align:center'>
+        //             <td>".month_en_to_bn($monthName)."</td>
+        //             <td>$monthly_fee</td>
+        //             <td>$monthly_feeButton</td>
+        //             </tr>";
+        //         }
+
+
+
+
+
+        //         $paymentHtml .="<tr style='text-align:center;display:none'>
+        //             <td colspan='3' style='text-align:center;font-size: 26px;'><h3>পরীক্ষার ফি</h3></td>
+
+        //         </tr>";
+
+        //         foreach ($allExams as $value) {
+
+
+
+        //             $exam_feeCount =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'count');
+        //             if($exam_feeCount>0){
+        //                 $exam_feeGet =    $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2022','type_name' => $value],'get');
+        //                 $exam_feeButton = "<span class='btn btn-success'>Paid</span> <a class='btn btn-info' target='_blank' href='/student/applicant/invoice/$exam_feeGet->trxid'>রশিদ ডাউনলোড</a>";
+        //             }else{
+
+        //                 $exam_feeButton = "<a href='' class='btn btn-info'>Pay Now</a>";
+
+        //             }
+
+
+
+        //             $paymentHtml .="<tr style='text-align:center;display:none' >
+        //                 <td>".exam_en_to_bn($value)."</td>
+        //                 <td>$exam_fee</td>
+        //                 <td>$exam_feeButton</td>
+        //             </tr>";
+        //         }
+
+
+        //         $paymentHtml .="<tr style='text-align:center;display:none'>
+        //             <td>রেজিস্ট্রেশন ফি</td>
+        //             <td>$registration_fee</td>
+        //             <td>$registration_feeButton</td>
+        //         </tr>
+        //         <tr style='text-align:center;display:none'>
+        //             <td>ফরম পূরণ ফি</td>
+        //             <td>$form_filup_fee</td>
+        //             <td>$form_filup_feeButton</td>
+        //         </tr>";
+
+            // }
+
+
+
+
+        //     $paymentHtml .= "</tbody>
+
+        // </table> ";
 
 
 
@@ -500,9 +824,126 @@ class PaymentController extends Controller
         $Insertdata = [];
 
         if ($data['msg_code'] == '1020') {
+
+
+
             $Insertdata = [
                 'status' => 'Paid',
                 'method' => $data['pi_det_info']['pi_name'],
+            ];
+            $paymentType = $payment->type;
+            // return paymentKhat($paymentType);
+
+
+            if($paymentType=='TC'){
+
+                 $tc = TC::where(['studentId'=>$student->id])->first();
+                $tc->update(['status'=>'active','paymentStatus'=>'Paid']);
+            }else{
+                $group = 'Humanities';
+                if($student->StudentClass=='Nine' || $student->StudentClass=='Ten'){
+                    $group = $student->StudentGroup;
+                }
+                if($student->StudentStatus=='Approve'){
+                    $student->update(['StudentStatus' => 'permited','StudentGroup'=>$group]);
+                }
+                if($paymentType=='Admission_fee'){
+                    $student->update(['StudentStatus' => 'Pending']);
+                    SmsNocSmsSend("Dear ".strtoupper($student->StudentNameEn).",Your Admission Fee has been Paid.Please Wait for Admission Result.Your Application Id- $student->AdmissionID",$student->StudentPhoneNumber);
+                }else{
+                    if($paymentType=='monthly_fee'){
+                        if($payment->amount!=0){
+                            SmsNocSmsSend("$student->StudentName  এর ". month_en_to_bn($payment->month) ." মাসের বেতন ". int_en_to_bn($payment->amount) ." টাকা জমা হয়েছে ",$student->StudentPhoneNumber);
+                        }
+                    }else{
+                        SmsNocSmsSend("$student->StudentName এর ". paymentKhat($paymentType) ." ". int_en_to_bn($payment->amount) ." টাকা জমা হয়েছে ",$student->StudentPhoneNumber);
+                    }
+                }
+
+            }
+
+
+
+
+
+
+        } else {
+            $Insertdata = ['status' => 'Failed',];
+        }
+
+        $Insertdata['ipnResponse'] = json_encode($data);
+        // return $Insertdata;
+         $payment->update($Insertdata);
+        }
+
+
+
+
+    }
+
+
+
+
+    public function ReCallIpn(Request $request)
+    {
+
+        $trnx_id = $request->trnx_id;
+        $trans_date = date("Y-m-d", strtotime($request->trans_date));
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://pg.ekpay.gov.bd/ekpaypg/v1/get-status',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>'{
+
+         "trnx_id":"'.$trnx_id.'",
+         "trans_date":"'.$trans_date.'"
+
+        }',
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+          ),
+        ));
+
+        $response1 = curl_exec($curl);
+
+        curl_close($curl);
+         $data =  json_decode($response1);
+
+
+
+
+
+        // $data = $request->all();
+
+
+
+        Log::info(json_encode($data));
+        $student = student::find($data->cust_info->cust_id);
+        $trnx_id = $data->trnx_info->mer_trnx_id;
+
+
+
+
+            $payments = payment::where('trxid', $trnx_id)->get();
+
+
+        foreach ($payments as $payment) {
+
+
+        $Insertdata = [];
+
+        if ($data->msg_code == '1020') {
+            $Insertdata = [
+                'status' => 'Paid',
+                'method' => $data->pi_det_info->pi_name,
             ];
 
 
@@ -525,7 +966,11 @@ class PaymentController extends Controller
             }else{
 
                 if($paymentType=='monthly_fee'){
-                    SmsNocSmsSend("$student->StudentName  এর ". month_en_to_bn($payment->month) ." মাসের বেতন ". int_en_to_bn($payment->amount) ." টাকা জমা হয়েছে ",$student->StudentPhoneNumber);
+					if($payment->amount!=0){
+						SmsNocSmsSend("$student->StudentName  এর ". month_en_to_bn($payment->month) ." মাসের বেতন ". int_en_to_bn($payment->amount) ." টাকা জমা হয়েছে ",$student->StudentPhoneNumber);
+					}
+
+
                 }else{
                     SmsNocSmsSend("$student->StudentName এর ". paymentKhat($paymentType) ." ". int_en_to_bn($payment->amount) ." টাকা জমা হয়েছে ",$student->StudentPhoneNumber);
                 }
@@ -543,9 +988,67 @@ class PaymentController extends Controller
         }
 
 
+    }
+
+
+
+
+
+    public function AkpayPaymentCheck(Request $request)
+    {
+
+        $trnx_id = $request->trnx_id;
+        $trans_date = date("Y-m-d", strtotime($request->trans_date));
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://pg.ekpay.gov.bd/ekpaypg/v1/get-status',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>'{
+
+         "trnx_id":"'.$trnx_id.'",
+         "trans_date":"'.$trans_date.'"
+
+        }',
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+          ),
+        ));
+
+        $response1 = curl_exec($curl);
+
+        curl_close($curl);
+
+
+        $myserver = Payment::where(['trxId'=>$trnx_id])->first();
+
+
+      return   $data =  [
+        'myserver'=>$myserver,
+        'akpay'=> json_decode($response1),
+      ];
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
     public function paymentCreate(Request $request)
     {
 
@@ -555,6 +1058,8 @@ class PaymentController extends Controller
         $resultId = $request->resultId;
         $student = student::find($studentId);
         $AdmissionID = $student->AdmissionID;
+        $StudentUID = $student->StudentID;
+        $StudentGroup = $student->StudentGroup;
 
         $studentMobile = '01909756552';
         if($student->StudentPhoneNumber){
@@ -607,8 +1112,10 @@ class PaymentController extends Controller
         array_push($monthlyPaid,[
             'key'=>'ভর্তি/সেশন ফি',
             'amount'=>$session_fee,
+            'sub_type'=>'',
         ]);
       }
+
 
 
       foreach ($allMonth as $value) {
@@ -624,6 +1131,7 @@ class PaymentController extends Controller
             array_push($monthlyPaid,[
                 'key'=>month_en_to_bn($value),
                 'amount'=>$monthly_fee,
+                'sub_type'=>'',
             ]);
         }
 
@@ -632,18 +1140,174 @@ class PaymentController extends Controller
 
           $CurrenMonthNumber = month_to_number($cuddentMonth);
           $valueMonthNumber = month_to_number($value);
-          if($cuddentdata<11){
-              $CurrenMonthNumber = $CurrenMonthNumber-1;
-              if($CurrenMonthNumber==$valueMonthNumber){
-                  break;
-              }
-          }else{
-              if($cuddentMonth==$value){
-                  break;
-              }
+
+
+
+        $Annual_assessment_feeCount = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>'Annual_assessment','status'=>1])->count();
+
+        $Annual_Examination_feeCount = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>'Annual_Examination','status'=>1])->count();
+
+        $Selective_Exam_feeCount = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>'Selective_Exam','status'=>1])->count();
+
+
+
+            if($Annual_assessment_feeCount>0){
+            }elseif($Annual_Examination_feeCount>0){
+            }elseif($Selective_Exam_feeCount>0){
+            }else{
+
+                if($cuddentdata<11){
+                    $CurrenMonthNumber = $CurrenMonthNumber-1;
+                    if($CurrenMonthNumber==$valueMonthNumber){
+                        break;
+                    }
+                }else{
+                    if($cuddentMonth==$value){
+                        break;
+                    }
+                }
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+      }
+
+
+
+
+      $ex_name_list = ex_name_list();
+      foreach ($ex_name_list as $exName) {
+
+      $Exam_feeCount = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>$exName,'status'=>1])->count();
+      if($Exam_feeCount){
+         $Schoolfee = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>$exName])->first();;
+          $exFee = $Schoolfee->fees;
+
+          $index_number = $Schoolfee->index_number;
+          $Exam_feeStatusCount =  $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023','ex_name' => $exName],'count');
+
+          if(!$Exam_feeStatusCount){
+            $totalamount +=  $exFee;
+              $insertedData = array(["key"=>'exam_fee',"amount"=>$exFee,"sub_type"=>$exName]);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
           }
       }
-      $amount =  $totalamount;
+      }
+
+
+
+      $Registration_feeCount = SchoolFee::where(['class'=>$class,'type'=>'registration_fee','status'=>1])->count();
+      if($Registration_feeCount){
+         $Schoolfee = SchoolFee::where(['class'=>$class,'type'=>'registration_fee'])->first();;
+          $RegFee = $Schoolfee->fees;
+
+          $index_number = $Schoolfee->index_number;
+          $Registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'count');
+
+          if(!$Registration_feeStatusCount){
+            $totalamount +=  $RegFee;
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$RegFee,"sub_type"=>'']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+          }
+      }
+
+
+
+      $Form_filup_feeCount = SchoolFee::where(['class'=>$class,'type'=>'form_filup_fee','status'=>1])->count();
+      if($Form_filup_feeCount){
+         $Schoolfee = SchoolFee::where(['class'=>$class,'type'=>'form_filup_fee'])->first();;
+          $FornFee = $Schoolfee->fees;
+
+          $index_number = $Schoolfee->index_number;
+          $Form_filup_feeStatusCount =  $this->PaymentCount(['type' => 'form_filup_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => '2023'],'count');
+
+          if(!$Form_filup_feeStatusCount){
+
+
+            $studentRestult = StudentResult::where(['stu_id'=>$StudentUID,'exam_name'=>'Selective_Exam'])->first();
+            $greed = $studentRestult->greed;
+            if($greed!='F'){
+            if($StudentGroup=='Humanities'){
+                $board_fee = 1535;
+                $totalamount +=  $board_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$board_fee,"sub_type"=>'board_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $center_fee = 485;
+                $totalamount +=  $center_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$center_fee,"sub_type"=>'center_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $late_fees = 100;
+                $totalamount +=  $late_fees;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$late_fees,"sub_type"=>'late_fees']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $other_fee = 100;
+                $totalamount +=  $other_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }else{
+                $board_fee = 1625;
+                $totalamount +=  $board_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$board_fee,"sub_type"=>'board_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $center_fee = 515;
+                $totalamount +=  $center_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$center_fee,"sub_type"=>'center_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $late_fees = 100;
+                $totalamount +=  $late_fees;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$late_fees,"sub_type"=>'late_fees']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+                $other_fee = 100;
+                $totalamount +=  $other_fee;
+                $insertedData = array(["key"=>'form_filup_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }
+            }
+
+
+
+            // $totalamount +=  $FornFee;
+            //   $insertedData = array(["key"=>'form_filup_fee',"amount"=>$FornFee,"sub_type"=>'']);
+            //   array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+
+
+          }
+      }
+
+
+
+
+
+
+    //   $Half_yearly_examinationExam_feeCount = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>'Half_yearly_examination','status'=>1])->count();
+
+    //   if($Half_yearly_examinationExam_feeCount){
+    //     $Half_yearly_examinationExam_fee = SchoolFee::where(['class'=>$class,'type'=>'exam_fee','sub_type'=>'Half_yearly_examination'])->first()->fees;
+    //     $insertedData = array(["key"=>"exam_fee","amount"=>$Half_yearly_examinationExam_fee,"sub_type"=>'Half_yearly_examination']);
+    //       array_splice($monthlyPaid, 6, 0, $insertedData);
+    //   }else{
+    //     $Half_yearly_examinationExam_fee = 0;
+    //   }
+
+
+
+
+
+
+
+       $amount =  $totalamount;
 
 
 
@@ -652,21 +1316,11 @@ class PaymentController extends Controller
 
 
 }else{
-
     if($type=='marksheet'){
         $class = 'All';
     }
-
-    if($type=='ex_name'){
-        $sub_type = $request->sub_type;
-        $schoolFee = SchoolFee::where(['class' => $class, 'type' => $type,'sub_type'=>$sub_type])->latest()->first();
-    }else{
-        $schoolFee = SchoolFee::where(['class' => $class, 'type' => $type])->latest()->first();
-
-    }
-
-
-     $amount = $schoolFee->fees;
+    $schoolFee = SchoolFee::where(['class' => $class, 'type' => $type])->latest()->first();
+    $amount = $schoolFee->fees;
 
 }
 
@@ -711,12 +1365,35 @@ class PaymentController extends Controller
 
 
 
+
         if($type=='allBokeya'){
             foreach ($monthlyPaid as $value) {
 
 
+
                 $typesC = $value['key'];
                 if($typesC=='ভর্তি/সেশন ফি'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='exam_fee'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='registration_fee'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='form_filup_fee'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='board_fee'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='center_fee'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='late_fees'){
+                    $types = paymentKhaten($value['key']);
+                    $monthName = date('F');
+                }elseif($typesC=='other_fee'){
                     $types = paymentKhaten($value['key']);
                     $monthName = date('F');
                 }else{
@@ -736,7 +1413,7 @@ class PaymentController extends Controller
                     'method' => '',
                     'amount' => $value['amount'],
                     'type' => $types,
-
+                    'ex_name' => $value['sub_type'],
                     'paymentUrl' => $redirectutl,
                     'date' => date("Y-m-d"),
                     'year' => $paymentYear,
@@ -747,15 +1424,11 @@ class PaymentController extends Controller
                 }else{
                     $Insertdata['month'] =  $monthName;
                 }
+
                 payment::create($Insertdata);
 
             }
         }else{
-            if($request->sub_type){
-                $sub_type =  $request->sub_type;
-            }else{
-                $sub_type = '';
-            }
             // print_r('sdf');
             $Insertdata = [
                 'trxid' => $trnx_id,
@@ -768,7 +1441,6 @@ class PaymentController extends Controller
                 'method' => '',
                 'amount' => $amount,
                 'type' => $type,
-                'ex_name' => $sub_type,
                 'paymentUrl' => $redirectutl,
                 'date' => date("Y-m-d"),
                 'year' => $paymentYear,
@@ -781,7 +1453,6 @@ class PaymentController extends Controller
             }
             payment::create($Insertdata);
         }
-
 
 
 
@@ -818,11 +1489,6 @@ class PaymentController extends Controller
     }
     public function payments_submit(Request $r)
     {
-
-        //  return paymentKhaten($r->type);
-
-
-
         $formtype = $r->formtype;
         $id = $r->id;
         $oldItem[0] = [
@@ -840,7 +1506,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => paymentKhaten($r->type),
+            'type' => $r->type,
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,
@@ -930,6 +1596,10 @@ class PaymentController extends Controller
     public function paymentReport(Request $request)
     {
 
+            ini_set('max_execution_time', '60000');
+            ini_set("pcre.backtrack_limit", "50000000000000");
+            ini_set('memory_limit', '12008M');
+
 
         $class = $request->class;
         $type = $request->type;
@@ -955,25 +1625,147 @@ class PaymentController extends Controller
 
 
 
-    public function paymentsheet($school_id, $class, $year, $type)
+    public function paymentsheet(Request $request,$school_id, $class, $year, $type)
     {
+
+        ini_set('max_execution_time', '60000');
+        ini_set("pcre.backtrack_limit", "500000000000000000");
+        ini_set('memory_limit', '12008M');
+
         $data['class'] = $class;
         $data['year'] = $year;
-        $data['type'] = $type;
+        $data['type'] = feesconvert($type);
         $wheredata = [
             'StudentStatus' => 'Active',
             'StudentClass' => $class,
             'Year' => date('Y'),
             'school_id' => $school_id,
         ];
+
+        $group = $request->group;
+        $data['group'] = $group;
+        if($class=='Nine' || $class=='Ten'){
+            $wheredata['StudentGroup'] = $group;
+        }
+
+
         $data['rows'] = DB::table('students')->where($wheredata)->orderBy('StudentRoll', 'ASC')->get();
         $fileName = 'Payments-' . date('Y-m-d H:m:s');
         $data['fileName'] = $fileName;
         $data['sign'] = base64(sitedetails()->PRINCIPALS_Signature);
+
+
+        // return $data;
+
+
+        // return view('admin/pdfReports.payments_sheet', $data);
+
         $pdf = LaravelMpdf::loadView('admin/pdfReports.payments_sheet', $data);
         return $pdf->stream("$fileName.pdf");
-        // return view('dashboard/payments.payments_sheet', $data);
     }
+
+
+    public function paymentsheetAnnual(Request $request)
+    {
+
+        ini_set('max_execution_time', '60000');
+        ini_set("pcre.backtrack_limit", "5000000000000000050000000000000000");
+        ini_set('memory_limit', '12008M');
+
+
+
+
+
+
+        $school_id = $request->school_id;
+        $fileName = 'Annually-report-'.date('Y').'-'.time().'.pdf';
+
+        // return $data;
+
+
+        // return view('admin/pdfReports.payments_sheet_annually');
+
+        $pdf = LaravelMpdf::loadView('admin/pdfReports.payments_sheet_annually', compact('school_id','fileName'));
+        return $pdf->stream("$fileName.pdf");
+    }
+
+
+    public function getAnnuallyReport()
+    {
+        $html = '';
+
+
+        $html .="
+
+        <table border='1' width='100%'>
+        <thead>
+            <tr>
+                <th colspan='10' style='font-size:25px;text-align:center'><span>বার্ষিক প্রতিবেদন</span></th>
+            </tr>
+        </thead>
+
+        <tr align='center'>
+            <td class='td'>শ্রেণি</td>
+            <td class='td'>ভর্তি ফরম ফি</td>
+            <td class='td'>ভর্তি/সেশন ফি</td>
+            <td class='td'>মাসিক বেতন</td>
+            <td class='td'>পরীক্ষার ফি</td>
+            <td class='td'>রেজিস্ট্রেশন ফি</td>
+            <td class='td'>ফরম পূরণ ফি</td>
+            <td class='td'>মার্কসীট ফি</td>
+            <td class='td'>প্রশংসা পত্র</td>
+            <td class='td'>সর্বমোট</td>
+        </tr>";
+
+
+
+        foreach (class_list() as $class){
+
+
+
+        $html .="
+        <tr  align='center'>
+            <td class='td'>". class_en_to_bn($class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'Admission_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'session_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'monthly_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'exam_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'registration_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'form_filup_fee',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'marksheet',$class) ."</td>
+            <td class='td'>". annualAmount(date('Y'),'TC',$class) ."</td>
+
+            <td class='td'>". annualAmount(date('Y'),'marksheet',$class, 'total') ."</td>
+        </tr>";
+
+        }
+
+        $html .="
+        <tr align='center'>
+            <td class='td'>মোট</td>
+            <td class='td'>". annualAmount(date('Y'),'Admission_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'session_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'monthly_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'exam_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'registration_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'form_filup_fee') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'marksheet') ."</td>
+            <td class='td'>". annualAmount(date('Y'),'TC') ."</td>
+
+            <td class='td'>". annualAmount(date('Y'),'','','Subtotal') ."</td>
+        </tr>
+
+
+    </table>
+
+        ";
+
+
+        return $html;
+
+    }
+
+
 
 
 
