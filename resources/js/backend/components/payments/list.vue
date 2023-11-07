@@ -25,35 +25,18 @@
                     </div>
                     <div class="dropdown">
                         <!-- {{ url('/school/student/'.$class.'/'.$year.'/'.$type.'/sheet') }} -->
-                        <a target="_blank" :href="'/dashboard/student/' + school_id + '/' + payment_class + '/' + year + '/' + type + '/paymnetsheet?group='+ this.group"
+                        <a target="_blank" :href="'/dashboard/student/' + school_id + '/' + payment_class + '/' + year + '/' + type + '/paymnetsheet'"
                             class="btn-fill-lmd text-light gradient-dodger-blue" style="float:right;margin-bottom:10px"
                             rel="noopener noreferrer">Download Full Year Sheet</a>
                     </div>
                 </div>
                 <div class="row gutters-8">
-
-
                     <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
-                        <select class="form-control" v-model="payment_class" id="payment_class" @change="callSubjects"  required>
+                        <select class="form-control" v-model="payment_class" id="payment_class" required>
                             <option value="">SELECT CLASS</option>
                             <option v-for="classlist in classess">{{  classlist  }}</option>
                         </select>
                     </div>
-
-
-
-                    <div class="col-md-3"  v-if="payment_class=='Nine' || payment_class=='Ten'" >
-                                <div class='form-group' >
-
-                                    <select class='form-control' style='width: 100%;' v-model='group' id='group' required>
-                                    <option value=''>select</option>
-                                    <option v-for="group in groups">{{ group }}</option>
-
-
-                                    </select></div>
-                                </div>
-
-
                     <div class="col-3-xxxl col-xl-4 col-lg-3 col-12 form-group">
                         <select class="form-control" v-model="year" id="year" required>
                             <option value="">SELECT YEAR</option>
@@ -75,8 +58,8 @@
                             <option value="">
                                 SELECT
                             </option>
-                            <option value="Monthly_fee">মাসিক বেতন</option>
-                            <option value="Session_fee">সেশন ফি</option>
+                            <option value="monthly_fee">মাসিক বেতন</option>
+                            <option value="session_fee">সেশন ফি</option>
                             <option value="Exam_fee">পরিক্ষার ফি</option>
                             <option value="Other">অন্যান্য</option>
                         </select>
@@ -122,16 +105,16 @@
                                 <td class="tablecolhide">{{  paymentAmount  }}</td>
                                 <td class="tablecolhide">
                                     <span v-if="statustext == 'Looding...'">{{  statustext  }}</span>
-                                    <span v-else>{{  paidamount[studentList.StudentRoll]  }}</span>
+                                    <span v-else>{{  paidamount[studentList.AdmissionID]  }}</span>
                                 </td>
-                                <td :class="paidclass" v-if="status[studentList.StudentRoll] == 'Paid'">
+                                <td :class="paidclass" v-if="status[studentList.AdmissionID] == 'Paid'">
                                     <span v-if="statustext == 'Looding...'">{{  statustext  }}</span>
-                                    <span v-else>{{  status[studentList.StudentRoll]  }}</span>
+                                    <span v-else>{{  status[studentList.AdmissionID]  }}</span>
                                 </td>
                                 <td class='badge badge-pill badge-danger d-block mg-t-8' v-else>{{  statustext  }}</td>
                                 <td class="tablecolhide">
                                     <span v-if="statustext == 'Looding...'">{{  statustext  }}</span>
-                                    <span v-else>{{  paiddate[studentList.StudentRoll]  }}</span>
+                                    <span v-else>{{  paiddate[studentList.AdmissionID]  }}</span>
                                 </td>
                                 <td>
                                     <div v-if="statustext == 'Looding...'">{{  statustext  }}</div>
@@ -143,11 +126,11 @@
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <router-link
-                                                :to="{ name: 'paymentedit', params: { create: 'edit', id: ids[studentList.StudentRoll] } }"
-                                                v-if="status[studentList.StudentRoll] == 'Paid'" class="dropdown-item"
+                                                :to="{ name: 'paymentedit', params: { create: 'edit', id: ids[studentList.AdmissionID] } }"
+                                                v-if="status[studentList.AdmissionID] == 'Paid'" class="dropdown-item"
                                                 id=""><i class="fas fa-cogs"></i> Edit</router-link>
-                                            <a :href="'/school/payment/invoice/'+ids[studentList.StudentRoll]" target="_blank" class="dropdown-item"
-                                                v-if="status[studentList.StudentRoll] == 'Paid'" id=""><i
+                                            <a :href="'/school/payment/invoice/'+ids[studentList.AdmissionID]" target="_blank" class="dropdown-item"
+                                                v-if="status[studentList.AdmissionID] == 'Paid'" id=""><i
                                                     class="fas fa-download fa-fw"></i> Invoice</a>
                                             <router-link
                                                 :to="{ name: 'paymentcreate', params: { create: 'create', classname: studentList.StudentClass, year: year, month: month, type: type, id: studentList.id },query:{type_name:examType} }"
@@ -179,12 +162,10 @@ export default {
     },
     data() {
         return {
-            groups: {},
             payment_class: null,
             year: null,
             month: null,
             type: null,
-            group: null,
             examType: '',
             students: [],
             payments: [],
@@ -204,15 +185,6 @@ export default {
         }
     },
     methods: {
-
-
-        callSubjects(){
-            if(this.filterdata.student_class=='Nine' || this.filterdata.student_class=='Ten'){
-            }else{
-                this.filterdata.group = 'All'
-            }
-        },
-
         filter() {
             this.preloader = true;
             this.newsearch = 'oldsearch',
@@ -221,9 +193,9 @@ export default {
                 this.paidclass = 'badge badge-pill badge-danger d-block mg-t-8';
             }
             // console.log(this.$router.currentRoute.path)
-            if (this.$router.currentRoute.path == `/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?group=${this.group}&type_name=${this.examType}`) {
+            if (this.$router.currentRoute.path == `/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?type_name=${this.examType}`) {
             } else {
-                this.$router.push({ name: 'paymentsearch', params: { classname: this.payment_class, year: this.year, month: this.month, type: this.type },query:{group:this.group,type_name:this.examType} })
+                this.$router.push({ name: 'paymentsearch', params: { classname: this.payment_class, year: this.year, month: this.month, type: this.type },query:{type_name:this.examType} })
             }
             this.allstudents();
             this.allpayments();
@@ -231,7 +203,7 @@ export default {
         allstudents() {
             this.statustext = 'Looding...'
             var url = '';
-            url = `/api/students/single?filter[StudentClass]=${this.payment_class}&filter[Year]=${this.year}&filter[school_id]=${this.school_id}&filter[StudentGroup]=${this.group}&filter[StudentStatus]=Active`;
+            url = `/api/students/single?filter[StudentClass]=${this.payment_class}&filter[Year]=${this.year}&filter[school_id]=${this.school_id}&filter[StudentStatus]=Active`;
             axios.get(url)
                 .then(({ data }) => {
                     this.students = data
@@ -241,7 +213,7 @@ export default {
         },
         allpayments() {
             var url = '';
-            url = `/api/students/payments?filter[studentClass]=${this.payment_class}&filter[year]=${this.year}&filter[month]=${this.month}&filter[school_id]=${this.school_id}&filter[type]=${this.feesconvert(this.type)}&filter[type_name]=${this.examType}`;
+            url = `/api/students/payments?filter[studentClass]=${this.payment_class}&filter[year]=${this.year}&filter[month]=${this.month}&filter[school_id]=${this.school_id}&filter[type]=${this.type}&filter[type_name]=${this.examType}`;
             axios.get(url)
                 .then(({ data }) => {
                     this.payments = data
@@ -261,10 +233,10 @@ export default {
             this.paiddate = {};
             this.ids = {};
             this.payments.forEach((value, index) => {
-                this.status[value.studentRoll] = value.status;
-                this.paidamount[value.studentRoll] = value.amount;
-                this.paiddate[value.studentRoll] = value.date;
-                this.ids[value.studentRoll] = value.id;
+                this.status[value.admissionId] = value.status;
+                this.paidamount[value.admissionId] = value.amount;
+                this.paiddate[value.admissionId] = value.date;
+                this.ids[value.admissionId] = value.id;
             });
             this.statustext = 'Unpaid'
             this.paidclass = 'badge badge-pill badge-success d-block mg-t-8'
@@ -279,7 +251,7 @@ export default {
             var res = await this.callApi('get',`/api/years/list?type=year`,[]);
             this.years = res.data;
         },
-            async all_lists(){
+            async all_list(){
             var res = await this.callApi('get',`/api/years/list?type=exams`,[]);
             this.exams = res.data;
         },
@@ -288,19 +260,14 @@ export default {
 
     },
     mounted() {
-
         this.yearslist();
        this.monthslist();
-       this.all_lists();
-       this.groups =  this.all_list('groups');
+       this.all_list();
         this.payment_class = this.$route.params.classname
-        this.group = this.$route.query.group
         this.year = this.$route.params.year
         this.month = this.$route.params.month
         this.type = this.$route.params.type
-
         setTimeout(() => {
-
             this.allstudents();
             this.allpayments();
         }, 1000);
