@@ -33,25 +33,21 @@
                 <div class="row gutters-8">
 
 
+
                     <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
-                        <select class="form-control" v-model="payment_class" id="payment_class" @change="callSubjects"  required>
+                        <select class="form-control" v-model="payment_class" id="payment_class" required>
                             <option value="">SELECT CLASS</option>
-                            <option v-for="classlist in classess">{{  classlist  }}</option>
+                            <option v-for="classlist in classess">{{ classlist }}</option>
                         </select>
                     </div>
 
 
-
-                    <div class="col-md-3"  v-if="payment_class=='Nine' || payment_class=='Ten'" >
-                                <div class='form-group' >
-
-                                    <select class='form-control' style='width: 100%;' v-model='group' id='group' required>
-                                    <option value=''>select</option>
-                                    <option v-for="group in groups">{{ group }}</option>
-
-
-                                    </select></div>
-                                </div>
+                    <!-- <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group"v-if="payment_class == 'Nine' || payment_class == 'Ten'">
+                        <select class='form-control' style='width: 100%;' v-model='StudentGroup' id='group' required>
+                                        <option value=''>select</option>
+                                        <option v-for="(group, ind) in groups" :key="'group' + ind">{{ group }}</option>
+                                    </select>
+                    </div> -->
 
 
 
@@ -87,8 +83,8 @@
                             <option value="">
                                 SELECT
                             </option>
-                            <option value="Monthly_fee">মাসিক বেতন</option>
-                            <option value="Session_fee">সেশন ফি</option>
+                            <option value="monthly_fee">মাসিক বেতন</option>
+                            <option value="session_fee">সেশন ফি</option>
                             <option value="Exam_fee">পরিক্ষার ফি</option>
                             <option value="Other">অন্যান্য</option>
 
@@ -164,40 +160,28 @@ created() {
 
 	data () {
 		return {
-            group:'',
-            payment_class:null,
-            year:null,
-            newsearch:null,
-            month:null,
-            type:null,
-            examType:'',
+       payment_class:null,
+       year:null,
+       newsearch:null,
+       month:null,
+       type:null,
+       examType:'',
+       StudentGroup:'',
 
-            exams: {},
-            months: {},
-            years: {}
+       exams: {},
+       months: {},
+       years: {}
 		}
 	},
 
 	methods: {
-
-
-
-        callSubjects(){
-            if(this.filterdata.student_class=='Nine' || this.filterdata.student_class=='Ten'){
-            }else{
-                this.filterdata.group = 'All'
-            }
-        },
-
-
-
             filter(){
                 // console.log(this.$router.currentRoute.path)
-                if(this.$router.currentRoute.path==`/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?group=${this.group}&type_name=${this.examType}`){
+                if(this.$router.currentRoute.path==`/school/payment/${this.payment_class}/${this.year}/${this.month}/${this.type}?type_name=${this.examType}?StudentGroup=${this.StudentGroup}`){
 
                 }else{
 this.newsearch ='oldsearch',
-                  this.$router.push({name:'paymentsearch', params: { classname: this.payment_class, year: this.year, month:this.month, type:this.type },query:{group:this.group,type_name:this.examType}})
+                  this.$router.push({name:'paymentsearch', params: { classname: this.payment_class, year: this.year, month:this.month, type:this.type },query:{type_name:this.examType}})
 
                 }
 
@@ -207,7 +191,7 @@ this.newsearch ='oldsearch',
 
 	},
 	mounted(){
-        this.groups =  this.all_list('groups');
+        this.all_list('groups');
 
        this.payment_class = ''
        this.year = ''
