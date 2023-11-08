@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Mccarlosen\LaravelMpdf\LaravelMpdf;
 use Rakibhstu\Banglanumber\NumberToBangla;
-use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
 
 class PaymentController extends Controller
 {
