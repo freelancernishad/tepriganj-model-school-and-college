@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         // Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
         // Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
+        Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Rakibhstu\Banglanumber\NumberToBanglaServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class
