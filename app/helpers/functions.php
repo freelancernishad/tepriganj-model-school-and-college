@@ -762,7 +762,7 @@ function feesconvert($text)
     if ($text == 'Monthly_fee') {
         $result = 'মাসিক বেতন';
     } elseif ($text == 'মাসিক বেতন') {
-        $result = 'Monthly_fee';
+        $result = 'monthly_fee';
     }elseif ($text == 'monthly_fee') {
         $result = 'মাসিক বেতন';
     } elseif ($text == 'Session_fee') {
