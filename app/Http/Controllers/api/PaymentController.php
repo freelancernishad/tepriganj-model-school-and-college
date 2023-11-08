@@ -1635,7 +1635,7 @@ class PaymentController extends Controller
 
         $data['class'] = $class;
         $data['year'] = $year;
-        $data['type'] = feesconvert($type);
+        $data['type'] = $type;
         $wheredata = [
             'StudentStatus' => 'Active',
             'StudentClass' => $class,
