@@ -1506,7 +1506,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => $r->type,
+            'type' => paymentKhaten($r->type),
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,
