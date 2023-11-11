@@ -135,6 +135,7 @@ let questionbanknew = require('./components/questionbank/form.vue').default;
 let fees = require('./components/fees/index.vue').default;
 let feesedit = require('./components/fees/edit.vue').default;
 
+let trxcheck = require('./components/trxcheck.vue').default;
 
 
 let onlineexam = require('./components/onlineexam/index.vue').default;
@@ -316,7 +317,7 @@ export const routes = [
   { path: `${prefix}/fees/edit/:id`, component: feesedit, name:'feesedit',meta: { layout: adminlayout } },
 
 
-
+  { path:  `${prefix}/check/trx`, component: trxcheck, name:'trxcheck',meta: { layout: adminlayout } },
 
 
 

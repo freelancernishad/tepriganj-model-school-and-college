@@ -43,6 +43,33 @@ export default {
         },
 
 
+        ex_fee_name(name){
+            if(name=='Half_yearly_examination'){
+                return 'অর্ধ বার্ষিক পরীক্ষার ফি';
+            }else if(name=='Half_yearly_evaluation'){
+                return 'অর্ধ বার্ষিক মূল্যায়ন ফি';
+            }else if(name=='Annual Examination'){
+                return 'বার্ষিক পরীক্ষার ফি';
+            }else if(name=='Annual_Examination'){
+                return 'বার্ষিক পরীক্ষার ফি';
+            }else if(name=='Annual_assessment'){
+                return 'বার্ষিক মূল্যায়ন ফি';
+            }else if(name=='Model_test_exam'){
+                return 'মডেল টেস্ট পরীক্ষার ফি';
+            }else if(name=='Pre_selection_examination'){
+                return 'প্রাক-নির্বাচনী পরীক্ষার ফি';
+            }else if(name=='Selective_Exam'){
+                return 'নির্বাচনী পরীক্ষার ফি';
+            }else if(name=='Continuous_assessment'){
+                return 'ধারাবাহিক মূল্যায়ন ফি';
+            }else if(name=='Summative_Assessment'){
+                return 'সামষ্টিক মূল্যায়ন ফি';
+            }else if(name=='Admission_fee'){
+                return 'আবেদন ফি';
+            }
+
+        },
+
 
 
         ex_name(name){
@@ -161,6 +188,10 @@ export default {
                 result = 'অন্যান্য';
             } else if (text == 'অন্যান্য') {
                 result = 'Other';
+            } else if (text == 'Admission_fee') {
+                result = 'আবেদন ফি';
+            } else if (text == 'আবেদন ফি') {
+                result = 'Admission_fee';
             }
             return result;
         },

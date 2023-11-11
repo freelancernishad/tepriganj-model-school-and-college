@@ -16,7 +16,7 @@
 
         <div class="card" v-for="(feeData,index) in feeDatas" :key="'feeMain'+index">
             <div class="card-body">
-                <div class="card-head"><h2 class="text-center">{{ class_en_to_bn(feeData[0].class) }}</h2></div>
+                <div class="card-head"><h2 class="text-center" v-if="feeData[0]">{{ class_en_to_bn(feeData[0].class) }}</h2></div>
                 <table class="table w-100">
                     <thead>
                         <tr>

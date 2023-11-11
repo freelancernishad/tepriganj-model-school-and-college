@@ -78,6 +78,10 @@ Route::post('update/users',[RoleController::class,'updateuser']);
 
 Route::post('/ipn',[PaymentController::class ,'ipn']);
 
+Route::post('/re/call/ipn',[PaymentController::class ,'ReCallIpn']);
+
+
+Route::post('/check/payments/ipn',[PaymentController::class ,'AkpayPaymentCheck']);
 
 
 Route::post('/payment/report',[PaymentController::class ,'reports']);
