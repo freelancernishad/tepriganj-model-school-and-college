@@ -1420,6 +1420,7 @@ class PaymentController extends Controller
                     'year' => $paymentYear,
                     'status' => 'Pending',
                 ];
+                return $Insertdata;
                 if($month){
                     $Insertdata['month'] = $monthName;
                 }else{

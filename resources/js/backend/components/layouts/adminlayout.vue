@@ -327,6 +327,10 @@
 </li>
 
 
+<li class="nav-item">
+                            <router-link :to="{ name: 'trxcheck' }" class="nav-link"><i
+                                    class="flaticon-dashboard"></i><span>Trx check</span></router-link>
+                        </li>
 
 
 
