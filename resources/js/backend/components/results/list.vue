@@ -115,7 +115,7 @@ export default {
             year: null,
             filterdata: {
                 student_class: null,
-                group: 'All',
+                group: 'Humanities',
                 religion: 'All',
                 subject: null,
                 examType: null,
