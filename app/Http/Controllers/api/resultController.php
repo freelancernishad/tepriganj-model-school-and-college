@@ -822,7 +822,15 @@ return redirect()->back();
     {
         $data['class'] = $student_class;
         $data['exam_name'] = $exam;
-        $data['group'] = $group;
+
+        if($student_class=='Nine' || $student_class=='Ten'){
+            $data['group'] = $group;
+        }else{
+            $data['group'] = 'Humanities';
+        }
+
+
+
         $resultW = [
             'school_id' => $school_id,
             'year' => date("Y", strtotime($date)),
