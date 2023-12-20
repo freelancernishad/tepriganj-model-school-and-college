@@ -1538,15 +1538,23 @@ return redirect()->back();
     public function fullResult(Request $request)
     {
         $publishids = [];
+
+
+         if($request->class=='Nine' || $request->class=='Ten'){
+            $class_group = $request->group;
+         }else{
+            $class_group = 'Humanities';
+         }
+
         $filter = [
             'school_id' => $request->school_id,
             'class' => $request->class,
             'year' => $request->year,
             'exam_name' => $request->exam_name,
-            'class_group' => $request->group,
+            'class_group' => $class_group,
         ];
         // $subjects = $this->GetSubject($request->class);
-        $subjects =  allList('subjects', $request->class, $request->group);
+        $subjects =  allList('subjects', $request->class, $class_group);
         $resultlast = StudentResult::where($filter)->latest('id')->first();
         $status = $resultlast->status;
         $result = StudentResult::where($filter)->get();
