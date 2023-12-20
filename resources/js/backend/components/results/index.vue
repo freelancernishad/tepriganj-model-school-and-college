@@ -197,7 +197,7 @@ export default {
 			student_class:"",
             filterdata:{
                 student_class:null,
-                group:'All',
+                group:'Humanities',
                 subject:null,
                 religion:'All',
                 examType:null,
@@ -236,7 +236,7 @@ export default {
         callSubjects(){
             if(this.filterdata.student_class=='Nine' || this.filterdata.student_class=='Ten'){
             }else{
-                this.filterdata.group = 'All'
+                this.filterdata.group = 'Humanities'
             }
             this.subjects =  this.all_list('subjects',this.filterdata.student_class,this.filterdata.group);
         },
