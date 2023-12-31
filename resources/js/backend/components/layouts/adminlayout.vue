@@ -152,6 +152,10 @@
                                     </li>
 
                                     <li class="nav-item">
+                                        <router-link :to="{ name: 'applicationPermission' }" class="nav-link"><i class="fas fa-angle-right"></i> Admission Confirm </router-link>
+                                    </li>
+
+                                    <li class="nav-item">
                                         <router-link :to="{ name: 'studentsReports' }" class="nav-link"><i class="fas fa-angle-right"></i> Reports </router-link>
                                     </li>
                                     <!-- <li class="nav-item">
