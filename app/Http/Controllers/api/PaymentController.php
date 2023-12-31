@@ -335,12 +335,12 @@ class PaymentController extends Controller
 
         $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
-        if(!$Pension_and_Welfare_Trust_feeCount){
-            array_push($monthlyPaid,[
-                'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
-                'amount'=>100,
-            ]);
-        }
+        // if(!$Pension_and_Welfare_Trust_feeCount){
+        //     array_push($monthlyPaid,[
+        //         'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+        //         'amount'=>100,
+        //     ]);
+        // }
     }
         // return $monthlyPaid;
 
