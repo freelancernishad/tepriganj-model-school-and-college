@@ -349,11 +349,11 @@ class PaymentController extends Controller
 
 
                 if($studentStatus=='Approve'){
-                    array_push($monthlyPaid,[
-                        'key'=>month_en_to_bn('January'),
-                        'amount'=>$monthly_fee,
-                        'sub_type'=>'',
-                    ]);
+                    // array_push($monthlyPaid,[
+                    //     'key'=>month_en_to_bn('January'),
+                    //     'amount'=>$monthly_fee,
+                    //     'sub_type'=>'',
+                    // ]);
                 }else{
                     if($MonthName=='December'){
 
@@ -362,24 +362,24 @@ class PaymentController extends Controller
 
         $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
-        if(!$Pension_and_Welfare_Trust_feeCount){
-            array_push($monthlyPaid,[
-                'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
-                'amount'=>100,
-            ]);
-        }
+        // if(!$Pension_and_Welfare_Trust_feeCount){
+        //     array_push($monthlyPaid,[
+        //         'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+        //         'amount'=>100,
+        //     ]);
+        // }
 
 
 
-                    $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
-                    if($monthly_feeCountJ>0){
-                    }else{
-                        array_push($monthlyPaid,[
-                            'key'=>month_en_to_bn('January'),
-                            'amount'=>$monthly_fee,
-                            'sub_type'=>'',
-                        ]);
-                    }
+                    // $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
+                    // if($monthly_feeCountJ>0){
+                    // }else{
+                    //     array_push($monthlyPaid,[
+                    //         'key'=>month_en_to_bn('January'),
+                    //         'amount'=>$monthly_fee,
+                    //         'sub_type'=>'',
+                    //     ]);
+                    // }
 
 
 
@@ -1189,24 +1189,23 @@ class PaymentController extends Controller
 
       $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
-      if(!$Pension_and_Welfare_Trust_feeCount){
-          array_push($monthlyPaid,[
-              'key'=>'Pension_and_Welfare_Trust',
-              'amount'=>100,
-              'sub_type'=>'',
-          ]);
-          $totalamount +=  100;
-
-      }
+    //   if(!$Pension_and_Welfare_Trust_feeCount){
+    //       array_push($monthlyPaid,[
+    //           'key'=>'Pension_and_Welfare_Trust',
+    //           'amount'=>100,
+    //           'sub_type'=>'',
+    //       ]);
+    //       $totalamount +=  100;
+    //   }
 
 
       if($student->StudentStatus=='Approve'){
-        $totalamount +=  $monthly_fee;
-        array_push($monthlyPaid,[
-            'key'=>month_en_to_bn('January'),
-            'amount'=>$monthly_fee,
-            'sub_type'=>'',
-        ]);
+        // $totalamount +=  $monthly_fee;
+        // array_push($monthlyPaid,[
+        //     'key'=>month_en_to_bn('January'),
+        //     'amount'=>$monthly_fee,
+        //     'sub_type'=>'',
+        // ]);
     }else{
         if($MonthName=='December' || $MonthName=='January'){
 
@@ -1227,12 +1226,12 @@ class PaymentController extends Controller
                         $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
                         if($monthly_feeCountJ>0){
                         }else{
-                            $totalamount +=  $monthly_fee;
-                            array_push($monthlyPaid,[
-                                'key'=>month_en_to_bn('January'),
-                                'amount'=>$monthly_fee,
-                                'sub_type'=>'',
-                            ]);
+                            // $totalamount +=  $monthly_fee;
+                            // array_push($monthlyPaid,[
+                            //     'key'=>month_en_to_bn('January'),
+                            //     'amount'=>$monthly_fee,
+                            //     'sub_type'=>'',
+                            // ]);
                         }
 
 
