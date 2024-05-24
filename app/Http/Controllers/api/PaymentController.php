@@ -1601,6 +1601,11 @@ class PaymentController extends Controller
             'Bamount' => 0,
         ];
         $oldItemg = json_encode($oldItem);
+        $type = $r->type;
+        if($type=='মাসিক বেতন'){
+            $type = 'monthly_fee';
+        }
+
         $data = [
             'school_id' => $r->school_id,
             'studentClass' => $r->StudentClass,
@@ -1611,7 +1616,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => $r->type,
+            'type' => $type,
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,
@@ -1638,14 +1643,18 @@ class PaymentController extends Controller
         );
         if ($formtype == 'create') {
             $data = payment::create($data);
-            try {
-                $msgs = sendMessages($messages);
-                foreach ($msgs as $value) {
-                    array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
-                }
-            } catch (Exception $e) {
-                array_push($responsemessege, $e->getMessage());
-            }
+
+
+            // try {
+            //     $msgs = sendMessages($messages);
+            //     foreach ($msgs as $value) {
+            //         array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
+            //     }
+            // } catch (Exception $e) {
+            //     array_push($responsemessege, $e->getMessage());
+            // }
+
+
         } else {
             $payment = payment::find($id);
             $data = $payment->update($data);
