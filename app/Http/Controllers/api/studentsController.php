@@ -25,6 +25,64 @@ use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
 class studentsController extends Controller
 {
 
+    
+
+    function Search(Request $request){
+
+
+        $student_class = $request->student_class;
+        $StudentGroup = $request->StudentGroup;
+        $StudentRoll = $request->StudentRoll;
+        $year = $request->year;
+
+         $filter = [
+            'StudentClass'=>$student_class,
+            'StudentGroup'=>$StudentGroup,
+
+
+
+            'Year'=>$year,
+            'StudentStatus'=>'old'
+        ];
+
+
+
+            $student = Student::where($filter)
+                ->where(function ($query) use ($StudentRoll) {
+                    $query->where('StudentRoll', $StudentRoll)
+                          ->orWhere('sscroll', $StudentRoll);
+                })
+                ->first();
+
+
+
+
+
+        //  $student = student::where($filter)->first();
+
+
+         if($student){
+
+            $tc = TC::where(['studentId'=>$student->id,'status'=>'active','paymentStatus'=>'Paid'])->first();
+            if($tc){
+                return response()->json(['student'=>$student,'tc'=>$tc], 422);
+            }else{
+                $tc = TC::where(['studentId'=>$student->id])->first();
+                return response()->json(['student'=>$student,'tc'=>$tc], 200);
+            }
+
+        }else{
+            $tc = [];
+            return response()->json(['student'=>$student,'tc'=>$tc], 404);
+
+        }
+
+
+
+
+    }
+
+
 
     public function listforGroup(Request $request)
     {
