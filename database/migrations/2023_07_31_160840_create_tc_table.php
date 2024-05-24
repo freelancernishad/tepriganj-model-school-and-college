@@ -17,6 +17,7 @@ class CreateTcTable extends Migration
             $table->id();
             $table->unsignedBigInteger('studentId');
             $table->string('sl');
+            $table->string('name');
             $table->string('token');
             $table->string('group');
             $table->string('academic_year');
@@ -36,6 +37,7 @@ class CreateTcTable extends Migration
             $table->string('StudentAddress');
             $table->string('status');
             $table->string('paymentStatus');
+            $table->string('student_type');
             $table->timestamps();
         });
     }

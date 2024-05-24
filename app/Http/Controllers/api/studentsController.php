@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\api;
 use PDF;
 use URL;
+use App\Models\TC;
 use App\Models\User;
 use App\Models\payment;
 use App\Models\student;
@@ -25,7 +26,7 @@ use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
 class studentsController extends Controller
 {
 
-    
+
 
     function Search(Request $request){
 

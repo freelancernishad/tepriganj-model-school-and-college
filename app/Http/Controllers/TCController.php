@@ -86,6 +86,7 @@ class TCController extends Controller
                 $tcData['paymentStatus'] = 'Unpaid';
                 $tcData['sl'] = $this->tcSL();
 
+                // return $tcData;
 
                 $tc = TC::create($tcData);
             }
@@ -125,7 +126,7 @@ class TCController extends Controller
             if($fees){
                 $amount = $fees->fees;
             }else{
-                $amount = 250;
+                $amount = 500;
             }
 
 
