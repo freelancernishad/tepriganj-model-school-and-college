@@ -72,6 +72,12 @@
                                 <router-link class="text-light px-3 nav-link " aria-current="page" :to="{name:'payment'}">পেমেন্ট</router-link>
                             </li>
 
+
+
+                        <li class="nav-item"><router-link to="/student/tc" class="text-light px-3 nav-link">প্রশংসা পত্র</router-link>
+                        </li>
+
+
                             <li class="nav-item dropdown">
                                 <router-link class="text-light px-3 nav-link" to="/result" id="navbarDropdown" >
                                    পরীক্ষার ফলাফল

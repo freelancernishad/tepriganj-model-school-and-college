@@ -22,6 +22,7 @@ let frontcontact_us = require('./components/themes/default/contact_us.vue').defa
 let student_register = require('./components/themes/default/register.vue').default;
 let payment = require('./components/themes/default/payment2.vue').default;
 
+let tc = require(`./components/themes/default/tc.vue`).default;
 
 let reject = require('./components/reject.vue').default;
 let PageNotFound = require('./components/404.vue').default;
@@ -51,7 +52,7 @@ export const routes = [
     { path: `${prefix}student/payment`, component: payment, name:'payment' ,meta: { layout: layout } },
 
     { path:  `${prefix}reject/:id`, component: reject, name:'reject',meta: { layout: layout } },
-
+    { path: `${prefix}student/tc`, component: tc, name:'tc' ,meta: { layout: layout } },
   { path: "*", component: PageNotFound }
 
 ]
