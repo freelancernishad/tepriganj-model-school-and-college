@@ -100,12 +100,25 @@ Route::get('/inviceverify', function (Request $request) {
 Route::get('/payment/success', function (Request $request) {
     // return $request->all();
     $transId = $request->transId;
+
+    $payment = payment::where(['trxid'=>$transId])->first();
+    $type = $payment->type;
+
+    if($type=='TC'){
+        $url = "/tc/success/confirm?transId=$transId";
+    }else{
+        $url = "/payment/success/confirm?transId=$transId";
+
+    }
+
+
+
     echo "
-    <h3 style='text-align:center'>Please wait 5 seconds.This page is auto redirect you</h3>
+    <h3 style='text-align:center;'>Please wait 10 seconds.This page will auto redirect you</h3>
     <script>
     setTimeout(() => {
-    window.location.href='/payment/success/confirm?transId=$transId'
-    }, 5000);
+    window.location.href='$url'
+    }, 10000);
     </script>
     ";
     // return redirect("/payment/success/confirm?transId=$transId");
@@ -131,11 +144,37 @@ Route::get('/payment/success/confirm', function (Request $request) {
         $AdmissionID = $payment->admissionId;
         $student = student::where(['AdmissionID' => $AdmissionID])->first();
         return view('applicationSuccess', compact('payment', 'student'));
-    } else {
+    }else if ($paymentType == 'TC') {
+        return redirect(url('/tc/success/confirm?transId=' . $transId));
+
+ } else {
         return redirect(url('/student/applicant/invoice/' . $transId));
     }
     // return redirect("/student/applicant/copy/$payment->admissionId");
 });
+
+
+Route::get('/tc/success/confirm', function (Request $request) {
+    // return $request->all();
+    $transId = $request->transId;
+    $payment = payment::where(['trxid' => $transId, 'status' => 'Paid'])->first();
+    if($payment){
+        $tc = TC::where(['studentId'=>$payment->studentId,'status'=>'active','paymentStatus'=>'Paid'])->first();
+        if($tc){
+            $paymentType = $payment->type;
+            return "<h1 style='text-align:center'>Wait for approve</h1>";
+            // return redirect(url('/student/tc/' . $tc->token));
+        }else{
+            return "Data Not Found";
+        }
+    }else{
+        return "Data Not Found";
+    }
+
+});
+
+
+
 Route::get('/payment/fail', function (Request $request) {
     $transId = $request->transId;
     $payment = payment::where('trxid', $transId)->first();

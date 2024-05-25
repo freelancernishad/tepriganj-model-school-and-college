@@ -115,6 +115,51 @@ class TCController extends Controller
 
 
 
+            $sentDataToAnotherSchool = [
+                "sscroll"=>$request->sscRoll,
+                "StudentName"=>$request->name,
+                "StudentClass"=>'Ten',
+                "StudentGroup"=>$request->group,
+                "StudentRoll"=>$request->roll,
+                "Year"=>"2023",
+                "StudentDateOfBirth"=>$request->dateOfBirth,
+                "StudentFatherNameBn"=>$request->fatherName,
+                "StudentMotherNameBn"=>$request->motherName,
+                "division"=>$request->division,
+                "district"=>$request->district,
+                "upazila"=>$request->upazila,
+                "union"=>$request->union,
+                "post_office"=>$request->post_office,
+                "StudentAddress"=>$request->StudentAddress,
+                "StudentStatus"=>'old',
+                "StudentID"=>'123'.time(),
+                "AdmissionID"=>'123'.time(),
+            ];
+
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://tepriganjhighschool.edu.bd/api/another/school/data',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $sentDataToAnotherSchool,
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+             $response;
+
+
+
+
+
 
             $studentMobile = '01909756552';
             if($student->StudentPhoneNumber){
@@ -126,7 +171,7 @@ class TCController extends Controller
             if($fees){
                 $amount = $fees->fees;
             }else{
-                $amount = 500;
+                $amount = 1000;
             }
 
 
