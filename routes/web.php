@@ -163,7 +163,7 @@ Route::get('/tc/success/confirm', function (Request $request) {
         $tc = TC::where(['studentId'=>$payment->studentId,'status'=>'active','paymentStatus'=>'Paid'])->first();
         if($tc){
             $paymentType = $payment->type;
-            return "<h1 style='text-align:center'>Wait for approve</h1>";
+            return "<h1 style='text-align:center'>Wait for approval</h1>";
             // return redirect(url('/student/tc/' . $tc->token));
         }else{
             return "Data Not Found";
