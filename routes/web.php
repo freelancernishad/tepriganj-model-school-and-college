@@ -1,4 +1,5 @@
 <?php
+use App\Models\TC;
 use App\Models\Role;
 use App\Models\payment;
 use App\Models\student;
@@ -14,13 +15,13 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\frontendController;
+use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 use App\Http\Controllers\api\resultController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\api\PaymentController;
 use App\Http\Controllers\api\RoutineController;
 use App\Http\Controllers\api\studentsController;
 use App\Http\Controllers\NotificationsController;
-use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
