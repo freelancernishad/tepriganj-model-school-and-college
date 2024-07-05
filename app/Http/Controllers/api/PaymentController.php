@@ -1604,6 +1604,8 @@ class PaymentController extends Controller
         $type = $r->type;
         if($type=='মাসিক বেতন'){
             $type = 'monthly_fee';
+        }elseif($type=='সেশন ফি'){
+            $type = 'session_fee';
         }
 
         $data = [
