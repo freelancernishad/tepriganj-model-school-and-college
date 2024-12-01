@@ -355,12 +355,12 @@ class PaymentController extends Controller
                     //     'sub_type'=>'',
                     // ]);
                 }else{
-                    if($MonthName=='December'){
+                    // if($MonthName=='December'){
 
 
 
 
-        $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
+        // $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
         // if(!$Pension_and_Welfare_Trust_feeCount){
         //     array_push($monthlyPaid,[
@@ -385,7 +385,7 @@ class PaymentController extends Controller
 
 
 
-                }else{
+                // }else{
 
 
 
@@ -428,7 +428,7 @@ class PaymentController extends Controller
                         }
                     }
 
-                }
+                // }
 
 
 
@@ -1207,12 +1207,12 @@ class PaymentController extends Controller
         //     'sub_type'=>'',
         // ]);
     }else{
-        if($MonthName=='December' || $MonthName=='January'){
+        // if($MonthName=='December' || $MonthName=='January'){
 
 
 
 
-            $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
+            // $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
             // if(!$Pension_and_Welfare_Trust_feeCount){
             //     array_push($monthlyPaid,[
@@ -1238,7 +1238,7 @@ class PaymentController extends Controller
 
 
 
-                    }else{
+                    // }else{
 
 
                         foreach ($allMonth as $value) {
@@ -1279,7 +1279,7 @@ class PaymentController extends Controller
                                     }
                                 }
                           }
-                    }
+                    // }
 
 
 
@@ -1463,9 +1463,9 @@ class PaymentController extends Controller
         //     $paymentYear = $amountYear+1;
         // }
 
-        if($currentmonth=='December'){
-            $paymentYear = $amountYear+1;
-        }
+        // if($currentmonth=='December'){
+        //     $paymentYear = $amountYear+1;
+        // }
 
 
 
