@@ -1061,7 +1061,7 @@ function fileupload2($file, $path)
 function class_list()
 {
 
-    $result = ['play','nursery','one','two','three','four','five','Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+    $result = ['Play','Nursery','One','Two','Three','Four','Five','Six', 'Seven', 'Eight', 'Nine', 'Ten'];
     return $result;
 }
 
