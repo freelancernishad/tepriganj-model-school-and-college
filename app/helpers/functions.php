@@ -284,7 +284,7 @@ function subjectCol($subject)
         } else if ($subject == 'স্বাস্থ্য সুরক্ষা') {
            return "Health_protection";
         } else if ($subject == 'জীবন ও জীবিকা') {
-           return "Life_and_livelihood";
+           return "Agriculture";
         } else if ($subject == 'শিল্প ও সংস্কৃতি') {
            return "Art_and_Culture";
         } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান') {
