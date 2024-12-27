@@ -286,7 +286,7 @@ function subjectCol($subject)
         } else if ($subject == 'জীবন ও জীবিকা') {
            return "Agriculture";
         } else if ($subject == 'শিল্প ও সংস্কৃতি') {
-           return "Art_and_Culture";
+           return "Arts_and_Crafts";
         } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান') {
            return "B_and_B";
         }
