@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\api;
 
 use PDF;
+use App\Models\payment;
 use App\Models\student;
+use App\Models\ResultLog;
 use Illuminate\Http\Request;
+use App\Models\school_detail;
 use App\Models\StudentResult;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\ResultLog;
-use App\Models\school_detail;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Meneses\LaravelMpdf\Facades\LaravelMpdf;
