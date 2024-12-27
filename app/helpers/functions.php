@@ -280,7 +280,7 @@ function subjectCol($subject)
         } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই') {
            return "History_and_Social_Science_Practice_Books";
         } else if ($subject == 'ডিজিটাল প্রযুক্তি') {
-           return "Digital_technology";
+           return "ICT";
         } else if ($subject == 'স্বাস্থ্য সুরক্ষা') {
            return "Health_protection";
         } else if ($subject == 'জীবন ও জীবিকা') {
