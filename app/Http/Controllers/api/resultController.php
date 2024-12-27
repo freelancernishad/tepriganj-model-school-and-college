@@ -339,6 +339,9 @@ class resultController extends Controller
 
 
     }
+
+
+
     public function searchResult(Request $request)
     {
         // return $request->all();
@@ -452,9 +455,6 @@ class resultController extends Controller
         }
 
 
-        // return $request->all();
-
-
 
         $result = QueryBuilder::for(StudentResult::class)
             ->allowedFilters([
@@ -477,11 +477,106 @@ class resultController extends Controller
          $results = $result->first();
 
 
+
+
         $count = $result->count();
+
+
+
+
         // return $results;
         // return $this->Greeting(80,100,'greed');
         $html  = "";
+
+
+
         if ($count > 0) {
+
+            // $studentFilter = [
+            //     'StudentClass'=>$results->class,
+            //     'StudentRoll'=>$results->roll,
+            //     'StudentStatus'=>'Active',
+            //     'StudentGroup'=>$results->class_group,
+            //     'Year'=>'2023',
+            // ];
+
+            $studentFilter = [
+                'StudentID'=>$results->stu_id,
+            ];
+        $studentDetails = student::where($studentFilter)->first();
+        $AdmissionID = $studentDetails->AdmissionID;
+
+     $paymentFilter = [
+        'admissionId'=>$AdmissionID,
+        'type'=>'exam_fee',
+        'ex_name'=>$results->exam_name,
+        'year'=>$results->year,
+        'status'=>'Paid',
+     ];
+
+
+    $paymentFilterMonth = [
+        'admissionId'=>$AdmissionID,
+        'type'=>'monthly_fee',
+        'month'=>'December',
+        'year'=>$results->year,
+        'status'=>'Paid',
+     ];
+
+      $payment = payment::where($paymentFilter)->count();
+    //    $paymentMonth = payment::where($paymentFilterMonth)->count();
+        $paymentMonth = 1;
+      if($paymentMonth<1){
+        $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
+        $html  .= "
+        <tbody>
+            <tr class=''>
+                <td class='pl-5 pr-5'> <b>
+                        <center>
+                            <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
+                            <h4 style='font-size:20px;color:red'> পূর্বের বকেয়া পরিশোধ করুন অথবা ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
+
+                        </center>
+                    </b></td>
+            </tr>
+        </tbody>
+        </table>
+        ";
+        // <div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$studentDetails->id&type=allBokeya' class='btn btn-info' style='font-size: 25px;'>ফি পরিশোধ করুন</a></div>
+        return $html;
+    }elseif($payment<1){
+                $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
+                $html  .= "
+                <tbody>
+                    <tr class=''>
+                        <td class='pl-5 pr-5'> <b>
+                                <center>
+                                    <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
+                                    <h4 style='font-size:20px;color:red'>ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
+
+                                </center>
+                            </b></td>
+                    </tr>
+                </tbody>
+                </table>
+                ";
+                return $html;
+            }
+            // http://localhost:8000/payment?studentId=840&type=allBokeya
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             $Fgg = 0;
             if ($results->status == 'Draft') {
                 $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
@@ -505,12 +600,20 @@ class resultController extends Controller
 
                 $html .= resultDetails($results);
 
-                $html  .= "<div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$student->id&type=marksheet&resultId=$results->id' class='btn btn-info' style='font-size: 25px;'>ডাউনলোড মার্কশীট</a></div>";
 
-                $html  .= "<h4 style='text-align: center;color: #007BFF;font-size: 25px;margin: 11px 2px;'>অথবা</h4>";
+                // if($request->filter['class']=='Six' || $request->filter['class']=='Seven'){}else{
+                    $html  .= "<div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$student->id&type=marksheet&resultId=$results->id' class='btn btn-info' style='font-size: 25px;'>ডাউনলোড মার্কশীট</a></div>";
 
-                $html  .= "<h2 style='text-align:center;font-size:20px;color:#007BFF'>মার্কশীট সংগ্রহ করতে বিদ্যালয়ে যোগাযোগ করুন </h2>";
-                //    $html .= ResultGradeList($results);
+                    $html  .= "<h4 style='text-align: center;color: #007BFF;font-size: 25px;margin: 11px 2px;'>অথবা</h4>";
+
+                    $html  .= "<h2 style='text-align:center;font-size:20px;color:#007BFF'>মার্কশীট সংগ্রহ করতে বিদ্যালয়ে যোগাযোগ করুন </h2>";
+                    //    $html .= ResultGradeList($results);
+                // }
+
+
+
+
+
 
             }
         } else {
@@ -520,7 +623,7 @@ class resultController extends Controller
                     <tr class='table-danger'>
                         <td class='pl-5 pr-5' > <b>
                                 <center>
-                                    <h4>Result Cannot Find!</h4>
+                                    <h4>Result Cannot Found!</h4>
                                 </center>
                             </b></td>
                     </tr>
@@ -529,9 +632,6 @@ class resultController extends Controller
         }
         return $html;
     }
-
-
-
 
 
 
@@ -735,7 +835,7 @@ return redirect()->back();
             'exam_name' => $request->exam_name,
             'class_group' => $request->class_group,
         ];
-        $result = StudentResult::where($filter)->get();
+        $result = StudentResult::orderBy('roll','asc')->where($filter)->get();
         $totalmark = [];
         $totalfailed = [];
         $i = 0;
@@ -767,7 +867,9 @@ return redirect()->back();
             }
             $total =  $this->sumNumber($totalmark[$studentresult->roll]);
             $failed = StudentFailedCount($value, 'failed');
+
              $Gparesult = StudentFailedCount($value, 'result');
+
 
               $greedRes = gpaToGreed($Gparesult);
 
@@ -822,22 +924,14 @@ return redirect()->back();
     {
         $data['class'] = $student_class;
         $data['exam_name'] = $exam;
-
-        if($student_class=='Nine' || $student_class=='Ten'){
-            $data['group'] = $group;
-        }else{
-            $data['group'] = 'Humanities';
-        }
-
-
-
+        $data['group'] = $group;
         $resultW = [
             'school_id' => $school_id,
             'year' => date("Y", strtotime($date)),
             'class' => $student_class,
             'exam_name' => $exam,
         ];
-        $data['rows'] = StudentResult::where($resultW)->orderBy('roll', 'ASC')->get();
+        $data['rows'] = StudentResult::where($resultW)->orderBy('roll', 'asc')->get();
         $data['sign'] = base64(sitedetails()->PRINCIPALS_Signature);
 
         $pdfFileName = $student_class.'-'.$group.'-'.$exam.'.pdf';
@@ -1529,16 +1623,19 @@ return redirect()->back();
         } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
             $data = ["বাংলা", "ইংরেজি", "গণিত", "ইতিহাস ও সামাজিক বিজ্ঞান", "বিজ্ঞান", "ধর্ম"];
         } elseif ($class == 'six' || $class == 'seven' || $class == 'eight') {
-            $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "কর্ম ও জীবনমুখী শিক্ষা"];
+
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি"];
+
+            // $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "কর্ম ও জীবনমুখী শিক্ষা"];
         } elseif ($class == 'nine' || $class == 'ten') {
             if ($group == 'science') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "ক্যারিয়ার শিক্ষা"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "উচ্চতর গণিত", "ডিজিটাল প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "ক্যারিয়ার শিক্ষা"];
             } elseif ($group == 'humanities') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "ক্যারিয়ার শিক্ষা"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "ক্যারিয়ার শিক্ষা"];
             } elseif ($group == 'commerce') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি"];
             } else {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি"];
             }
         }
         return $data;
@@ -1546,26 +1643,18 @@ return redirect()->back();
     public function fullResult(Request $request)
     {
         $publishids = [];
-
-
-         if($request->class=='Nine' || $request->class=='Ten'){
-            $class_group = $request->group;
-         }else{
-            $class_group = 'Humanities';
-         }
-
         $filter = [
             'school_id' => $request->school_id,
             'class' => $request->class,
             'year' => $request->year,
             'exam_name' => $request->exam_name,
-            'class_group' => $class_group,
+            'class_group' => $request->group,
         ];
         // $subjects = $this->GetSubject($request->class);
-        $subjects =  allList('subjects', $request->class, $class_group);
+        $subjects =  allList('subjects', $request->class, $request->group);
         $resultlast = StudentResult::where($filter)->latest('id')->first();
         $status = $resultlast->status;
-        $result = StudentResult::where($filter)->get();
+        $result = StudentResult::orderBy('roll','asc')->where($filter)->get();
 
         $gpa5Count  = StudentResult::where($filter)->where('greed','A+')->count();
         $gpa4Count  = StudentResult::where($filter)->where('greed','A')->count();
@@ -1642,7 +1731,7 @@ return redirect()->back();
             // $subjectsGroup = $this->GetSubject($request->class, $resValue->class_group);
             $subjectsGroup =  allList('subjects', $request->class, $resValue->class_group);
             $failed = StudentFailedCount($resValue, 'failed');
-            $Gpa = StudentFailedCount($resValue, 'result');
+             $Gpa = StudentFailedCount($resValue, 'result');
             $total = 0;
             foreach ($subjects as $value) {
                 // print_r($value);
@@ -1750,7 +1839,7 @@ return redirect()->back();
         $subjects =  allList('subjects', $class, $group);
         $resultlast = StudentResult::where($filter)->latest('id')->first();
         $status = $resultlast->status;
-        $result = StudentResult::where($filter)->get();
+        $result = StudentResult::where($filter)->orderBy('roll','asc')->get();
         $html = "
         <style>
           td{
