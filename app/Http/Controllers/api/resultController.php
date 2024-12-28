@@ -527,42 +527,42 @@ class resultController extends Controller
       $payment = payment::where($paymentFilter)->count();
     //    $paymentMonth = payment::where($paymentFilterMonth)->count();
         $paymentMonth = 1;
-      if($paymentMonth<1){
-        $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
-        $html  .= "
-        <tbody>
-            <tr class=''>
-                <td class='pl-5 pr-5'> <b>
-                        <center>
-                            <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
-                            <h4 style='font-size:20px;color:red'> পূর্বের বকেয়া পরিশোধ করুন অথবা ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
+    //   if($paymentMonth<1){
+    //     $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
+    //     $html  .= "
+    //     <tbody>
+    //         <tr class=''>
+    //             <td class='pl-5 pr-5'> <b>
+    //                     <center>
+    //                         <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
+    //                         <h4 style='font-size:20px;color:red'> পূর্বের বকেয়া পরিশোধ করুন অথবা ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
 
-                        </center>
-                    </b></td>
-            </tr>
-        </tbody>
-        </table>
-        ";
-        // <div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$studentDetails->id&type=allBokeya' class='btn btn-info' style='font-size: 25px;'>ফি পরিশোধ করুন</a></div>
-        return $html;
-    }elseif($payment<1){
-                $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
-                $html  .= "
-                <tbody>
-                    <tr class=''>
-                        <td class='pl-5 pr-5'> <b>
-                                <center>
-                                    <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
-                                    <h4 style='font-size:20px;color:red'>ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
+    //                     </center>
+    //                 </b></td>
+    //         </tr>
+    //     </tbody>
+    //     </table>
+    //     ";
+    //     // <div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$studentDetails->id&type=allBokeya' class='btn btn-info' style='font-size: 25px;'>ফি পরিশোধ করুন</a></div>
+    //     return $html;
+    // }elseif($payment<1){
+    //             $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
+    //             $html  .= "
+    //             <tbody>
+    //                 <tr class=''>
+    //                     <td class='pl-5 pr-5'> <b>
+    //                             <center>
+    //                                 <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
+    //                                 <h4 style='font-size:20px;color:red'>ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
 
-                                </center>
-                            </b></td>
-                    </tr>
-                </tbody>
-                </table>
-                ";
-                return $html;
-            }
+    //                             </center>
+    //                         </b></td>
+    //                 </tr>
+    //             </tbody>
+    //             </table>
+    //             ";
+    //             return $html;
+    //         }
             // http://localhost:8000/payment?studentId=840&type=allBokeya
 
 

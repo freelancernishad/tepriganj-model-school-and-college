@@ -272,13 +272,9 @@ function subjectCol($subject)
            return "Arts_and_Crafts";
         } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান') {
            return "B_and_B";
-        }
-
-
-
-
-
-        else{
+        } else if ($subject == 'গণিত') {
+           return "Math";
+        }else{
 
 
 
@@ -1640,6 +1636,7 @@ function characterCount($string)
 
  function Greeting($mark,$total,$type)
 {
+    Log::info("$total $mark $type");
     $greed = 'F';
     $point = '0.00';
 
@@ -1848,15 +1845,17 @@ $Fgg = 0;
                 $EXTRA = 0;
             }
             $subMark = $results[subjectCol($sub)];
+
         }
         $totalMark +=$subMark;
         $gg = Greeting($subMark, $SUBJECT_TOTAL, 'point');
+
         $great = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
         array_push($greating, $great);
         $GPA += $gg;
         $i++;
 
-        Log::info(" GPA=  $GPA name = $results->name roll- $results->roll   sub- ".subjectCol($sub)."  = ".$gg);
+        Log::info(" subMark=  $subMark GPA=  $GPA name = $results->name roll- $results->roll   sub- ".subjectCol($sub)."  = ".$gg);
     }
 
 
