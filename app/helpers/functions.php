@@ -256,6 +256,7 @@ function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='paymen
 
 
 
+<<<<<<< HEAD
     function BanglaSubToEnglish($banglaSubject)
     {
         $data = '';
@@ -311,8 +312,60 @@ function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='paymen
         }
 
         return $data;
+=======
+function BanglaSubToEnglish($banglaSubject)
+{
+    $data = '';
+    if($banglaSubject=='বাংলা'){
+        $data = 'Bangla';
+    }
+    if($banglaSubject=='বাংলা ১ম'){
+        $data = 'Bangla-I';
+    }elseif($banglaSubject=='বাংলা ২য়'){
+        $data = 'Bangla-II';
+    }elseif($banglaSubject=='ইংরেজি'){
+        $data = 'English';
+    }elseif($banglaSubject=='ইংরেজি ১ম'){
+        $data = 'English-I';
+    }elseif($banglaSubject=='ইংরেজি ২য়'){
+        $data = 'English-II';
+    }elseif($banglaSubject=='গণিত'){
+        $data = 'Mathematics';
+    }elseif($banglaSubject=='বিজ্ঞান'){
+        $data = 'Science';
+    }elseif($banglaSubject=='পদার্থবিজ্ঞান'){
+        $data = 'Physics';
+    }elseif($banglaSubject=='রসায়ন'){
+        $data = 'Chemistry';
+    }elseif($banglaSubject=='জীব বিজ্ঞান'){
+        $data = 'Biology';
+    }elseif($banglaSubject=='বাংলাদেশ ও বিশ্ব পরিচয়'){
+        $data = 'Bangladesh and Global Studies';
+    }elseif($banglaSubject=='ইতিহাস ও সামাজিক বিজ্ঞান'){
+        $data = 'History and Social Science';
+    }elseif($banglaSubject=='ভূগোল ও পরিবেশ'){
+        $data = 'Geography and environment';
+    }elseif($banglaSubject=='অর্থনীতি'){
+        $data = 'Economics';
+    }elseif($banglaSubject=='বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস'){
+        $data = 'History and world civilization of bangladesh';
+    }elseif($banglaSubject=='ধর্ম ও নৈতিক শিক্ষা'){
+        $data = 'Religion and moral education';
+    }elseif($banglaSubject=='জীবন ও জীবিকা'){
+        $data = 'Life and Livelihood';
+    }elseif($banglaSubject=='উচ্চতর গণিত'){
+        $data = 'Higher Mathematics';
+    }elseif($banglaSubject=='ডিজিটাল প্রযুক্তি'){
+        $data = 'Digital Technology';
+    }elseif($banglaSubject=='শিল্প ও সংস্কৃতি'){
+        $data = 'Art and Culture';
+    }elseif($banglaSubject=='স্বাস্থ্য ও সুরক্ষা'){
+        $data = 'Health and Wellbeing';
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
     }
 
+    return $data;
+}
 
 
 
@@ -328,6 +381,7 @@ function subjectCol($subject)
             return 'physics';
         }else if($subject=='উচ্চতর গণিত'){
             return 'Higher_Mathematics';
+<<<<<<< HEAD
         }else if($subject=='ইতিহাস ও সামাজিক বিজ্ঞান'){
             return 'B_and_B';
         }else{
@@ -338,6 +392,43 @@ function subjectCol($subject)
 
 
             // $orginal = array("বাংলা ১ম","বাংলা ২য়","ইংলিশ ১ম","ইংলিশ ২য়","গনিত","বিজ্ঞান","পদার্থ","রসায়ন","ভূগোল","অর্থনীতি","ইতিহাস","ইতিহাস ও সামাজিক বিজ্ঞান","ধর্ম","ইসলাম-ধর্ম","হিন্দু-ধর্ম","কৃষি শিক্ষা","তথ্য ও যোগাযোগ প্রযোক্তি");
+=======
+        }  else if ($subject == 'বিজ্ঞান অনুসন্ধানী পাঠ') {
+           return "Science_Inquiry_Lessons";
+        } else if ($subject == 'বিজ্ঞান অনুশীলন বই') {
+           return "Science_practice_book";
+        } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ') {
+           return "History_and_Social_Science_Inquiry_Lessons";
+        } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই') {
+           return "History_and_Social_Science_Practice_Books";
+        } else if ($subject == 'ডিজিটাল প্রযুক্তি') {
+           return "ICT";
+        } else if ($subject == 'স্বাস্থ্য সুরক্ষা') {
+           return "Health_protection";
+        } else if ($subject == 'জীবন ও জীবিকা') {
+           return "Agriculture";
+        } else if ($subject == 'শিল্প ও সংস্কৃতি') {
+           return "Arts_and_Crafts";
+        } else if ($subject == 'ইতিহাস ও সামাজিক বিজ্ঞান') {
+           return "B_and_B";
+        } else if ($subject == 'গণিত') {
+           return "Math";
+        }else{
+
+
+
+     $orginal = array("বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান","পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান","ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা","ইসলাম-ধর্ম","হিন্দু-ধর্ম", "জীবন ও জীবিকা", "উচ্চতর গণিত", "ডিজিটাল প্রযুক্তি","স্বাস্থ্য ও সুরক্ষা","শিল্প ও সংস্কৃতি");
+
+     $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","Biology","B_and_B","vugol","orthoniti","itihas","Religion","ReligionIslam","ReligionHindu","Agriculture","Higher_Mathematics","ICT","Physical_Education_and_Health","Arts_and_Crafts","Work_and_life_oriented_education","Career_Education");
+
+
+            // $orginal = array("বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান","পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান","ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা","ইসলাম-ধর্ম","হিন্দু-ধর্ম", "জীবন ও জীবিকা", "উচ্চতর গণিত", "ডিজিটাল প্রযুক্তি" ,                      "বিজ্ঞান অনুসন্ধানী পাঠ",  "বিজ্ঞান অনুশীলন বই",  "ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ",  "ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই",  "ডিজিটাল প্রযুক্তি",  "স্বাস্থ্য সুরক্ষা",  "জীবন ও জীবিকা",  "শিল্প ও সংস্কৃতি");
+
+            // $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","Biology","B_and_B","vugol","orthoniti","itihas","Religion","ReligionIslam","ReligionHindu","Agriculture","Higher_Mathematics","ICT","Physical_Education_and_Health","Arts_and_Crafts","Work_and_life_oriented_education","Career_Education",                   "Science_Inquiry_Lessons","Science_practice_book","History_and_Social_Science_Inquiry_Lessons","History_and_Social_Science_Practice_Books","Digital_technology","Health_protection","Life_and_livelihood","Art_and_Culture");
+
+
+            // $orginal = array("বাংলা ১ম","বাংলা ২য়","ইংলিশ ১ম","ইংলিশ ২য়","গনিত","বিজ্ঞান","পদার্থ","রসায়ন","ভূগোল","অর্থনীতি","ইতিহাস","ইতিহাস ও সামাজিক বিজ্ঞান","ধর্ম","ইসলাম-ধর্ম","হিন্দু-ধর্ম","কৃষি","তথ্য ও যোগাযোগ প্রযোক্তি");
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
             // $colname = array("Bangla_1st","Bangla_2nd","English_1st","English_2nd","Math","Science","physics","Chemistry","vugol","orthoniti","itihas","B_and_B","Religion","ReligionIslam","ReligionHindu","Agriculture","ICT");
 
 
@@ -955,6 +1046,7 @@ function allList($type = '', $class = '', $group = '')
             $data = ["বাংলা", "ইংরেজি", "গণিত", "ইতিহাস ও সামাজিক বিজ্ঞান", "বিজ্ঞান", "ধর্ম"];
         } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
             $data = ["বাংলা", "ইংরেজি", "গণিত", "ইতিহাস ও সামাজিক বিজ্ঞান", "বিজ্ঞান", "ধর্ম"];
+<<<<<<< HEAD
         } elseif ($class == 'six' || $class == 'seven' || $class == 'eight') {
 
              $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "বাংলাদেশ ও বিশ্ব পরিচয়", "ধর্ম ও নৈতিক শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
@@ -970,8 +1062,13 @@ function allList($type = '', $class = '', $group = '')
 
                 } elseif ($group == 'humanities') {
                     $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
+=======
+        } elseif ($class == 'six' || $class == 'seven' || $class == 'eight' || $class == 'nine') {
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
 
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি","স্বাস্থ্য ও সুরক্ষা","শিল্প ও সংস্কৃতি"];
 
+<<<<<<< HEAD
                 } elseif ($group == 'commerce') {
 
                     $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
@@ -979,6 +1076,27 @@ function allList($type = '', $class = '', $group = '')
 
                     $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "তথ্য ও যোগাযোগ প্রযুক্তি", "কৃষি শিক্ষা"];
                 }
+=======
+            // $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি"];
+
+        }
+        elseif ($class == 'eight' || $class == 'nine') {
+            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "জীবন ও জীবিকা", "ডিজিটাল প্রযুক্তি"];
+        }
+
+        elseif ($class == 'nine' || $class == 'ten') {
+            if ($group == 'science') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "ডিজিটাল প্রযুক্তি", "জীবন ও জীবিকা", "উচ্চতর গণিত"];
+            } elseif ($group == 'humanities') {
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "ডিজিটাল প্রযুক্তি", "জীবন ও জীবিকা"];
+            } elseif ($group == 'commerce') {
+
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "ডিজিটাল প্রযুক্তি", "জীবন ও জীবিকা"];
+            } else {
+
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "ডিজিটাল প্রযুক্তি", "জীবন ও জীবিকা"];
+            }
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
         }
 
 
@@ -1739,6 +1857,7 @@ function characterCount($string)
 
  function Greeting($mark,$total,$type)
 {
+    Log::info("$total $mark $type");
     $greed = 'F';
     $point = '0.00';
 
@@ -1890,6 +2009,7 @@ function characterCount($string)
 
 function StudentFailedCount($results, $type = 'result')
 {
+<<<<<<< HEAD
     $class = $results->class;
     $class_group = $results->class_group;
     if (in_array($class, ['Six', 'Seven', 'Eight'])) {
@@ -1897,6 +2017,15 @@ function StudentFailedCount($results, $type = 'result')
     }
 
     $subjects = allList('subjects', $class, $class_group);
+=======
+$class = $results->class;
+$class_group = $results->class_group;
+if($class=='Six' || $class=='Seven' || $class=='Eight'){
+    $class_group = '';
+}
+$Fgg = 0;
+     $subjects =  allList('subjects', $class, $class_group);
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
     $greating = [];
     $GPA = 0.00;
     $totalMark = 0;
@@ -1997,6 +2126,7 @@ function StudentFailedCount($results, $type = 'result')
             $sub_d = json_decode($results['ReligionHindu_d'] ?? '{}');
             $subMark = $results['ReligionHindu'] ?? 0;
         } else {
+<<<<<<< HEAD
             $sub_d = json_decode($results[$subjectName . '_d'] ?? '{}');
             $subMark = $results[$subjectName] ?? 0;
         }
@@ -2018,6 +2148,51 @@ function StudentFailedCount($results, $type = 'result')
 
         $greating[] = $great;
         Log::info(" GPA=  $GPA name = $results->name roll- $results->roll   sub- $subjectName  = $gg");
+=======
+            $sub_d = json_decode($results[subjectCol($sub) . '_d']);
+            //  print_r($sub_d);
+            if ($sub_d) {
+                $SUBJECT_TOTAL = $sub_d->SUBJECT_TOTAL;
+                $CQ = $sub_d->CQ;
+                $MCQ = $sub_d->MCQ;
+                $EXTRA = $sub_d->EXTRA;
+            } else {
+                $SUBJECT_TOTAL = 100;
+                $CQ = 0;
+                $MCQ = 0;
+                $EXTRA = 0;
+            }
+            $subMark = $results[subjectCol($sub)];
+
+        }
+        $totalMark +=$subMark;
+        $gg = Greeting($subMark, $SUBJECT_TOTAL, 'point');
+
+        $great = Greeting($subMark, $SUBJECT_TOTAL, 'greed');
+        array_push($greating, $great);
+        $GPA += $gg;
+        $i++;
+
+        Log::info(" subMark=  $subMark GPA=  $GPA name = $results->name roll- $results->roll   sub- ".subjectCol($sub)."  = ".$gg);
+    }
+
+
+
+    $fourthSub = 0;
+    // if ($Fgg > 2) {
+    //     $fourthSub = $Fgg - 2;
+    // }
+
+    $finalTotalGpa =  $GPA + $fourthSub;
+    Log::info(" finalTotalGpa=  $finalTotalGpa");
+    $subDe = 0;
+
+
+$failedCount = 0;
+foreach ($greating as  $value) {
+    if($value=='F'){
+        $failedCount +=1;
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
     }
 
     // ✅ Add bonus GPA from 4th subject
@@ -2025,6 +2200,7 @@ function StudentFailedCount($results, $type = 'result')
         $GPA += ($fourthSubjectGPA - 2.00);
     }
 
+<<<<<<< HEAD
     Log::info(" finalTotalGpa=  $GPA");
 
     $failedCount = 0;
@@ -2129,6 +2305,17 @@ function StudentFailedCountNineTen($results, $type = 'result')
         }
 
 
+=======
+    if (in_array('F', $greating)) {
+        $GpaResult = 'F';
+    } else {
+        $GpaResult =  number_format((float)$finalTotalGpa/10, 2, '.', '');
+        if ($GpaResult > 5) {
+            $GpaResult = number_format((float)5.00, 2, '.', '');
+        }
+    }
+    Log::info(" GpaResult=  $GpaResult");
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
 
         // English Combine (only CQ)
         if (in_array($subjectName, $combinedSubjects['English'])) {
@@ -2294,8 +2481,11 @@ function StudentFailedCountNineTen($results, $type = 'result')
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
 function SubjectDetailsMark($results,$subjextName ='Bangla_1st',$type='all')
 {
 
@@ -2549,8 +2739,116 @@ function ResultGradeList($results,$type='ragular')
 
     foreach ($subjects as $sub) {
         $html .= "<tr class='table-primar'  >";
+<<<<<<< HEAD
         if ($class == "Six" || $class == "Seven" || $class == "Eight") {
 
+=======
+        if ($class == "Six" || $class == "Seven") {
+
+                $html .= " <td class='pl-5 pr-5'> ".BanglaSubToEnglish($sub)."</td>";
+
+
+
+
+                if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
+
+                    $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
+                    $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                } else {
+                    $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+                    $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+                    $CQ = $mark['CQ'];
+                    $MCQ = $mark['MCQ'];
+                    $EXTRA = $mark['EXTRA'];
+                    $subMark = $mark['subMark'];
+
+                    $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+                    $html .= "<td style='text-align:center'><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+                }
+
+
+
+
+
+
+
+        } elseif ($class == "Eight") {
+            $html .= " <td class='pl-5 pr-5'>". BanglaSubToEnglish($sub)."</td>";
+
+            if (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Islam') {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionIslam', 'total');
+                $mark =  SubjectDetailsMark($results, 'ReligionIslam', 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+
+                $html .= "<td><span> " . Greeting($results['ReligionIslam'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            } elseif (subjectCol($sub) == 'Religion' && $results->StudentReligion == 'Hindu') {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, 'ReligionHindu', 'total');
+
+                $mark =  SubjectDetailsMark($results, 'ReligionHindu', 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+                $html .= "<td><span> " . Greeting($results['ReligionHindu'], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            } else {
+                $SUBJECT_TOTAL =  SubjectDetailsMark($results, subjectCol($sub), 'total');
+
+                $mark =  SubjectDetailsMark($results, subjectCol($sub), 'all');
+                $CQ = $mark['CQ'];
+                $MCQ = $mark['MCQ'];
+                $EXTRA = $mark['EXTRA'];
+                $subMark = $mark['subMark'];
+
+                $html .= "<td style='text-align:center'><span> " . $CQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $MCQ . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $EXTRA . "</span></td>";
+                $html .= "<td style='text-align:center'><span> " . $subMark . "</span></td>";
+
+                $html .= "<td><span> " . Greeting($results[subjectCol($sub)], $SUBJECT_TOTAL, 'greed') . "</span></td>";
+            }
+        } elseif ($class == "Nine" || $class == "Ten") {
+>>>>>>> 0e096e89e6bf546c29e295c8e2b38ad7ce3df9ef
             if (subjectCol($sub) == 'Bangla_1st') {
                 $html .= " <td class='pl-5 pr-5'>".BanglaSubToEnglish('বাংলা ১ম')." <br/>".BanglaSubToEnglish('বাংলা ২য়')."</td>";
             } elseif (subjectCol($sub) == 'Bangla_2nd') {

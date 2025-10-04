@@ -328,6 +328,9 @@ class resultController extends Controller
 
 
     }
+
+
+
     public function searchResult(Request $request)
     {
         // return $request->all();
@@ -477,92 +480,6 @@ class resultController extends Controller
 
 
         if ($count > 0) {
-
-            // $studentFilter = [
-            //     'StudentClass'=>$results->class,
-            //     'StudentRoll'=>$results->roll,
-            //     'StudentStatus'=>'Active',
-            //     'StudentGroup'=>$results->class_group,
-            //     'Year'=>'2023',
-            // ];
-
-            $studentFilter = [
-                'StudentID'=>$results->stu_id,
-            ];
-        $studentDetails = student::where($studentFilter)->first();
-        $AdmissionID = $studentDetails->AdmissionID;
-
-     $paymentFilter = [
-        'admissionId'=>$AdmissionID,
-        'type'=>'exam_fee',
-        'ex_name'=>$results->exam_name,
-        'year'=>$results->year,
-        'status'=>'Paid',
-     ];
-
-
-    $paymentFilterMonth = [
-        'admissionId'=>$AdmissionID,
-        'type'=>'monthly_fee',
-        'month'=>'December',
-        'year'=>$results->year,
-        'status'=>'Paid',
-     ];
-
-      $payment = payment::where($paymentFilter)->count();
-    //    $paymentMonth = payment::where($paymentFilterMonth)->count();
-        $paymentMonth = 1;
-      if($paymentMonth<1){
-        $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
-        $html  .= "
-        <tbody>
-            <tr class=''>
-                <td class='pl-5 pr-5'> <b>
-                        <center>
-                            <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
-                            <h4 style='font-size:20px;color:red'> পূর্বের বকেয়া পরিশোধ করুন অথবা ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
-
-                        </center>
-                    </b></td>
-            </tr>
-        </tbody>
-        </table>
-        ";
-        // <div  style='text-align: center;'><a target='_blank' href='/payment?studentId=$studentDetails->id&type=allBokeya' class='btn btn-info' style='font-size: 25px;'>ফি পরিশোধ করুন</a></div>
-        return $html;
-    }elseif($payment<1){
-                $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
-                $html  .= "
-                <tbody>
-                    <tr class=''>
-                        <td class='pl-5 pr-5'> <b>
-                                <center>
-                                    <h2 style='font-size:30px;color:red'>দুঃখিত </h2>
-                                    <h4 style='font-size:20px;color:red'>ফলাফল এর জন্য বিদ্যালয়ে যোগাযোগ করুন</h4>
-
-                                </center>
-                            </b></td>
-                    </tr>
-                </tbody>
-                </table>
-                ";
-                return $html;
-            }
-            // http://localhost:8000/payment?studentId=840&type=allBokeya
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             $Fgg = 0;
             if ($results->status == 'Draft') {
                 $html  .= "     <table class='width-50 table table-sm mt-3' width='100%' >";
@@ -618,9 +535,6 @@ class resultController extends Controller
         }
         return $html;
     }
-
-
-
 
 
 
@@ -1612,19 +1526,16 @@ return redirect()->back();
         } elseif ($class == 'three' || $class == 'four' || $class == 'five') {
             $data = ["বাংলা", "ইংরেজি", "গণিত", "ইতিহাস ও সামাজিক বিজ্ঞান", "বিজ্ঞান", "ধর্ম"];
         } elseif ($class == 'six' || $class == 'seven' || $class == 'eight') {
-
-            $data = ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
-
-            // $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "কর্ম ও জীবনমুখী শিক্ষা"];
+            $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "কর্ম ও জীবনমুখী শিক্ষা"];
         } elseif ($class == 'nine' || $class == 'ten') {
             if ($group == 'science') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "ক্যারিয়ার শিক্ষা"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীব বিজ্ঞান", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "উচ্চতর গণিত", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "ক্যারিয়ার শিক্ষা"];
             } elseif ($group == 'humanities') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "শারীরিক শিক্ষা ও স্বাস্থ্য", "চারু ও কারুকলা", "ক্যারিয়ার শিক্ষা"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "ভূগোল ও পরিবেশ", "অর্থনীতি", "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস", "ধর্ম ও নৈতিক শিক্ষা", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি", "স্বাস্থ্য ও সুরক্ষা", "চারু ও কারু কলা", "ক্যারিয়ার শিক্ষা"];
             } elseif ($group == 'commerce') {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
             } else {
-                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি শিক্ষা", "তথ্য ও যোগাযোগ প্রযুক্তি"];
+                $data = ["বাংলা ১ম", "বাংলা ২য়", "ইংরেজি ১ম", "ইংরেজি ২য়", "গণিত", "বিজ্ঞান", "পদার্থ", "রসায়ন", "জীব-বিজ্ঞান", "ভূগোল", "অর্থনীতি", "ইতিহাস", "ইতিহাস ও সামাজিক বিজ্ঞান", "ধর্ম", "কৃষি", "তথ্য ও যোগাযোগ প্রযুক্তি"];
             }
         }
         return $data;
