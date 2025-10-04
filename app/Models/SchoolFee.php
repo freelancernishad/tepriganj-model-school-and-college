@@ -13,7 +13,7 @@ class SchoolFee extends Model
         'class',
         'type',
         'fees',
-        'sub_type',
         'status',
+        'index_number',
     ];
 }

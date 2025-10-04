@@ -160,8 +160,13 @@ export default {
                                 }else if(res.role=='camera_man'){
 
                                     window.location.href = "/dashboard/student/img";
+                                }else if(res.role=='tcVerifications'){
+                                    window.location.href = "/dashboard/tc/verifications";
+                                }else if(res.role=='assessment'){
+                                    window.location.href = "/dashboard/assessments/single/create";
+                                }else if(res.role=='formfill'){
+                                    window.location.href = "/dashboard/form/fill/up";
                                 }else{
-
                                     window.location.href = "/dashboard";
                                 }
 

@@ -3,7 +3,7 @@
 
         <header  >
             <!-- Top header -->
-            <div class="topHeader">
+            <div class="topHeader" style="background: #9e5bba; border-bottom: 2px solid #ff0000a8; overflow: hidden; padding: 0 17px;">
                     <div class="row">
                         <div class="topheaderItem col-md-6 col-6" style="font-size: 14px;"><span>{{ schoolSettings.SCHOLL_NAME }} এ
                                 স্বাগতম</span></div>

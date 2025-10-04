@@ -119,11 +119,11 @@
 
 
                         <li class="nav-item sidebar-nav-item"  v-if="$localStorage.getItem('role')=='admin'" :class="{ active: selected == 2 }">
-                            <a href="javascript:void(0)" class="nav-link" @click="submenu(2)"><i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span></a>
+                            <a href="javascript:void(0)" class="nav-link" @click="submenu(2)"><i class="flaticon-multiple-users-silhouette"></i><span>Staffs</span></a>
                         <transition name="slide">
                             <ul class="nav sub-group-menu menu-open child" v-if="selected == 2" style="display:block">
                                 <li class="nav-item">
-                                    <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All Teachers</router-link>
+                                    <router-link   :to="{name:'staffs'}" class="nav-link"><i class="fas fa-angle-right"></i> All Staffs</router-link>
                                 </li>
                                 <li class="nav-item" >
                                     <router-link   :to="{name:'staffsattendance'}" class="nav-link"><i class="fas fa-angle-right"></i> Attendence</router-link>
@@ -162,9 +162,9 @@
                                         <router-link :to="{ name: 'students' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Promotion </router-link>
                                     </li> -->
 
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <router-link :to="{ name: 'studentCard' }" class="nav-link"><i class="fas fa-angle-right"></i> Student Card </router-link>
-                                    </li>
+                                    </li> -->
 
                                 </ul>
                             </transition>
@@ -201,6 +201,10 @@
             <router-link   :to="{name:'payment'}" class="nav-link"><i class="fas fa-angle-right"></i> Payments</router-link>
         </li>
 
+        <li class="nav-item">
+            <a   href="/dashboard/student/paymnetsheet/annual?school_id=125983" class="nav-link"><i class="fas fa-angle-right"></i> Annually Report</a>
+        </li>
+
     </ul>
 </transition>
 </li>
@@ -222,6 +226,25 @@
 
 
 
+
+
+<li class="nav-item sidebar-nav-item"  :class="{ active: selected == 40 }">
+    <a href="javascript:void(0)" class="nav-link" @click="submenu(40)"><i class="flaticon-shopping-list"></i><span>Assessment</span></a>
+    <transition name="slide">
+    <ul class="nav sub-group-menu menu-open child" v-if="selected == 40" style="display:block">
+
+        <li class="nav-item">
+            <a href="javascript:void(0)" class="nav-link"><i class="fas fa-angle-right"></i>Assessment List</a>
+        </li>
+
+        <li class="nav-item">
+            <router-link   :to="{name:'Assessmentcreate'}" class="nav-link"><i class="fas fa-angle-right"></i>New Assessment</router-link>
+        </li>
+
+
+    </ul>
+</transition>
+</li>
 
 
 <li class="nav-item sidebar-nav-item"  :class="{ active: selected == 4 }">
@@ -305,7 +328,6 @@
     <transition name="slide">
     <ul class="nav sub-group-menu menu-open child" v-if="selected == 8" style="display:block">
 
-
         <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'exam_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Exam Fees</router-link></li>
         <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'Admission_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Admission Fees</router-link></li>
         <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'monthly_fee'}}" class="nav-link"><i class="fas fa-angle-right"></i> Monthly Fees</router-link></li>
@@ -318,11 +340,12 @@
         <li class="nav-item"><router-link    :to="{name:'fees',params:{name:'letter_of_appreciation'}}" class="nav-link"><i class="fas fa-angle-right"></i> প্রশংসা পত্রের ফি</router-link></li>
 
 
-        <li class="nav-item">
-            <router-link    :to="{name:'settings'}" class="nav-link"><i class="fas fa-angle-right"></i> School Profile</router-link>
-        </li>
+
+        <li class="nav-item"><router-link    :to="{name:'settings'}" class="nav-link"><i class="fas fa-angle-right"></i> School Profile</router-link></li>
         <li class="nav-item"><router-link    :to="{name:'seoSettings'}" class="nav-link"><i class="fas fa-angle-right"></i> Seo Settings</router-link></li>
         <li class="nav-item"><router-link    :to="{name:'sliderSettings'}" class="nav-link"><i class="fas fa-angle-right"></i> Slider</router-link></li>
+
+
 
 
 
@@ -330,11 +353,11 @@
 </transition>
 </li>
 
-
 <li class="nav-item">
                             <router-link :to="{ name: 'trxcheck' }" class="nav-link"><i
                                     class="flaticon-dashboard"></i><span>Trx check</span></router-link>
                         </li>
+
 
 
 
@@ -379,6 +402,12 @@ export default {
                 this.$router.push({name:'fileupload'});
             }else if(this.user.role=='application_permission'){
                 this.$router.push({name:'applicationPermission'});
+            }else if(this.user.role=='tcVerifications'){
+                this.$router.push({name:'tcVerifications'});
+            }else if(this.user.role=='assessment'){
+                this.$router.push({name:'Assessmentsinglecreate'});
+            }else if(this.user.role=='formfill'){
+                this.$router.push({name:'formFillupList'});
             }
         }
         this.$store.commit('setUpdateUser', this.user)

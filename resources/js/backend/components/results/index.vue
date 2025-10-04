@@ -33,6 +33,7 @@
                                     </div>
 
                                 </div>
+
                                 <div class="col-md-3"  v-if="filterdata.student_class=='Nine' || filterdata.student_class=='Ten'" >
                                 <div class='form-group' >
                                     <label>Group:</label>
@@ -44,13 +45,14 @@
                                     </select></div>
                                 </div>
 
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Exam Type:</label>
                                         <select class="form-control" style="width: 100%;" v-model="filterdata.examType" onchange=""
                                             id="ExamType" required>
                                             <option value="">select</option>
-                               <option v-for="exam in exams">{{ exam }}</option>
+                               <option v-for="exam in exams" :value="exam">{{ ex_name(exam) }}</option>
                                         </select>
                                     </div>
 
@@ -128,7 +130,7 @@
                             <td v-if="result.class=='Nine' || result.class=='Ten'">{{ result.class_group, }}</td>
                             <td v-else >N/A</td>
 
-                            <td>{{ result.exam_name }}</td>
+                            <td>{{ ex_name(result.exam_name) }}</td>
                             <td>{{ result.year }}</td>
                             <td>
 
@@ -197,7 +199,7 @@ export default {
 			student_class:"",
             filterdata:{
                 student_class:null,
-                group:'Humanities',
+                group:'All',
                 subject:null,
                 religion:'All',
                 examType:null,
@@ -236,7 +238,7 @@ export default {
         callSubjects(){
             if(this.filterdata.student_class=='Nine' || this.filterdata.student_class=='Ten'){
             }else{
-                this.filterdata.group = 'Humanities'
+                this.filterdata.group = 'All'
             }
             this.subjects =  this.all_list('subjects',this.filterdata.student_class,this.filterdata.group);
         },

@@ -42,7 +42,10 @@
                                         <select class="form-control" style="width: 100%;" v-model="filterdata.examType" onchange=""
                                             id="ExamType" required>
                                             <option value="">select</option>
-                               <option v-for="exam in exams">{{ exam }}</option>
+
+                                                <option v-for="exam in exam_names" :value="exam">{{ ex_name(exam) }}</option>
+
+
                                         </select>
                                     </div>
 
@@ -116,6 +119,7 @@ export default {
 
 			groups: {},
 			exams: {},
+			exam_names: {},
 			religions: {},
 			subjects: {},
             preloader:false,
@@ -155,6 +159,7 @@ export default {
 	methods: {
           async filter(){
 
+
             var res = await this.callApi('post',`/api/resultlogCount`,this.filterdata);
 
             if(res.data){
@@ -187,11 +192,33 @@ export default {
 
 
         callSubjects(){
+
+
+            // console.log(this.exams);
+            this.exam_names = this.exams
+
+
+            // if(this.filterdata.student_class=='Six' || this.filterdata.student_class=='Seven' || this.filterdata.student_class=='Eight' || this.filterdata.student_class=='Nine'){
+            //     var result =  this.exams.filter(exam => exam == 'Annual Examination' );
+            //     this.filterdata.examType = 'Annual Examination'
+            // }else{
+            //     var result =  this.exams.filter(exam => exam == 'Selective_Exam' );
+            //     this.filterdata.examType = 'Selective_Exam'
+            // }
+
+            // this.exam_names = result;
+
+
+
             if(this.filterdata.student_class=='Nine' || this.filterdata.student_class=='Ten'){
             }else{
                 this.filterdata.group = 'All'
             }
             this.subjects =  this.all_list('subjects',this.filterdata.student_class,this.filterdata.group);
+
+
+
+
         },
 
 

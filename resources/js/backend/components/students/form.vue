@@ -141,6 +141,35 @@
 
                 <div class="col-md-4 mt-3">
                     <div class="form-group">
+                        <label class="form_label">এসএসসি রোল</label>
+                        <input class="form-control" style="text-transform:uppercase"  type="text"  placeholder="এসএসসি রোল"  name="এসএসসি রোল" v-model="form.sscroll"   />
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 mt-3">
+                    <div class="form-group">
+                        <label class="form_label">সাল</label>
+
+                        <input class="form-control"  type="text"  placeholder="সাল"  name="সাল" v-model="form.Year"  required />
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <div class="form-group">
+                        <label class="form_label">Status</label>
+                        <select class="form-control"  type="text"  placeholder="Status"  name="Status" v-model="form.StudentStatus" required>
+                            <option value="">Select</option>
+                            <option>Active</option>
+                            <option>old</option>
+                        </select>
+                        <!-- <input class="form-control"  type="text"  placeholder="সাল"  name="সাল" v-model="form.Year"   /> -->
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 mt-3">
+                    <div class="form-group">
                         <label class="form_label">লিঙ্গ</label>
                         <select class="form-control" style="width: 100%;" v-model="form.StudentGender" >
                             <option value="">
@@ -643,7 +672,7 @@
                             </option>
                             <option>ব্যবসায়ি</option>
                             <option>কৃষক</option>
-                            <option>কৃষি শ্রমিক</option>
+                            <option>জীবন ও জীবিকা শ্রমিক</option>
                             <option>ডাক্তার</option>
                             <option>জেলে</option>
                             <option>সরকারি চাকুরি</option>

@@ -335,12 +335,12 @@ class PaymentController extends Controller
 
         $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
-        // if(!$Pension_and_Welfare_Trust_feeCount){
-        //     array_push($monthlyPaid,[
-        //         'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
-        //         'amount'=>100,
-        //     ]);
-        // }
+        if(!$Pension_and_Welfare_Trust_feeCount){
+            array_push($monthlyPaid,[
+                'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+                'amount'=>100,
+            ]);
+        }
     }
         // return $monthlyPaid;
 
@@ -349,13 +349,13 @@ class PaymentController extends Controller
 
 
                 if($studentStatus=='Approve'){
-                    // array_push($monthlyPaid,[
-                    //     'key'=>month_en_to_bn('January'),
-                    //     'amount'=>$monthly_fee,
-                    //     'sub_type'=>'',
-                    // ]);
+                    array_push($monthlyPaid,[
+                        'key'=>month_en_to_bn('January'),
+                        'amount'=>$monthly_fee,
+                        'sub_type'=>'',
+                    ]);
                 }else{
-                    // if($MonthName=='December'){
+                    // if($MonthName=='December' || $MonthName=='January'){
 
 
 
@@ -371,15 +371,15 @@ class PaymentController extends Controller
 
 
 
-                    // $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
-                    // if($monthly_feeCountJ>0){
-                    // }else{
-                    //     array_push($monthlyPaid,[
-                    //         'key'=>month_en_to_bn('January'),
-                    //         'amount'=>$monthly_fee,
-                    //         'sub_type'=>'',
-                    //     ]);
-                    // }
+        //             $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
+        //             if($monthly_feeCountJ>0){
+        //             }else{
+        //                 array_push($monthlyPaid,[
+        //                     'key'=>month_en_to_bn('January'),
+        //                     'amount'=>$monthly_fee,
+        //                     'sub_type'=>'',
+        //                 ]);
+        //             }
 
 
 
@@ -387,6 +387,15 @@ class PaymentController extends Controller
 
                 // }else{
 
+
+                    $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
+
+                    if(!$Pension_and_Welfare_Trust_feeCount){
+                        array_push($monthlyPaid,[
+                            'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+                            'amount'=>100,
+                        ]);
+                    }
 
 
                     foreach ($allMonth as $value) {
@@ -413,16 +422,20 @@ class PaymentController extends Controller
                         }else{
 
 
-                            if($cuddentdata<11){
-                                $CurrenMonthNumber = $CurrenMonthNumber-1;
-                                if($CurrenMonthNumber==$valueMonthNumber){
-                                    break;
-                                }
-                            }else{
-                                if($cuddentMonth==$value){
-                                    break;
-                                }
+                            if($cuddentMonth==$value){
+                                break;
                             }
+                            // if($cuddentdata<11){
+                            //     $CurrenMonthNumber = $CurrenMonthNumber-1;
+                            //     if($CurrenMonthNumber==$valueMonthNumber){
+                            //         break;
+                            //     }
+
+                            // }else{
+                            //     if($cuddentMonth==$value){
+                            //         break;
+                            //     }
+                            // }
 
 
                         }
@@ -470,8 +483,22 @@ class PaymentController extends Controller
             $Registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
             if(!$Registration_feeStatusCount){
+
                 $insertedData = array(["key"=>'রেজিস্ট্রেশন ফি',"amount"=>$RegFee,"sub_type"=>'']);
                 array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+                if($StudentClass=='Nine' || $StudentClass=='Ten'){
+                    $other_fee = 75;
+                }
+                elseif($StudentClass=='Eight'){
+                    $other_fee = 34;
+                }else{
+                    $other_fee = 17;
+                }
+                $insertedData = array(["key"=>'বিবিধ ফি',"amount"=>$other_fee,"sub_type"=>'']);
+
+                array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
             }
         }
 
@@ -497,10 +524,10 @@ class PaymentController extends Controller
                         array_splice($monthlyPaid, $index_number, 0, $insertedData);
                     }else{
                         if($StudentGroup=='Humanities'){
-                            $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2220,"sub_type"=>'']);
+                            $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2320,"sub_type"=>'']);
                             array_splice($monthlyPaid, $index_number, 0, $insertedData);
                         }else{
-                            $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2340,"sub_type"=>'']);
+                            $insertedData = array(["key"=>'ফরম পূরণ ফি',"amount"=>2440,"sub_type"=>'']);
                             array_splice($monthlyPaid, $index_number, 0, $insertedData);
                         }
                     }
@@ -633,6 +660,8 @@ class PaymentController extends Controller
                 }elseif($paidPayment->type=='exam_fee'){
                 $paymentHtml .="<td>".paymentKhat($paidPayment->type)." (".ex_name($paidPayment->ex_name).")</td>";
                 }elseif($paidPayment->type=='form_filup_fee'){
+                $paymentHtml .="<td>".paymentKhat($paidPayment->type)." (".form_name($paidPayment->ex_name).")</td>";
+                }elseif($paidPayment->type=='registration_fee'){
                 $paymentHtml .="<td>".paymentKhat($paidPayment->type)." (".form_name($paidPayment->ex_name).")</td>";
                 }else{
                     $paymentHtml .="<td>".month_en_to_bn($paidPayment->month)."</td>";
@@ -1189,23 +1218,24 @@ class PaymentController extends Controller
 
       $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
-    //   if(!$Pension_and_Welfare_Trust_feeCount){
-    //       array_push($monthlyPaid,[
-    //           'key'=>'Pension_and_Welfare_Trust',
-    //           'amount'=>100,
-    //           'sub_type'=>'',
-    //       ]);
-    //       $totalamount +=  100;
-    //   }
+      if(!$Pension_and_Welfare_Trust_feeCount){
+          array_push($monthlyPaid,[
+              'key'=>'Pension_and_Welfare_Trust',
+              'amount'=>100,
+              'sub_type'=>'',
+          ]);
+          $totalamount +=  100;
+
+      }
 
 
       if($student->StudentStatus=='Approve'){
-        // $totalamount +=  $monthly_fee;
-        // array_push($monthlyPaid,[
-        //     'key'=>month_en_to_bn('January'),
-        //     'amount'=>$monthly_fee,
-        //     'sub_type'=>'',
-        // ]);
+        $totalamount +=  $monthly_fee;
+        array_push($monthlyPaid,[
+            'key'=>month_en_to_bn('January'),
+            'amount'=>$monthly_fee,
+            'sub_type'=>'',
+        ]);
     }else{
         // if($MonthName=='December' || $MonthName=='January'){
 
@@ -1223,16 +1253,16 @@ class PaymentController extends Controller
 
 
 
-                        $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
-                        if($monthly_feeCountJ>0){
-                        }else{
-                            // $totalamount +=  $monthly_fee;
-                            // array_push($monthlyPaid,[
-                            //     'key'=>month_en_to_bn('January'),
-                            //     'amount'=>$monthly_fee,
-                            //     'sub_type'=>'',
-                            // ]);
-                        }
+                        // $monthly_feeCountJ =    $this->PaymentCount(['type' => 'monthly_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'month' => 'January'],'count');
+                        // if($monthly_feeCountJ>0){
+                        // }else{
+                        //     $totalamount +=  $monthly_fee;
+                        //     array_push($monthlyPaid,[
+                        //         'key'=>month_en_to_bn('January'),
+                        //         'amount'=>$monthly_fee,
+                        //         'sub_type'=>'',
+                        //     ]);
+                        // }
 
 
 
@@ -1267,16 +1297,19 @@ class PaymentController extends Controller
                                 }elseif($Selective_Exam_feeCount>0){
                                 }else{
 
-                                    if($cuddentdata<11){
-                                        $CurrenMonthNumber = $CurrenMonthNumber-1;
-                                        if($CurrenMonthNumber==$valueMonthNumber){
-                                            break;
-                                        }
-                                    }else{
-                                        if($cuddentMonth==$value){
-                                            break;
-                                        }
+                                    if($cuddentMonth==$value){
+                                        break;
                                     }
+                                    // if($cuddentdata<11){
+                                    //     $CurrenMonthNumber = $CurrenMonthNumber-1;
+                                    //     if($CurrenMonthNumber==$valueMonthNumber){
+                                    //         break;
+                                    //     }
+                                    // }else{
+                                    //     if($cuddentMonth==$value){
+                                    //         break;
+                                    //     }
+                                    // }
                                 }
                           }
                     // }
@@ -1316,11 +1349,53 @@ class PaymentController extends Controller
           $Registration_feeStatusCount =  $this->PaymentCount(['type' => 'registration_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
           if(!$Registration_feeStatusCount){
-            $totalamount +=  $RegFee;
+
+
+            if($class=='Nine' || $class=='Ten'){
+                $other_fee = 75;
+                $totalamount +=  $RegFee-$other_fee;
+
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$RegFee-$other_fee,"sub_type"=>'']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+              $totalamount +=  $other_fee;
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }elseif($class=='Eight'){
+
+                $other_fee = 34;
+                $totalamount +=  $RegFee;
+
               $insertedData = array(["key"=>'registration_fee',"amount"=>$RegFee,"sub_type"=>'']);
               array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+              $totalamount +=  $other_fee;
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }else{
+
+                $other_fee = 17;
+                $totalamount +=  $RegFee;
+
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$RegFee,"sub_type"=>'']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+
+              $totalamount +=  $other_fee;
+              $insertedData = array(["key"=>'registration_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
+              array_splice($monthlyPaid, $index_number, 0, $insertedData);
+            }
+
+
+
+
+
+
+
+
+
           }
       }
+
 
 
 
@@ -1341,7 +1416,7 @@ class PaymentController extends Controller
                 $greed = $studentRestult->greed;
                 if($greed!='F'){
                     if($StudentGroup=='Humanities'){
-                        $board_fee = 1535;
+                        $board_fee = 1635;
                         $totalamount +=  $board_fee;
                         $insertedData = array(["key"=>'form_filup_fee',"amount"=>$board_fee,"sub_type"=>'board_fee']);
                         array_splice($monthlyPaid, $index_number, 0, $insertedData);
@@ -1358,7 +1433,7 @@ class PaymentController extends Controller
                         $insertedData = array(["key"=>'form_filup_fee',"amount"=>$other_fee,"sub_type"=>'other_fee']);
                         array_splice($monthlyPaid, $index_number, 0, $insertedData);
                     }else{
-                        $board_fee = 1625;
+                        $board_fee = 1725;
                         $totalamount +=  $board_fee;
                         $insertedData = array(["key"=>'form_filup_fee',"amount"=>$board_fee,"sub_type"=>'board_fee']);
                         array_splice($monthlyPaid, $index_number, 0, $insertedData);
@@ -1408,7 +1483,7 @@ class PaymentController extends Controller
 
 
 
-
+// return $totalamount;
 
        $amount =  $totalamount;
 
@@ -1601,13 +1676,6 @@ class PaymentController extends Controller
             'Bamount' => 0,
         ];
         $oldItemg = json_encode($oldItem);
-        $type = $r->type;
-        if($type=='মাসিক বেতন'){
-            $type = 'monthly_fee';
-        }elseif($type=='সেশন ফি'){
-            $type = 'session_fee';
-        }
-
         $data = [
             'school_id' => $r->school_id,
             'studentClass' => $r->StudentClass,
@@ -1618,7 +1686,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => $type,
+            'type' => $r->type,
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,
@@ -1645,18 +1713,14 @@ class PaymentController extends Controller
         );
         if ($formtype == 'create') {
             $data = payment::create($data);
-
-
-            // try {
-            //     $msgs = sendMessages($messages);
-            //     foreach ($msgs as $value) {
-            //         array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
-            //     }
-            // } catch (Exception $e) {
-            //     array_push($responsemessege, $e->getMessage());
-            // }
-
-
+            try {
+                $msgs = sendMessages($messages);
+                foreach ($msgs as $value) {
+                    array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
+                }
+            } catch (Exception $e) {
+                array_push($responsemessege, $e->getMessage());
+            }
         } else {
             $payment = payment::find($id);
             $data = $payment->update($data);
@@ -1785,7 +1849,7 @@ class PaymentController extends Controller
     {
 
         ini_set('max_execution_time', '60000');
-        ini_set("pcre.backtrack_limit", "5000000000000000050000000000000000");
+        ini_set("pcre.backtrack_limit", "50000000000000000");
         ini_set('memory_limit', '12008M');
 
 

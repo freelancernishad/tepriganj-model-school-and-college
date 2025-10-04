@@ -17,7 +17,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('dashboard_asset/css/bootstrap.min.css') }}">
     <!-- Fontawesome CSS -->
-    <link rel="stylesheet" href="{{ asset('dashboard_asset/css/all.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('dashboard_asset/css/all.min.css') }}"> --}}
+    <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v6.4.0/css/pro.min.css" />
     <!-- Flaticon CSS -->
     <link rel="stylesheet" href="{{ asset('dashboard_asset/fonts/flaticon.css') }}">
 
@@ -163,13 +164,12 @@ li.page-item.active button {
         <component :is="$route.meta.layout || 'div'"   :user="{{Auth::user()}}"   :classes-list="{{ $classess }}" :school_detials="{{ $school_detials }}">
             <router-view />
           </component>
-
-</div>
-
+    </div>
 
 
 
-<script src="{{ asset('js/backend.js?ver=1.2.17') }}"></script>
+
+<script src="{{ asset('js/backend.js?ver=1.2.92') }}"></script>
 
 
 

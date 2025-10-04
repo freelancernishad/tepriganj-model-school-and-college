@@ -17,30 +17,6 @@
 
 
 
-
-
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="dashboard-summery-one mg-b-20">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <div class="item-icon bg-light-yellow">
-                                        <i class="flaticon-couple text-orange"></i>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="item-content">
-                                        <div class="item-title">Visitor</div>
-                                        <div class="item-number"><span  >{{visitorcount}}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
                     <div class="col-xl-3 col-sm-6 col-12">
                         <div class="dashboard-summery-one mg-b-20">
                             <div class="row align-items-center">
@@ -58,6 +34,74 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-yellow">
+                                        <i class="flaticon-couple text-orange"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">SMS BALANCE</div>
+                                        <div class="item-number"><span  >{{smsDetails.remaining_unit}}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-blue">
+                                        <i class="flaticon-multiple-users-silhouette text-blue"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">Staffs</div>
+                                        <div class="item-number"><span  >{{totalteachers}}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="dashboard-summery-one mg-b-20">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="item-icon bg-light-green ">
+                                        <i class="flaticon-classmates text-green"></i>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-content">
+                                        <div class="item-title">Students</div>
+                                        <div class="item-number"><span  >{{ totalstudents }}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
 
 
 
@@ -100,45 +144,24 @@
 
 
 
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="dashboard-summery-one mg-b-20">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <div class="item-icon bg-light-blue">
-                                        <i class="flaticon-multiple-users-silhouette text-blue"></i>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="item-content">
-                                        <div class="item-title">Teachers</div>
-                                        <div class="item-number"><span  >{{totalteachers}}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
 
                     <div class="col-xl-3 col-sm-6 col-12">
                         <div class="dashboard-summery-one mg-b-20">
                             <div class="row align-items-center">
                                 <div class="col-6">
-                                    <div class="item-icon bg-light-green ">
-                                        <i class="flaticon-classmates text-green"></i>
+                                    <div class="item-icon bg-light-yellow">
+                                        <i class="flaticon-couple text-orange"></i>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="item-content">
-                                        <div class="item-title">Students</div>
-                                        <div class="item-number"><span  >{{ totalstudents }}</span></div>
+                                        <div class="item-title">Visitors</div>
+                                        <div class="item-number"><span  >{{visitorcount}}</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-
 
 
 
@@ -193,9 +216,33 @@
 
                 <div class="row">
 
+                    <div class="col-md-12 mb-3">
+                        <a target="_blank" style="float: right;font-size: 18px;margin-bottom: 10px;" href="/dashboard/student/paymnetsheet/annual?school_id=125983" class="btn btn-info">Download Annual Reports</a>
+
+
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <select class="form-control" v-model="paymentYear">
+                                        <option>2025</option>
+                                        <option>2024</option>
+                                        <option>2023</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-info" @click="changePaymentYear">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="table-responsive" ref="annuallyReportsContainer"></div>
+                    </div>
                     <div class="col-md-12">
 
                         <a target="_blank" style="float: right;font-size: 18px;margin-bottom: 10px;" :href="'/dashboard/download/student/reports?school_id='+school_id+'&type=pdf'" class="btn btn-info">Download Reports</a>
+
+
 
 
 
@@ -203,6 +250,11 @@
 
 <table class="mb-5" width="100%" border="1">
 
+
+<tr align="center">
+
+    <th colspan="14" style="vertical-align: middle;font-size: 22px;"> <span>অধ্যয়নরত শিক্ষার্থীর তথ্য</span></th>
+</tr>
 
 <tr align="center">
     <td rowspan="2" style="vertical-align: middle;">শ্রেণী</td>
@@ -444,6 +496,7 @@ export default {
 
     },
     async created() {
+        this.getSmsNoc();
         this.getReports();
         this.getmonth();
          this.totalstudent();
@@ -453,6 +506,7 @@ export default {
          this.totalearn();
          this.visitors();
          this.attendacereport();
+         this.getAnnualReport();
     },
 
     props: {
@@ -516,7 +570,7 @@ export default {
 
     data() {
         return {
-
+            paymentYear:2025,
             year:new Date().getFullYear(),
             totalstudents:0,
             marksheetDownload:0,
@@ -536,7 +590,9 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false,
             },
-            reports:{}
+            reports:{},
+            smsDetails:{},
+            annuallyReports:{},
 
 
         };
@@ -546,6 +602,28 @@ export default {
         filteratten(){
             this.attendacereport();
         },
+
+        async getSmsNoc(){
+            var res = await this.callApi('get','/api/get/balance',[]);
+            this.smsDetails = res.data.data;
+        },
+
+        changePaymentYear(){
+            this.getAnnualReport();
+        },
+        async getAnnualReport(){
+
+            var res = await this.callApi('get',`/api/get/annually/report?year=${this.paymentYear}`,[]);
+            this.annuallyReports = res.data;
+            this.renderHTML();
+
+
+        },
+        renderHTML() {
+            this.$refs.annuallyReportsContainer.innerHTML = this.annuallyReports;
+        },
+
+
 
             getmonth(){
                 const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];

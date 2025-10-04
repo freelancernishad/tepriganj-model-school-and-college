@@ -335,3 +335,6 @@ export default {
 	width: 40px;
 }
 </style>
+
+
+

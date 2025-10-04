@@ -598,7 +598,7 @@ else if ($class == "Six" || $class == "Seven" || $class == "Eight") {
                             @else
                             <td class="pl-5 pr-5"> <b>ইংলিশ ১ম</b></td>
                             @endif
-						
+
 							<td class="pl-5"> <b class="ml-5">{{ $English_1st_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $English_1st_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $English_1st_d->EXTRA }}</b></td>
@@ -679,7 +679,7 @@ if($row->StudentReligion=='Islam'){
 
 @if($Agriculture)
 						<tr class="table-primar" style="display:none">
-							<td class="pl-5 pr-5"> <b>কৃষি</b></td>
+							<td class="pl-5 pr-5"> <b>কৃষি শিক্ষা</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->EXTRA }}</b></td>
@@ -700,7 +700,7 @@ if($row->StudentReligion=='Islam'){
 
 {{--
 						<tr class="table-primar">
-							<td class="pl-5 pr-5"> <b>স্বাস্থ্য ও সুরক্ষা</b></td>
+							<td class="pl-5 pr-5"> <b>শারীরিক শিক্ষা ও স্বাস্থ্য</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->EXTRA }}</b></td>
@@ -709,7 +709,7 @@ if($row->StudentReligion=='Islam'){
 
 
 						<tr class="table-primar">
-							<td class="pl-5 pr-5"> <b>চারু ও কারু কলা</b></td>
+							<td class="pl-5 pr-5"> <b>চারু ও কারুকলা</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->EXTRA }}</b></td>
@@ -1027,7 +1027,7 @@ if($row->StudentReligion=='Islam'){
 </tr>
 @else
 <tr class="table-primar" style="display:none">
-    <td class="pl-5 pr-5"> <b>কৃষি</b></td>
+    <td class="pl-5 pr-5"> <b>কৃষি শিক্ষা</b></td>
     <td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->CQ }}</b></td>
     <td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->MCQ }}</b></td>
     <td class="pl-5"> <b class="ml-5">{{ $Agriculture_d->EXTRA }}</b></td>
@@ -1049,7 +1049,7 @@ if($row->StudentReligion=='Islam'){
 {{--
 
 						<tr class="table-primar">
-							<td class="pl-5 pr-5"> <b>স্বাস্থ্য ও সুরক্ষা</b></td>
+							<td class="pl-5 pr-5"> <b>শারীরিক শিক্ষা ও স্বাস্থ্য</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Physical_Education_and_Health_d->EXTRA }}</b></td>
@@ -1058,7 +1058,7 @@ if($row->StudentReligion=='Islam'){
 
 
 						<tr class="table-primar">
-							<td class="pl-5 pr-5"> <b>চারু ও কারু কলা</b></td>
+							<td class="pl-5 pr-5"> <b>চারু ও কারুকলা</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->CQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->MCQ }}</b></td>
 							<td class="pl-5"> <b class="ml-5">{{ $Arts_and_Crafts_d->EXTRA }}</b></td>

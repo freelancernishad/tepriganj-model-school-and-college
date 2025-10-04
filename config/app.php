@@ -176,7 +176,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         // Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
         // Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
-        // Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Rakibhstu\Banglanumber\NumberToBanglaServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class
@@ -238,6 +237,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'PDF' => Mccarlosen\LaravelMpdf\Facades\LaravelMpdf::class,
+        // 'PDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Image' => Intervention\Image\Facades\Image::class
     ],

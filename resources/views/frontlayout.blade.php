@@ -12,8 +12,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset(sitedetails()->logo) }}" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v-1.0.1') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/pro.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v-1.0.2') }}">
+
+    {{-- <link rel="stylesheet" href="{{ asset('assets/css/pro.min.css') }}">
+     --}}
+
+     <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v6.4.0/css/pro.min.css" />
+
     <script type="text/javascript" src="{{asset('assets/js/jquery-1.12.4.min.js')}}"></script>
 
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -99,6 +104,23 @@ h5 {
 }
 .form-control {
     font-family: 'Kalpurush' !important;
+}
+.form-control {
+    border: 1px solid #954913 !important;
+    color: #954913 !important;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #ff0000 !important;
+    outline: 0;
+    box-shadow: 0 0 0 black !important;
+}
+.btn-info {
+    color: #fff;
+    background-color: #160089 !important;
+    border-color: #160089 !important;
 }
 </style>
 

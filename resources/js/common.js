@@ -47,7 +47,7 @@ export default {
             if(name=='Half_yearly_examination'){
                 return 'অর্ধ বার্ষিক পরীক্ষার ফি';
             }else if(name=='Half_yearly_evaluation'){
-                return 'অর্ধ বার্ষিক মূল্যায়ন ফি';
+                return 'ষাষ্মাসিক মূল্যায়ন ফি';
             }else if(name=='Annual Examination'){
                 return 'বার্ষিক পরীক্ষার ফি';
             }else if(name=='Annual_Examination'){
@@ -64,33 +64,31 @@ export default {
                 return 'ধারাবাহিক মূল্যায়ন ফি';
             }else if(name=='Summative_Assessment'){
                 return 'সামষ্টিক মূল্যায়ন ফি';
-            }else if(name=='Admission_fee'){
-                return 'আবেদন ফি';
             }
 
         },
 
-
-
         ex_name(name){
             if(name=='Half_yearly_examination'){
-                return 'অর্ধ বার্ষিক পরীক্ষার ফি';
+                return 'অর্ধ বার্ষিক পরীক্ষা';
             }else if(name=='Half_yearly_evaluation'){
-                return 'অর্ধ বার্ষিক মূল্যায়ন ফি';
+                return 'অর্ধ বার্ষিক মূল্যায়ন';
+            }else if(name=='Annual Examination'){
+                return 'বার্ষিক পরীক্ষা';
             }else if(name=='Annual_Examination'){
-                return 'বার্ষিক পরীক্ষার ফি';
+                return 'বার্ষিক পরীক্ষা';
             }else if(name=='Annual_assessment'){
-                return 'বার্ষিক মূল্যায়ন ফি';
+                return 'বার্ষিক মূল্যায়ন';
             }else if(name=='Model_test_exam'){
-                return 'মডেল টেস্ট পরীক্ষার ফি';
+                return 'মডেল টেস্ট পরীক্ষা';
             }else if(name=='Pre_selection_examination'){
-                return 'প্রাক-নির্বাচনী পরীক্ষার ফি';
+                return 'প্রাক-নির্বাচনী পরীক্ষা';
             }else if(name=='Selective_Exam'){
-                return 'নির্বাচনী পরীক্ষার ফি';
+                return 'নির্বাচনী পরীক্ষা';
             }else if(name=='Continuous_assessment'){
-                return 'ধারাবাহিক মূল্যায়ন ফি';
+                return 'ধারাবাহিক মূল্যায়ন';
             }else if(name=='Summative_Assessment'){
-                return 'সামষ্টিক মূল্যায়ন ফি';
+                return 'সামষ্টিক মূল্যায়ন';
             }
 
         },
@@ -145,13 +143,14 @@ export default {
             },
 
 
+
         async schoolDetial(type=''){
             var res = await this.callApi('get',`/api/school/settings?school_id=${this.school_id}&front=${type}`,[]);
             this.schoolinfo = res.data
         },
         paymentamount(type, classname) {
             var needAmount;
-            if (type == 'monthly_fee') {
+            if (type == 'Monthly_fee') {
                 if (classname == 'Eight') {
                     needAmount = 500;
                 } else if (classname == 'Nine') {
@@ -161,7 +160,7 @@ export default {
                 } else {
                     needAmount = 400;
                 }
-            } else if (type == 'session_fee') {
+            } else if (type == 'Session_fee') {
                 needAmount = 500;
             } else if (type == 'Exam_fee') {
                 needAmount = 200;
@@ -172,26 +171,46 @@ export default {
         },
         feesconvert(text) {
             var result;
-            if (text == 'monthly_fee') {
+            if (text == 'Monthly_fee') {
+                result = 'মাসিক বেতন';
+            }else if (text == 'monthly_fee') {
                 result = 'মাসিক বেতন';
             } else if (text == 'মাসিক বেতন') {
-                result = 'monthly_fee';
-            } else if (text == 'session_fee') {
+                result = 'Monthly_fee';
+            } else if (text == 'Session_fee') {
                 result = 'সেশন ফি';
             } else if (text == 'সেশন ফি') {
-                result = 'session_fee';
+                result = 'Session_fee';
             } else if (text == 'Exam_fee') {
+                result = 'পরিক্ষার ফি';
+            } else if (text == 'exam_fee') {
                 result = 'পরিক্ষার ফি';
             } else if (text == 'পরিক্ষার ফি') {
                 result = 'Exam_fee';
+            } else if (text == 'Admission_fee') {
+                result = 'ফর্ম ফি';
+            } else if (text == 'ফর্ম ফি') {
+                result = 'Admission_fee';
+            } else if (text == 'registration_fee') {
+                result = 'রেজিস্ট্রেশন ফি';
+            } else if (text == 'রেজিস্ট্রেশন ফি') {
+                result = 'registration_fee';
+            } else if (text == 'form_filup_fee') {
+                result = 'ফরম পূরণ ফি';
+            } else if (text == 'ফরম পূরণ ফি') {
+                result = 'form_filup_fee';
+            } else if (text == 'session_fee') {
+                result = 'ভর্তি/সেশন ফি';
+            } else if (text == 'ভর্তি/সেশন ফি') {
+                result = 'session_fee';
+            } else if (text == 'letter_of_appreciation') {
+                result = 'প্রশংসা পত্র ফি';
+            } else if (text == 'প্রশংসা পত্র ফি') {
+                result = 'letter_of_appreciation';
             } else if (text == 'Other') {
                 result = 'অন্যান্য';
             } else if (text == 'অন্যান্য') {
                 result = 'Other';
-            } else if (text == 'Admission_fee') {
-                result = 'আবেদন ফি';
-            } else if (text == 'আবেদন ফি') {
-                result = 'Admission_fee';
             }
             return result;
         },
@@ -260,13 +279,13 @@ export default {
                 str = "ReligionIslam";
             } else if (str == 'হিন্দু-ধর্ম') {
                 str = "ReligionHindu";
-            } else if (str == 'জীবন ও জীবিকা') {
+            } else if (str == 'কৃষি শিক্ষা') {
                 str = "Agriculture";
             } else if (str == 'উচ্চতর গণিত') {
                 str = "Higher_Mathematics";
-            } else if (str == 'ডিজিটাল প্রযুক্তি') {
+            } else if (str == 'তথ্য ও যোগাযোগ প্রযুক্তি') {
                 str = "ICT";
-            } else if (str == 'স্বাস্থ্য ও সুরক্ষা') {
+            } else if (str == 'শারিরীক শিক্ষা ও স্বাস্থ্য') {
                 str = "Physical_Education_and_Health";
             } else if (str == 'শিল্প ও সংস্কৃতি') {
                 str = "Arts_and_Crafts";
@@ -275,29 +294,32 @@ export default {
             } else if (str == 'ক্যারিয়ার শিক্ষা') {
                 str = "Career_Education";
             }
-
-
-            else if (str == 'বিজ্ঞান অনুসন্ধানী পাঠ') {
-                str = "Science_Inquiry_Lessons";
-            } else if (str == 'বিজ্ঞান অনুশীলন বই') {
-                str = "Science_practice_book";
-            } else if (str == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ') {
-                str = "History_and_Social_Science_Inquiry_Lessons";
-            } else if (str == 'ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই') {
-                str = "History_and_Social_Science_Practice_Books";
-            } else if (str == 'ডিজিটাল প্রযুক্তি') {
-                str = "Digital_technology";
-            } else if (str == 'স্বাস্থ্য সুরক্ষা') {
-                str = "Health_protection";
-            } else if (str == 'জীবন ও জীবিকা') {
-                str = "Life_and_livelihood";
-            } else if (str == 'শিল্প ও সংস্কৃতি') {
-                str = "Art_and_Culture";
-            }
-
-
-
-
+            //         let banglaNumber=
+            //         {
+            //         "বাংলা":"Bangla",
+            //         "বাংলা ১ম":"Bangla_1st",
+            //         "বাংলা ২য়":"Bangla_2nd",
+            //         "ইংলিশ":"English",
+            //         "ইংলিশ ১ম":"English_1st",
+            //         "ইংলিশ ২য়":"English_2nd",
+            //         "গনিত":"Math",
+            //         "বিজ্ঞান":"Science",
+            //         "পদার্থ":"physics",
+            //         "রসায়ন":"Chemistry",
+            //         "জীব-বিজ্ঞান":"Biology",
+            //         "ভূগোল":"vugol",
+            //         "অর্থনীতি":"orthoniti",
+            //         "ইতিহাস":"itihas",
+            //         "ইতিহাস ও সামাজিক বিজ্ঞান":"B_and_B",
+            //         "ধর্ম":"Religion",
+            //         "ইসলাম-ধর্ম":"ReligionIslam",
+            //         "হিন্দু-ধর্ম":"ReligionHindu",
+            //         "কৃষি শিক্ষা":"Agriculture",
+            //         "তথ্য ও যোগাযোগ প্রযুক্তি":"ICT",
+            // }
+            //     for (var x in banglaNumber) {
+            //         str = str.replace(new RegExp(x, 'g'), banglaNumber[x]);
+            //     }
             return str;
         },
         exam_comvert(str) {
@@ -369,11 +391,11 @@ export default {
             } else if (str == 'Higher_Mathematics') {
                 str = "উচ্চতর গণিত";
             } else if (str == 'Agriculture') {
-                str = "জীবন ও জীবিকা";
+                str = "কৃষি শিক্ষা";
             } else if (str == 'ICT') {
-                str = "ডিজিটাল প্রযুক্তি";
+                str = "তথ্য ও যোগাযোগ প্রযুক্তি";
             } else if (str == 'Physical_Education_and_Health') {
-                str = "স্বাস্থ্য ও সুরক্ষা";
+                str = "শারিরীক শিক্ষা ও স্বাস্থ্য";
             } else if (str == 'Arts_and_Crafts') {
                 str = "শিল্প ও সংস্কৃতি";
             } else if (str == 'Work_and_life_oriented_education') {
@@ -382,25 +404,33 @@ export default {
                 str = "ক্যারিয়ার শিক্ষা";
             }
 
-            else if (str == 'Science_Inquiry_Lessons') {
-                str = "বিজ্ঞান অনুসন্ধানী পাঠ";
-            } else if (str == 'Science_practice_book') {
-                str = "বিজ্ঞান অনুশীলন বই";
-            } else if (str == 'History_and_Social_Science_Inquiry_Lessons') {
-                str = "ইতিহাস ও সামাজিক বিজ্ঞান অনুসন্ধানী পাঠ";
-            } else if (str == 'History_and_Social_Science_Practice_Books') {
-                str = "ইতিহাস ও সামাজিক বিজ্ঞান অনুশীলন বই";
-            } else if (str == 'Digital_technology') {
-                str = "ডিজিটাল প্রযুক্তি";
-            } else if (str == 'Health_protection') {
-                str = "স্বাস্থ্য সুরক্ষা";
-            } else if (str == 'Life_and_livelihood') {
-                str = "জীবন ও জীবিকা";
-            } else if (str == 'Art_and_Culture') {
-                str = "শিল্প ও সংস্কৃতি";
-            }
 
-
+            // let banglaNumber =
+            // {
+            //     "Bangla": "বাংলা",
+            //     "Bangla_1st": "বাংলা ১ম",
+            //     "Bangla_2nd": "বাংলা ২য়",
+            //     "English": "ইংলিশ",
+            //     "English_1st": "ইংলিশ ১ম",
+            //     "English_2nd": "ইংলিশ ২য়",
+            //     "Math": "গনিত",
+            //     "Science": "বিজ্ঞান",
+            //     "physics": "পদার্থ",
+            //     "Chemistry": "রসায়ন",
+            //     "Biology": "জীব-বিজ্ঞান",
+            //     "vugol": "ভূগোল",
+            //     "orthoniti": "অর্থনীতি",
+            //     "itihas": "ইতিহাস",
+            //     "B_and_B": "ইতিহাস ও সামাজিক বিজ্ঞান",
+            //     "Religion": "ধর্ম",
+            //     "ReligionIslam": "ইসলাম-ধর্ম",
+            //     "ReligionHindu": "হিন্দু-ধর্ম",
+            //     "Agriculture": "কৃষি শিক্ষা",
+            //     "ICT": "তথ্য ও যোগাযোগ প্রযুক্তি"
+            // }
+            // for (var x in banglaNumber) {
+            //     str = str.replace(new RegExp(x, 'g'), banglaNumber[x]);
+            // }
             return str;
         },
         examcomvert(str) {
@@ -461,6 +491,33 @@ export default {
                 result = '৮';
             } else if (text == '9') {
                 result = '৯';
+            }
+            return result;
+        },
+
+
+        int_bn_to_en(text='০') {
+            var result;
+            if (text == '০') {
+                result = '০';
+            } else if (text == '১') {
+                result = '1';
+            } else if (text == '২') {
+                result = '2';
+            } else if (text == '৩') {
+                result = '3';
+            } else if (text == '৪') {
+                result = '4';
+            } else if (text == '৫') {
+                result = '5';
+            } else if (text == '৬') {
+                result = '6';
+            } else if (text == '৭') {
+                result = '7';
+            } else if (text == '৮') {
+                result = '8';
+            } else if (text == '৯') {
+                result = '9';
             }
             return result;
         },

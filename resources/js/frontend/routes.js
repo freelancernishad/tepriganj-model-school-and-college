@@ -50,9 +50,10 @@ export const routes = [
     { path: `${prefix}contact-us`, component: frontcontact_us, name:'frontcontact_us' ,meta: { layout: layout } },
     { path: `${prefix}student/register`, component: student_register, name:'student_register' ,meta: { layout: layout } },
     { path: `${prefix}student/payment`, component: payment, name:'payment' ,meta: { layout: layout } },
+    { path: `${prefix}student/tc`, component: tc, name:'tc' ,meta: { layout: layout } },
 
     { path:  `${prefix}reject/:id`, component: reject, name:'reject',meta: { layout: layout } },
-    { path: `${prefix}student/tc`, component: tc, name:'tc' ,meta: { layout: layout } },
+
   { path: "*", component: PageNotFound }
 
 ]

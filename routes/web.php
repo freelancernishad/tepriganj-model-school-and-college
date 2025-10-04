@@ -1,5 +1,4 @@
 <?php
-use App\Models\TC;
 use App\Models\Role;
 use App\Models\payment;
 use App\Models\student;
@@ -15,13 +14,15 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\frontendController;
-use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 use App\Http\Controllers\api\resultController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\api\PaymentController;
 use App\Http\Controllers\api\RoutineController;
 use App\Http\Controllers\api\studentsController;
 use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\TCController;
+use App\Models\TC;
+use Meneses\LaravelMpdf\Facades\LaravelMpdf;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -60,6 +61,41 @@ Route::get('genrate-sitemap', function () {
     return redirect(url('sitemap.xml'));
 });
 
+Route::get('/sent/ekpay/ip', function () {
+
+
+
+$curl = curl_init();
+
+ $apiUrl = 'https://tepriganjhighschool.edu.bd/get/ekpay/ip';
+curl_setopt_array($curl, array(
+  CURLOPT_URL => $apiUrl,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'GET',
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+
+});
+
+Route::get('/get/ekpay/ip', function () {
+
+    Log::info($_SERVER['REMOTE_ADDR']);
+    return $_SERVER['REMOTE_ADDR'];
+
+});
+
+
+
+
 
 
 
@@ -72,24 +108,6 @@ Route::get('/smstest', function () {
     \Mail::to('freelancernishad123@gmail.com')->send(new \App\Mail\MyTestMail($details, $subject));
     dd("Email is Sent.");
 });
-
-
-
-    Route::get('/update/invoice', function () {
-        $payments = payment::where(['method'=>'Handcash'])->get();
-
-        foreach ($payments as $value) {
-            $payment = payment::find($value->id);
-            $payment->update(['trxid'=>rand(11111,99999).time()]);
-
-        }
-        return $payment;
-
-    });
-
-
-
-
 Route::get('details', [NotificationsController::class, 'details']);
 Route::get('/unioncreate', function () {
     return view('unioncreate');
@@ -98,6 +116,8 @@ Route::get('/inviceverify', function (Request $request) {
     $trx = $request->trx;
     return redirect("/student/applicant/invoice/$trx");
 });
+
+
 Route::get('/payment/success', function (Request $request) {
     // return $request->all();
     $transId = $request->transId;
@@ -124,6 +144,10 @@ Route::get('/payment/success', function (Request $request) {
     ";
     // return redirect("/payment/success/confirm?transId=$transId");
 });
+
+
+
+
 Route::get('/payment/success/confirm', function (Request $request) {
     // return $request->all();
     $transId = $request->transId;
@@ -146,13 +170,17 @@ Route::get('/payment/success/confirm', function (Request $request) {
         $student = student::where(['AdmissionID' => $AdmissionID])->first();
         return view('applicationSuccess', compact('payment', 'student'));
     }else if ($paymentType == 'TC') {
-        return redirect(url('/tc/success/confirm?transId=' . $transId));
+           return redirect(url('/tc/success/confirm?transId=' . $transId));
 
- } else {
-        return redirect(url('/student/applicant/invoice/' . $transId));
+    } else {
+       return redirect(url('/student/applicant/invoice/' . $transId));
     }
     // return redirect("/student/applicant/copy/$payment->admissionId");
 });
+
+
+
+
 
 
 Route::get('/tc/success/confirm', function (Request $request) {
@@ -163,8 +191,7 @@ Route::get('/tc/success/confirm', function (Request $request) {
         $tc = TC::where(['studentId'=>$payment->studentId,'status'=>'active','paymentStatus'=>'Paid'])->first();
         if($tc){
             $paymentType = $payment->type;
-            return "<h1 style='text-align:center'>Wait for approval</h1>";
-            // return redirect(url('/student/tc/' . $tc->token));
+            return redirect(url('/student/tc/' . $tc->token));
         }else{
             return "Data Not Found";
         }
@@ -173,6 +200,11 @@ Route::get('/tc/success/confirm', function (Request $request) {
     }
 
 });
+
+
+
+
+
 
 
 
@@ -207,9 +239,18 @@ Route::get('pdfgen', function () {
 });
 
 
+
 Route::get('student/applicant/copy/{applicant_id}', [studentsController::class, 'applicant_copy']);
 Route::get('student/applicant/invoice/{trxid}', [studentsController::class, 'applicant_invoice']);
 Route::get('/student/exam/admit/{admissionId}/{ex_name}', [studentsController::class, 'exam_admit']);
+
+
+Route::get('/student/tc/{token}', [TCController::class, 'tc']);
+
+
+Route::get('student/m/{class}/{bisoy}', [studentsController::class, 'Mullayon']);
+
+
 
 Route::get('download/mark', [resultController::class, 'marksheet']);
 
@@ -224,12 +265,8 @@ Route::get('/pdf/{school_id}/{class}/{roll}/{year}/{exam}/{group}', [frontendCon
 
 Route::get('/marksheet/{marksheetCode}', [frontendController::class, 'PublicMarkSheet']);
 
+
 Route::get('/routines/{school_id}/{class}/{year}/download', [RoutineController::class, 'routine_download'])->name('routines.routine_download');
-
-
-
-
-
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
 
 
@@ -263,7 +300,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
         $HumanitiesStudnets = student::where(['StudentClass'=>'Nine','StudentGroup'=>'Humanities','Year'=>date('Y'),'StudentStatus'=>'Active'])->orderBy('StudentRoll','asc')->get();
         $ScienceStudnets = student::where(['StudentClass'=>'Nine','StudentGroup'=>'Science','Year'=>date('Y'),'StudentStatus'=>'Active'])->orderBy('StudentRoll','asc')->get();
 
-        $students = student::where(['StudentClass'=>'Nine','Year'=>date('Y'),'StudentStatus'=>'Active'])->orderBy('StudentRoll','asc')->get();
+        $students = student::where(['StudentClass'=>'Nine','Year'=>date('Y'),'StudentStatus'=>'Active','StudentGroup'=>'Humanities'])->orderBy('StudentRoll','asc')->get();
 
         return view('groupset',compact('HumanitiesStudnets','ScienceStudnets','students'));
     });
@@ -280,8 +317,15 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
         $veiwType = $request->veiwType;
         // $filter['status'] = 'Published';
         if($veiwType=='noticePdf'){
+            if($student_class=='Six' || $student_class=='Seven'){
 
-            $results = StudentResult::where($filter)->where('FinalResultStutus','!=','inhaled')->where('GPA','!=','F')->orderBy('failed', 'asc')->orderBy('total', 'desc')->get();
+                $results = StudentResult::where($filter)->where('FinalResultStutus','!=','inhaled')->orderBy('failed', 'asc')->orderBy('total', 'desc')->get();
+            }else{
+
+                $results = StudentResult::where($filter)->where('FinalResultStutus','!=','inhaled')->where('GPA','!=','F')->orderBy('failed', 'asc')->orderBy('total', 'desc')->get();
+            }
+
+
         }else{
             $results = StudentResult::where($filter)->orderBy('failed', 'asc')->orderBy('total', 'desc')->get();
 
@@ -295,11 +339,11 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
          if($veiwType=='noticePdf'){
 
 
-            return PdfMaker('A4',$school_id,view('admin/pdfReports.promotionResult',compact('results','pdfFileName','veiwType','schoolDetails')),$pdfFileName);
+            return PdfMaker('A4',$school_id,view('admin/pdfReports.promotionResult',compact('results','pdfFileName','veiwType','schoolDetails','school_id')),$pdfFileName);
 
 
          }elseif($veiwType=='schoolPdf'){
-            return PdfMaker('A4',$school_id,view('admin/pdfReports.promotionResult',compact('results','pdfFileName','veiwType','schoolDetails')),$pdfFileName);
+            return PdfMaker('A4',$school_id,view('admin/pdfReports.promotionResult',compact('results','pdfFileName','veiwType','schoolDetails','school_id')),$pdfFileName);
          }else{
              return view('resultpublish', compact('results','filter','schoolDetails'));
 
@@ -348,14 +392,22 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
 
     Route::get('student/{school_id}/{class}/{year}/{type}/paymnetsheet', [PaymentController::class, 'paymentsheet']);
 
+
+    Route::get('student/paymnetsheet/annual', [PaymentController::class, 'paymentsheetAnnual']);
+
+
     Route::get('payment/report', [PaymentController::class, 'paymentReport']);
     Route::get('student/report', [studentsController::class, 'reports']);
 
     Route::get('download/student/reports', [frontendController::class, 'student_at_a_glance']);
 
+    Route::get('/get/form/fillup/students',[studentsController::class , 'formfillupstudentsPdf']);
+
+
 
     Route::get('/result_sheet/pdf/{school_id}/{group}/{class}/{exam}/All/{date}', [resultController::class, 'resultViewpdf']);
     Route::get('/student_list/pdf/{year}/{class}/{school_id}', [studentsController::class, 'student_list_pdf']);
+    Route::get('/student_list_stipend/pdf/{year}/{class}/{school_id}', [studentsController::class, 'student_list_stipend_pdf']);
     Route::get('/{vue_capture?}', function () {
         // return   Auth::user()->roles->permission;
         //   Auth::user()->roles;

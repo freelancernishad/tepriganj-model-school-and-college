@@ -10,7 +10,10 @@ let logout = require('./components/auth/logout.vue').default;
 let home = require('./components/home.vue').default;
 
 let fileupload = require('./components/fileupload.vue').default;
+
+
 let applicationPermission = require('./components/applicationPermission.vue').default;
+let tcVerifications = require('./components/tcVerifications.vue').default;
 
 
 let profile = require('./components/profile.vue').default;
@@ -131,33 +134,42 @@ let questionbank = require('./components/questionbank/index.vue').default;
 let questionbanknew = require('./components/questionbank/form.vue').default;
 
 
-
-let fees = require('./components/fees/index.vue').default;
-let feesedit = require('./components/fees/edit.vue').default;
-
-let trxcheck = require('./components/trxcheck.vue').default;
-
-
 let onlineexam = require('./components/onlineexam/index.vue').default;
 let onlineexamstart = require('./components/onlineexam/start.vue').default;
 let onlineexamresult = require('./components/onlineexam/result.vue').default;
 let onlineexamView = require('./components/onlineexam/view.vue').default;
 let onlineexamnew = require('./components/onlineexam/form.vue').default;
+
+let trxcheck = require('./components/trxcheck.vue').default;
+
+let Assessmentcreate = require('./components/Assessment/create.vue').default;
+let formFillupList = require('./components/formfilup/list.vue').default;
+
+
+let fees = require('./components/fees/index.vue').default;
+let feesedit = require('./components/fees/edit.vue').default;
+
+
 let PageNotFound = require('./components/404.vue').default;
 
-let paymentSingle = require('./components/payments/payment2.vue').default;
+
 
 let prefix = '/dashboard'
 export const routes = [
 
   //Auth Routes
-  { path: `${prefix}/student/payment`, component: paymentSingle, name:'paymentSingle' ,meta: { layout: adminlayout } },
+
 
 
   { path: `${prefix}/logout`, component: logout, name:'logout',meta: { layout: adminlayout } },
 
   { path: `${prefix}/student/img`, component: fileupload, name:'fileupload',meta: { layout: blanklayout } },
+
+
   { path: `${prefix}/application/permission`, component: applicationPermission, name:'applicationPermission',meta: { layout: blanklayout } },
+
+  { path: `${prefix}/tc/verifications`, component: tcVerifications, name:'tcVerifications',meta: { layout: blanklayout } },
+
 
   { path: `${prefix}`, component: home, name:'home',meta: { layout: adminlayout } },
 
@@ -312,12 +324,26 @@ export const routes = [
 
 
 
-
   { path: `${prefix}/fees/:name`, component: fees, name:'fees',meta: { layout: adminlayout } },
   { path: `${prefix}/fees/edit/:id`, component: feesedit, name:'feesedit',meta: { layout: adminlayout } },
 
 
+
+
   { path:  `${prefix}/check/trx`, component: trxcheck, name:'trxcheck',meta: { layout: adminlayout } },
+
+
+
+
+  { path:  `${prefix}/assessments/create`, component: Assessmentcreate, name:'Assessmentcreate',meta: { layout: adminlayout } },
+
+
+
+  { path:  `${prefix}/assessments/single/create`, component: Assessmentcreate, name:'Assessmentsinglecreate',meta: { layout: blanklayout } },
+
+
+  { path:  `${prefix}/form/fill/up`, component: formFillupList, name:'formFillupList',meta: { layout: blanklayout } },
+
 
 
 

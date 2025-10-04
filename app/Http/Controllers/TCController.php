@@ -86,7 +86,6 @@ class TCController extends Controller
                 $tcData['paymentStatus'] = 'Unpaid';
                 $tcData['sl'] = $this->tcSL();
 
-                // return $tcData;
 
                 $tc = TC::create($tcData);
             }
@@ -110,51 +109,6 @@ class TCController extends Controller
                 'StudentAddress'=>$request->StudentAddress,
             ];
             $student->update($studentUpdateData);
-
-
-
-
-
-            $sentDataToAnotherSchool = [
-                "sscroll"=>$request->sscRoll,
-                "StudentName"=>$request->name,
-                "StudentClass"=>'Ten',
-                "StudentGroup"=>$request->group,
-                "StudentRoll"=>$request->roll,
-                "Year"=>"2023",
-                "StudentDateOfBirth"=>$request->dateOfBirth,
-                "StudentFatherNameBn"=>$request->fatherName,
-                "StudentMotherNameBn"=>$request->motherName,
-                "division"=>$request->division,
-                "district"=>$request->district,
-                "upazila"=>$request->upazila,
-                "union"=>$request->union,
-                "post_office"=>$request->post_office,
-                "StudentAddress"=>$request->StudentAddress,
-                "StudentStatus"=>'old',
-                "StudentID"=>'123'.time(),
-                "AdmissionID"=>'123'.time(),
-            ];
-
-
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://tepriganjhighschool.edu.bd/api/another/school/data',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $sentDataToAnotherSchool,
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-             $response;
 
 
 
@@ -262,7 +216,7 @@ class TCController extends Controller
 
 
 
-              $qrcode = "<img src='https://chart.apis.google.com/chart?cht=qr&chl=$qrurl&chs=130'/>";
+              $qrcode = "<img src='https://api.qrserver.com/v1/create-qr-code/?data=$qrurl&size=100x100'/>";
 
 
 
@@ -294,6 +248,8 @@ class TCController extends Controller
             $typeName = 'নিয়মিত';
             if($group=='regular'){
                 $typeName = 'নিয়মিত';
+            }elseif($group=='quality_improvement'){
+                $typeName = 'মানউন্নয়ন';
             }else{
                 $typeName = 'অনিয়মিত';
             }
