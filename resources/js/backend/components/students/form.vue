@@ -689,6 +689,17 @@
                 </div>
 
 
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form_label">ডিসকাউন্ট শতকরা </label>
+                        <input class="form-control" type="text"  placeholder="ডিসকাউন্ট শতকরা" name="ডিসকাউন্ট শতকরা" v-model="form.discount"  />
+
+                    </div>
+                </div>
+
+
+
                 </div>
 </fieldset>
 <div class="row">
@@ -798,6 +809,7 @@ export default {
             StudentTranferStatus:null,
             AplicationStatus:null,
             ThisMonthPaymentStatus:null,
+            discount:0,
             },
 
             editid:'',

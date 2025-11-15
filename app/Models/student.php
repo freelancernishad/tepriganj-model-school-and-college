@@ -76,6 +76,7 @@ class student extends Model
         'fatherNidB',
         'motherNidF',
         'motherNidB',
+        'discount',
 
 
 

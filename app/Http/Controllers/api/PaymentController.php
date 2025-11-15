@@ -255,6 +255,10 @@ class PaymentController extends Controller
 
         if($student->stipend=='No'){
             $monthly_fee = SchoolFee::where(['class'=>$StudentClass,'type'=>'monthly_fee'])->first()->fees;
+            $discount = $student->discount;
+            if($discount>0){
+                $monthly_fee = $monthly_fee - ($monthly_fee * $discount / 100);
+            }
         }else{
             $monthly_fee = 0;
         }
