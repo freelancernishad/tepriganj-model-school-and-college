@@ -340,10 +340,10 @@ class PaymentController extends Controller
         $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
         if(!$Pension_and_Welfare_Trust_feeCount){
-            array_push($monthlyPaid,[
-                'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
-                'amount'=>100,
-            ]);
+            // array_push($monthlyPaid,[
+            //     'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+            //     'amount'=>100,
+            // ]);
         }
     }
         // return $monthlyPaid;
@@ -395,10 +395,10 @@ class PaymentController extends Controller
                     $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
                     if(!$Pension_and_Welfare_Trust_feeCount){
-                        array_push($monthlyPaid,[
-                            'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
-                            'amount'=>100,
-                        ]);
+                        // array_push($monthlyPaid,[
+                        //     'key'=>'অবসর ও কল্যাণ ট্রাস্ট',
+                        //     'amount'=>100,
+                        // ]);
                     }
 
 
@@ -463,9 +463,17 @@ class PaymentController extends Controller
         $ex_name_list = ex_name_list();
         foreach ($ex_name_list as $exName) {
 
+
+            if($exName=='Annual Examination'){
+                $exName = 'Annual_Examination';
+            }
+            Log::info($exName);
+
         $Exam_feeCount = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>$exName,'status'=>1])->count();
+
+        Log::info($Exam_feeCount);
         if($Exam_feeCount){
-           $Schoolfee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>$exName])->first();;
+           $Schoolfee = SchoolFee::where(['class'=>$StudentClass,'type'=>'exam_fee','sub_type'=>$exName])->first();
             $exFee = $Schoolfee->fees;
             $index_number = $Schoolfee->index_number;
             $Exam_feeStatusCount =  $this->PaymentCount(['type' => 'exam_fee','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession,'ex_name' => $exName],'count');
@@ -1181,6 +1189,12 @@ class PaymentController extends Controller
         if($student->stipend=='No'){
             $monthly_fee = SchoolFee::where(['class'=>$class,'type'=>'monthly_fee'])->first()->fees;
 
+            $discount = $student->discount;
+            if($discount>0){
+                $monthly_fee = $monthly_fee - ($monthly_fee * $discount / 100);
+            }
+
+
         }else{
             $monthly_fee = 0;
         }
@@ -1223,12 +1237,12 @@ class PaymentController extends Controller
       $Pension_and_Welfare_Trust_feeCount =  $this->PaymentCount(['type' => 'Pension_and_Welfare_Trust','admissionId' => $AdmissionID,'status' => 'Paid','year' => $yearSession],'count');
 
       if(!$Pension_and_Welfare_Trust_feeCount){
-          array_push($monthlyPaid,[
-              'key'=>'Pension_and_Welfare_Trust',
-              'amount'=>100,
-              'sub_type'=>'',
-          ]);
-          $totalamount +=  100;
+        //   array_push($monthlyPaid,[
+        //       'key'=>'Pension_and_Welfare_Trust',
+        //       'amount'=>100,
+        //       'sub_type'=>'',
+        //   ]);
+        //   $totalamount +=  100;
 
       }
 
