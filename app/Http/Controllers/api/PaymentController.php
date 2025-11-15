@@ -1731,14 +1731,14 @@ class PaymentController extends Controller
         );
         if ($formtype == 'create') {
             $data = payment::create($data);
-            try {
-                $msgs = sendMessages($messages);
-                foreach ($msgs as $value) {
-                    array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
-                }
-            } catch (Exception $e) {
-                array_push($responsemessege, $e->getMessage());
-            }
+            // try {
+            //     $msgs = sendMessages($messages);
+            //     foreach ($msgs as $value) {
+            //         array_push($responsemessege, 'Sms Successfully Sent To : ' . $value["number"]);
+            //     }
+            // } catch (Exception $e) {
+            //     array_push($responsemessege, $e->getMessage());
+            // }
         } else {
             $payment = payment::find($id);
             $data = $payment->update($data);
