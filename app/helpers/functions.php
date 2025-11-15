@@ -1840,27 +1840,34 @@ function characterCount($string)
     return $result;
 }
 
- function StudentAdmissionId($admition_id='',$school_id)
+function StudentAdmissionId($school_id)
 {
-    $regYear = date("Y");
-    $studentCount =  student::where(['school_id'=>$school_id,'Year'=>$regYear,'StudentStatus'=>'Pending'])->count();
-    if($studentCount>0){
-    $student =  student::where(['school_id'=>$school_id,'Year'=>$regYear])->orderBy('id','desc')->latest()->first();
-    $admition_id = $student->AdmissionID;
-    $mutiple = (rand(1, 9));
-        if($admition_id=='' || $admition_id==null){
-                $one = "0001";
-                $year = date("y");
-              return  $admition_ID = $school_id . $year . $one;
-             }
-             $admition_ID =  $admition_id;
-             return $admition_ID += $mutiple;
-        }else{
-            $one = "0001";
-            $year = date("y");
-           return $admition_ID = $school_id . $year . $one;
-        }
+    $year = date("y");  // last 2 digit year
+
+    // সর্বশেষ অ্যাডমিশন আইডি আনো
+    $lastStudent = student::where([
+        'school_id' => $school_id,
+        'Year'      => date("Y"),
+    ])->orderBy('AdmissionID', 'desc')->first();
+
+    // যদি কোনো student না থাকে → প্রথম আইডি
+    if (!$lastStudent) {
+        return $school_id . $year . "0001";
+    }
+
+    // সর্বশেষ আইডি থেকে serial বের করি
+    $lastId = $lastStudent->AdmissionID;
+
+    // শেষ 4 digit নেওয়া
+    $lastSerial = intval(substr($lastId, -4));
+
+    // next serial
+    $nextSerial = str_pad($lastSerial + 1, 4, '0', STR_PAD_LEFT);
+
+    // নতুন Admission ID Return
+    return $school_id . $year . $nextSerial;
 }
+
 
  function StudentId($class, $roll,$school_id,$StudentGroup='Humanities',$year='')
 {
