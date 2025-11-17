@@ -1659,6 +1659,28 @@ class PaymentController extends Controller
     public function payments(Request $request)
     {
         $datatype = $request->datatype;
+
+
+
+    // Map logic
+    if ($request->filled('filter.type')) {
+        $typeValue = $request->input('filter.type');
+
+        // যদি বাংলা "মাসিক বেতন" আসে, সেটাকে monthly_fee-এ map করুন
+        if ($typeValue === 'মাসিক বেতন') {
+            // নিচে request-এর filter[type] কে override করা হচ্ছে
+            $request->merge([
+                'filter' => array_merge(
+                    $request->input('filter'),
+                    ['type' => 'monthly_fee']
+                )
+            ]);
+        }
+    }
+
+
+
+
         $datas = QueryBuilder::for(payment::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
