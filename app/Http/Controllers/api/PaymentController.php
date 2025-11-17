@@ -1704,7 +1704,7 @@ class PaymentController extends Controller
             'method' => $r->method,
             'amount' => $r->amount,
             'bokeya' => $oldItemg,
-            'type' => $r->type,
+            'type' => $r->type=="মাসিক বেতন" ? "monthly_fee" : $r->type,
             'type_name' => $r->type_name,
             'date' => $r->date,
             'month' => $r->month,
