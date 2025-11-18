@@ -1052,12 +1052,18 @@ function base64($Image)
 {
     //  return $Image;
 
-    if (File::exists(env('FILE_PATH') . $Image)) {
-
-        $Image = env('FILE_PATH') . $Image;
-    } else {
+    if(!$Image){
         $Image = env('FILE_PATH') . 'backend/image.png';
+    }else{
+        if (File::exists(env('FILE_PATH') . $Image)) {
+
+            $Image = env('FILE_PATH') . $Image;
+        } else {
+            $Image = env('FILE_PATH') . 'backend/image.png';
+        }
     }
+
+
 
     $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
     return $b64image = "data:image/$ext;base64," . base64_encode(file_get_contents($Image));
