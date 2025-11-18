@@ -2182,7 +2182,7 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
     <td>
         <p class='fontsize2'>$school_details->SCHOLL_NAME</p>
         <p class='fontsize1'>$school_details->SCHOLL_ADDRESS </p>
-        <p class='fontsize1' style='font-size:12px'>website: www.tepriganjhighschool.edu.bd </p>
+        <p class='fontsize1' style='font-size:12px'>website: www.tmscedu.com </p>
     </td>
     <td style='text-align: right'>
     <div class='imgdiv'>
@@ -2200,7 +2200,7 @@ public function usercreate($school_id,$name,$email,$password,$id,$class,$type)
 
     <div class='examNameHead' style='margin-top:20px'>
         <p class='examNamePara'>প্রবেশ পত্র</p>
-        <p style='margin:0px !important;margin-top:10px;font-size:18px'>".ex_name($ex_name)."- ২০২৫</p>
+        <p style='margin:0px !important;margin-top:10px;font-size:18px'>".ex_name($ex_name)."- ".int_en_to_bn(date('Y'))."</p>
     </div>
 
 
