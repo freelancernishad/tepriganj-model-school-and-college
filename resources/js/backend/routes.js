@@ -52,6 +52,7 @@ let payment = require('./components/payments/index.vue').default;
 let payment_reports = require('./components/payments/reports.vue').default;
 let paymentsearch = require('./components/payments/list.vue').default;
 let paymentcreate = require('./components/payments/create.vue').default;
+let bulkpayment = require('./components/payments/MultiStudentPayment.vue').default;
 
 
 // routines Components
@@ -212,6 +213,9 @@ export const routes = [
   { path: `${prefix}/payment/reports`, component: payment_reports, name:'payment_reports',meta: { layout: adminlayout } },
   { path: `${prefix}/payment/:classname/:year/:month/:type`, component: paymentsearch, name:'paymentsearch',meta: { layout: adminlayout } },
   { path: `${prefix}/payment/:create/:classname/:year/:month/:type/:id`, component: paymentcreate, name:'paymentcreate',meta: { layout: adminlayout } },
+
+  { path: `${prefix}/payment/bulk/:classname/:year/:month/:type`, component: bulkpayment, name:'bulkpayment',meta: { layout: adminlayout } },
+
   { path: `${prefix}/payment/:create/:id`, component: paymentcreate, name:'paymentedit',meta: { layout: adminlayout } },
 
 
