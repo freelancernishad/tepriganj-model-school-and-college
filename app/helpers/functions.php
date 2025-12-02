@@ -1848,7 +1848,7 @@ function characterCount($string)
     return $result;
 }
 
-function StudentAdmissionId($school_id)
+function StudentAdmissionId($addmitionid,$school_id)
 {
     $year = date("y");  // last 2 digit year
 
