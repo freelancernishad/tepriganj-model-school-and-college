@@ -384,6 +384,8 @@ export default {
                 str = "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস";
             } else if (str == 'B_and_B') {
                 str = "ইতিহাস ও সামাজিক বিজ্ঞান";
+            } else if (str == 'B_and_B') {
+                str = "বাংলাদেশ ও বিশ্ব পরিচয়";
             } else if (str == 'Religion') {
                 str = "ধর্ম ও নৈতিক শিক্ষা";
             } else if (str == 'ReligionIslam') {
