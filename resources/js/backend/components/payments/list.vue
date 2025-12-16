@@ -101,6 +101,10 @@
                     <div class="col-1-xxxl col-xl-2 col-lg-3 col-12 form-group">
                         <button type="submit" @click="filter" class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
                     </div>
+
+                    <div class="col-1-xxxl col-xl-2 col-lg-3 col-12 form-group">
+                        <router-link :to="`/dashboard/payment/bulk/${payment_class}/${year}/${month}/${type}`" class="fw-btn-fill btn-info">Bulk Payment</router-link>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table text-nowrap">
