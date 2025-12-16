@@ -271,9 +271,9 @@ export default {
                 str = "vugol";
             } else if (str == 'অর্থনীতি') {
                 str = "orthoniti";
-            } else if (str == 'বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস') {
+            } else if (str == 'ইতিহাস') {
                 str = "itihas";
-            } else if (str == 'ইতিহাস ও সামাজিক বিজ্ঞান') {
+            } else if (str == 'বাংলাদেশ ও বিশ্ব পরিচয়') {
                 str = "B_and_B";
             } else if (str == 'ধর্ম ও নৈতিক শিক্ষা') {
                 str = "Religion";
@@ -381,9 +381,7 @@ export default {
             } else if (str == 'orthoniti') {
                 str = "অর্থনীতি";
             } else if (str == 'itihas') {
-                str = "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস";
-            } else if (str == 'B_and_B') {
-                str = "ইতিহাস ও সামাজিক বিজ্ঞান";
+                str = "ইতিহাস";
             } else if (str == 'B_and_B') {
                 str = "বাংলাদেশ ও বিশ্ব পরিচয়";
             } else if (str == 'Religion') {
