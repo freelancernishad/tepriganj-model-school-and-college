@@ -34,7 +34,7 @@
                                             SELECT
                                         </option>
                                         <option>Admission Result</option>
-                                        <option v-for="classlist in classess">{{ classlist }}</option>
+                                        <option v-for="classlist in classess" :key="classlist">{{ classlist }}</option>
                                         <option>SSC Result</option>
                                     </select>
                                 </div>
@@ -46,7 +46,7 @@
                                     <select class='form-control' style='width: 100%;' v-model='filterdata.group'
                                         @change="callSubjects" id='group' required>
                                         <option value=''>select</option>
-                                        <option v-for="group in groups">{{ group }}</option>
+                                        <option v-for="group in groups" :key="group">{{ group }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -56,7 +56,7 @@
                                     <select class="form-control" style="width: 100%;" v-model="filterdata.examType"
                                         @change="callSubjects" id="ExamType" required>
                                         <option value="">select</option>
-                                        <option v-for="exam in exams">{{ exam }}</option>
+                                        <option v-for="exam in exams" :value="exam" :key="exam">{{ ex_name(exam) }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@
                                     <select class='form-control' style='width: 100%;' v-model="filterdata.subject"
                                         id='Subject' @change="callreligion" required>
                                         <option value=''>SELECT</option>
-                                        <option v-for="subject in subjects">{{ subject }}</option>
+                                        <option v-for="subject in subjects" :key="subject">{{ subject }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                                     <select class='form-control' style='width: 100%;' v-model="filterdata.religion"
                                         id='Subject' required>
                                         <option value=''>SELECT</option>
-                                        <option v-for="religion in religions">{{ religion }}</option>
+                                        <option v-for="religion in religions" :key="religion">{{ religion }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
                                     <select class='form-control' style='width: 100%;' v-model="filterdata.year"
                                         id='Subject' required>
                                         <option value=''>SELECT</option>
-                                        <option v-for="year in years">{{ year }}</option>
+                                        <option v-for="year in years" :key="year">{{ year }}</option>
                                     </select>
                                 </div>
                             </div>
