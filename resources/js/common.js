@@ -271,7 +271,7 @@ export default {
                 str = "vugol";
             } else if (str == 'অর্থনীতি') {
                 str = "orthoniti";
-            } else if (str == 'ইতিহাস') {
+            } else if (str == 'বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস') {
                 str = "itihas";
             } else if (str == 'বাংলাদেশ ও বিশ্ব পরিচয়') {
                 str = "B_and_B";
@@ -311,7 +311,7 @@ export default {
             //         "জীব-বিজ্ঞান":"Biology",
             //         "ভূগোল":"vugol",
             //         "অর্থনীতি":"orthoniti",
-            //         "ইতিহাস":"itihas",
+            //         "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস":"itihas",
             //         "ইতিহাস ও সামাজিক বিজ্ঞান":"B_and_B",
             //         "ধর্ম":"Religion",
             //         "ইসলাম-ধর্ম":"ReligionIslam",
@@ -381,7 +381,7 @@ export default {
             } else if (str == 'orthoniti') {
                 str = "অর্থনীতি";
             } else if (str == 'itihas') {
-                str = "ইতিহাস";
+                str = "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস";
             } else if (str == 'B_and_B') {
                 str = "বাংলাদেশ ও বিশ্ব পরিচয়";
             } else if (str == 'Religion') {
@@ -422,7 +422,7 @@ export default {
             //     "Biology": "জীব-বিজ্ঞান",
             //     "vugol": "ভূগোল",
             //     "orthoniti": "অর্থনীতি",
-            //     "itihas": "ইতিহাস",
+            //     "itihas": "বাংলাদেশ ও বিশ্ব সভ্যতার ইতিহাস",
             //     "B_and_B": "ইতিহাস ও সামাজিক বিজ্ঞান",
             //     "Religion": "ধর্ম",
             //     "ReligionIslam": "ইসলাম-ধর্ম",
