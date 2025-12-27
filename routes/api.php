@@ -1,5 +1,8 @@
 <?php
 
+use Carbon\Carbon;
+use App\Models\student;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -18,10 +21,10 @@ use App\Http\Controllers\SchoolFeeController;
 use App\Http\Controllers\api\resultController;
 use App\Http\Controllers\api\staffsController;
 use App\Http\Controllers\AssessmentController;
+
 use App\Http\Controllers\countryApiController;
 use App\Http\Controllers\OnlineexamController;
 use App\Http\Controllers\api\GalleryController;
-
 use App\Http\Controllers\api\PaymentController;
 use App\Http\Controllers\api\RoutineController;
 use App\Http\Controllers\api\HomeworkController;
@@ -354,9 +357,94 @@ Route::get('/assessment/students',[AssessmentController::class , 'getStudent']);
 
 
 
-Route::post('atten/webhook',function(Request $request){
 
-    $webhookdata = $request->all();
-    Log::info($webhookdata);
+Route::post('atten/webhook', function (Request $request) {
 
+    $payload = $request->all();
+    Log::info($payload);
+
+    $data = $payload['data'] ?? null;
+    if (!$data) {
+        return response()->json('Invalid payload', 400);
+    }
+
+    // punch করা student
+    $student = Student::find($data['user_id']);
+    if (!$student) {
+        return response()->json('Student not found', 404);
+    }
+
+    $date  = Carbon::parse($data['timestamp'])->toDateString();
+    $month = Carbon::parse($data['timestamp'])->format('F');
+    $year  = Carbon::parse($data['timestamp'])->year;
+
+    // আজকের attendance row খোঁজা
+    $attendanceRow = Attendance::where([
+        'student_class' => $student->StudentClass,
+        'date'          => $date,
+        'year'          => $year,
+    ])->first();
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASE 1: প্রথম punch → attendance নাই
+    |--------------------------------------------------------------------------
+    */
+    if (!$attendanceRow) {
+
+        // ঐ class-এর সব student
+        $students = Student::where([
+            'StudentClass'  => $student->StudentClass,
+            'Year'          => $student->Year,
+            'StudentStatus' => $student->StudentStatus,
+        ])->get();
+
+        $attendanceArray = [];
+
+        foreach ($students as $stu) {
+            $attendanceArray[] = [
+                'id'         => $stu->id,
+                'stu_roll'   => $stu->roll,
+                'stu_id'     => $stu->stu_id,
+                'stu_name'   => $stu->name,
+                'phone'      => $stu->phone,
+                'attendence' => ($stu->id == $student->id) ? 'Present' : 'Absent',
+                'status'     => 'pending',
+            ];
+        }
+
+        Attendance::create([
+            'school_id'     => $student->school_id,
+            'date'          => $date,
+            'month'         => $month,
+            'year'          => $year,
+            'student_class' => $student->StudentClass,
+            'attendance'    => json_encode($attendanceArray, JSON_UNESCAPED_UNICODE),
+            'status'        => 'Pending',
+        ]);
+
+        return response()->json('Attendance created & student marked present');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASE 2: attendance already আছে → শুধু update
+    |--------------------------------------------------------------------------
+    */
+    $attendanceList = json_decode($attendanceRow->attendance, true);
+
+    foreach ($attendanceList as &$row) {
+        if ($row['stu_id'] == $student->stu_id) {
+            $row['attendence'] = 'Present';
+            break;
+        }
+    }
+
+    $attendanceRow->attendance = json_encode($attendanceList, JSON_UNESCAPED_UNICODE);
+    $attendanceRow->save();
+
+    return response()->json('Student attendance updated');
 });
+
+
+// INSERT INTO `attendances` (`id`, `school_id`, `date`, `month`, `year`, `student_class`, `attendance`, `status`, `message_status`, `created_at`, `updated_at`) VALUES (NULL, '2019', '2023-01-11', 'January', '2023', 'Six', '[{\"id\":341,\"stu_roll\":\"12\",\"fatherName\":\"MD.ASHRAFUL\",\"motherName\":\"MST.AKTER BANU\",\"stu_id\":\"201923062012\",\"stu_name\":\"\\u09b8\\u09c1\\u09ae\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01780975682\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":342,\"stu_roll\":\"4\",\"fatherName\":\"Md. Aktar hossin\",\"motherName\":\"mst. Shanaz khatun\",\"stu_id\":\"201923062004\",\"stu_name\":\"\\u0986\\u0996\\u09bf \\u09ae\\u09a8\\u09bf \\u09ae\\u09bf\\u09b6\\u09c1\",\"phone\":\"01770630265\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":343,\"stu_roll\":\"26\",\"fatherName\":\"Ramesh chandra ray\",\"motherName\":\"menoka rani\",\"stu_id\":\"201923062016\",\"stu_name\":\"\\u0995\\u09ae\\u09b2\\u09c0\\u0995\\u09be \\u09b0\\u09be\\u09a8\\u09c0\",\"phone\":\"01723706109\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":344,\"stu_roll\":\"18\",\"fatherName\":\"md. Aminur rahman\",\"motherName\":\"MST.shajade begum\",\"stu_id\":\"201923062018\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u0986\\u09b8\\u09be\\u09a6\\u09c1\\u099c\\u09cd\\u099c\\u09be\\u09ae\\u09be\\u09a8 \\u0986\\u0995\\u09be\\u09b6\",\"phone\":\"01744873590\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":345,\"stu_roll\":\"15\",\"fatherName\":\"md. Maznu mia\",\"motherName\":\"mst. Anna begum\",\"stu_id\":\"201923062015\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b8\\u09be\\u09a6\\u09bf\\u0995\\u09c1\\u09b2 \\u0987\\u09b8\\u09b2\\u09be\\u09ae\",\"phone\":\"01705128708\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":347,\"stu_roll\":\"17\",\"fatherName\":\"Sukumar roy\",\"motherName\":\"biroja rani\",\"stu_id\":\"201923062017\",\"stu_name\":\"\\u09a6\\u09bf\\u09aa\\u09cd\\u09a4\\u09c0 \\u09b0\\u09be\\u09a3\\u09c0\",\"phone\":\"01755405717\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":348,\"stu_roll\":\"9\",\"fatherName\":\"bidhan chandra roy\",\"motherName\":\"protima rani\",\"stu_id\":\"201923062009\",\"stu_name\":\"\\u0985\\u09ad\\u09bf\\u099c\\u09bf\\u09ce \\u099a\\u09a8\\u09cd\\u09a6\\u09cd\\u09b0 \\u09b0\\u09be\\u09df\",\"phone\":\"01744762555\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":350,\"stu_roll\":\"1\",\"fatherName\":\"MD. Murad hossain modol\",\"motherName\":\"mst.moyna begum\",\"stu_id\":\"201923062001\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u0986\\u09b2 \\u0986\\u09ae\\u09bf\\u09a8 \\u09ae\\u09a8\\u09cd\\u09a1\\u09b2\",\"phone\":\"01965979256\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":351,\"stu_roll\":\"14\",\"fatherName\":\"md. Sarfat ali\",\"motherName\":\"Mst. Mukta begum\",\"stu_id\":\"201923062014\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09ae\\u09be\\u09b8\\u09c1\\u09a6 \\u09b0\\u09be\\u09a8\\u09be\",\"phone\":\"01776865958\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":353,\"stu_roll\":\"3\",\"fatherName\":\"md. Sahidul islam\",\"motherName\":\"mst.sahaj parvin\",\"stu_id\":\"201923062003\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u09b8\\u09c1\\u09ac\\u09b0\\u09cd\\u09a8\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0 \\u09b8\\u09cd\\u09ac\\u09aa\\u09cd\\u09a8\\u09be\",\"phone\":\"01311882198\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":354,\"stu_roll\":\"2\",\"fatherName\":\"md. Tonuman islam\",\"motherName\":\"mst.sukhi khatun\",\"stu_id\":\"201923062002\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b8\\u09cc\\u09b0\\u09ad \\u09b9\\u09cb\\u09b8\\u09c7\\u09a8\",\"phone\":\"01788013472\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":356,\"stu_roll\":\"6\",\"fatherName\":\"Nazrul islam\",\"motherName\":\"Mst. Forida yesmin\",\"stu_id\":\"201923062006\",\"stu_name\":\"\\u09ab\\u09b0\\u09bf\\u09a6\\u09c1\\u09b2 \\u0987\\u09b8\\u09b2\\u09be\\u09ae\",\"phone\":\"01784985744\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":358,\"stu_roll\":\"8\",\"fatherName\":\"tarikul islam\",\"motherName\":\"moriom begum\",\"stu_id\":\"201923062008\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b9\\u09be\\u099b\\u09be\\u09a8 \\u0986\\u09b2\\u09c0\",\"phone\":\"01767176019\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":360,\"stu_roll\":\"16\",\"fatherName\":\"md. Ajijul haque\",\"motherName\":\"mst. Mariam begum\",\"stu_id\":\"201923062016\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09ae\\u09a8\\u09bf\\u09b0\\u09c1\\u09b2 \\u0987\\u09b8\\u09b2\\u09be\\u09ae\",\"phone\":\"01307330057\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":362,\"stu_roll\":\"5\",\"fatherName\":\"md. Jamser ali\",\"motherName\":\"mst. Mazeda begum\",\"stu_id\":\"201923062005\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u09b0\\u09c1\\u09ae\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01706786297\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":364,\"stu_roll\":\"10\",\"fatherName\":\"md. Arphan ali\",\"motherName\":\"surza banu\",\"stu_id\":\"201923062010\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b8\\u09c1\\u09ae\\u09a8 \\u0987\\u09b8\\u09b2\\u09be\\u09ae\",\"phone\":\"01321283993\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":365,\"stu_roll\":\"13\",\"fatherName\":\"md. Surus ali\",\"motherName\":\"Mst. Lipi akter\",\"stu_id\":\"201923062013\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b2\\u09bf\\u0996\\u09a8 \\u0987\\u09b8\\u09b2\\u09be\\u09ae\",\"phone\":\"01713769893\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":367,\"stu_roll\":\"11\",\"fatherName\":\"liton chandra\",\"motherName\":\"nilema rani\",\"stu_id\":\"201923062011\",\"stu_name\":\"\\u09b6\\u09c1\\u09ad \\u09aa\\u09cd\\u09b0\\u09ad\\u09be\\u09a4\",\"phone\":\"01721558036\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":368,\"stu_roll\":\"21\",\"fatherName\":\"ROBIUL islam\",\"motherName\":\"jharna begum\",\"stu_id\":\"201923062021\",\"stu_name\":\"\\u09b0\\u09c1\\u09ac\\u09bf\\u09a8\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01984364411\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":371,\"stu_roll\":\"19\",\"fatherName\":\"ROBIUL islam\",\"motherName\":\"mst. Alif laila\",\"stu_id\":\"201923062019\",\"stu_name\":\"\\u0986\\u09b0\\u09be\\u09ab\\u09be\\u09a4 \\u0987\\u09b8\\u09b2\\u09be\\u09ae \\u0986\\u09ac\\u09bf\\u09b0\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":372,\"stu_roll\":\"25\",\"fatherName\":\"md. Joynal abedin\",\"motherName\":\"Mst. kamola begum\",\"stu_id\":\"201923062025\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u099c\\u09c1\\u0987 \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01740261219\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":373,\"stu_roll\":\"22\",\"fatherName\":\"vabesh chandra ray\",\"motherName\":\"shapna rani\",\"stu_id\":\"201923062022\",\"stu_name\":\"\\u09ac\\u09c3\\u09b7\\u09cd\\u099f\\u09bf \\u09b0\\u09be\\u09a8\\u09c0\",\"phone\":\"01306048027\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":375,\"stu_roll\":\"7\",\"fatherName\":\"FORIdul islam\",\"motherName\":\"peara begum\",\"stu_id\":\"201923062007\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u099c\\u09be\\u09b9\\u09bf\\u09a6 \\u09b9\\u09be\\u09b8\\u09be\\u09a8\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":376,\"stu_roll\":\"20\",\"fatherName\":\"md. Rostom ali\",\"motherName\":\"Rofika begum\",\"stu_id\":\"201923062020\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u09b0\\u09be\\u09ab\\u09bf\\u0989\\u09b2 \\u0987\\u09b8\\u09b2\\u09be\\u09ae \\u09b0\\u09be\\u09b9\\u09c0\",\"phone\":\"01788248681\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":377,\"stu_roll\":\"23\",\"fatherName\":\"semanta chandra roy\",\"motherName\":\"tiloktoma\",\"stu_id\":\"201923062023\",\"stu_name\":\"\\u0995\\u09b0\\u09c1\\u09a8\\u09be \\u09b0\\u09be\\u09a8\\u09c0 \\u09b0\\u09be\\u09df\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":378,\"stu_roll\":\"24\",\"fatherName\":\"md. Minhaj\",\"motherName\":\"Mst. Golapi\",\"stu_id\":\"201923062024\",\"stu_name\":\"\\u0993\\u09df\\u09be\\u09b2\\u09bf\\u09a6 \\u09b9\\u09be\\u09b8\\u09be\\u09a8 \\u09b0\\u09bf\\u09df\\u09be\\u09a6\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":379,\"stu_roll\":\"29\",\"fatherName\":\"md. Omor faruk\",\"motherName\":\"mst. Nargis akter\",\"stu_id\":\"201923062029\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u0989\\u09ae\\u09cd\\u09ae\\u09c7 \\u09ab\\u09be\\u09b0\\u09bf\\u099c\\u09be\",\"phone\":\"01723997045\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":380,\"stu_roll\":\"28\",\"fatherName\":\"md. hafizur rahman\",\"motherName\":\"mst. RUMA akter\",\"stu_id\":\"201923062028\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u09b9\\u09c7\\u09a8\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01794839263\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":381,\"stu_roll\":\"27\",\"fatherName\":\"md. MOKADdes hossan\",\"motherName\":\"anoara AKHtar\",\"stu_id\":\"201923062027\",\"stu_name\":\"\\u09ae\\u09cb\\u0983 \\u0986\\u09b9\\u09b8\\u09be\\u09a8 \\u09b9\\u09be\\u09ac\\u09bf\\u09ac \\u0986\\u09b2\\u09bf\\u09ab\",\"phone\":\"01762608619\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":382,\"stu_roll\":\"30\",\"fatherName\":\"md. Shahajahan ali\",\"motherName\":\"mst. rupali begum\",\"stu_id\":\"201923062030\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u09b8\\u09c1\\u09ae\\u09be\\u0987\\u09df\\u09be \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01737749408\",\"attendence\":\"Absent\",\"status\":\"pending\"},{\"id\":383,\"stu_roll\":\"31\",\"fatherName\":\"topon CHANDRo roy\",\"motherName\":\"shondha rani roy\",\"stu_id\":\"201923062031\",\"stu_name\":\"\\u09b8\\u09cc\\u09b0\\u09ad \\u099a\\u09a8\\u09cd\\u09a6\\u09cd\\u09b0 \\u09b0\\u09be\\u09df\",\"phone\":\"01923036995\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":384,\"stu_roll\":\"32\",\"fatherName\":\"Md. hafizul islam\",\"motherName\":\"mst. Yasmin akter\",\"stu_id\":\"201923062032\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u09b9\\u09cd\\u09af\\u09be\\u09aa\\u09bf \\u0986\\u0995\\u09cd\\u09a4\\u09be\\u09b0\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"},{\"id\":385,\"stu_roll\":\"33\",\"fatherName\":\"md. Asadul haque\",\"motherName\":\"mst. Pervin begum\",\"stu_id\":\"201923062033\",\"stu_name\":\"\\u09ae\\u09cb\\u099b\\u09be\\u0983 \\u0986\\u09b6\\u09be \\u09ae\\u09a8\\u09bf\",\"phone\":\"01737749408\",\"attendence\":\"Present\",\"status\":\"pending\"}]', NULL, 'Pending', '2023-01-11 21:45:03', '2023-01-11 21:45:03')
