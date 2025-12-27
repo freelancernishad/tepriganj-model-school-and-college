@@ -387,7 +387,7 @@ function subjectCol($subject)
 
    function ex_name_list($name='en'){
 
-        $ex_en_name = ['Half_yearly_examination','Half_yearly_evaluation','Annual_Examination','Annual_assessment','Model_test_exam','Pre_selection_examination','Selective_Exam','Continuous_assessment','Summative_Assessment'];
+        $ex_en_name = ['Half_yearly_examination','Half_yearly_evaluation','Annual Examination','Annual_assessment','Model_test_exam','Pre_selection_examination','Selective_Exam','Continuous_assessment','Summative_Assessment'];
 
 
        $ex_bn_name =  ['অর্ধ বার্ষিক পরীক্ষার ফি','অর্ধ বার্ষিক মূল্যায়ন','বার্ষিক পরীক্ষা','বার্ষিক মূল্যায়ন','মডেল টেস্ট পরীক্ষা','প্রাক-নির্বাচনী পরীক্ষা','নির্বাচনী পরীক্ষা','ধারাবাহিক মূল্যায়ন','সামষ্টিক মূল্যায়ন'];
