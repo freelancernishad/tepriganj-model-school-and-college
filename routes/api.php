@@ -393,14 +393,6 @@ Route::post('atten/webhook', function (Request $request) {
         $phone = $phone;
     }
 
-    if (!(strlen($phone) == 13 && str_starts_with($phone, '88'))) {
-        Log::warning('Invalid phone number', [
-            'student_id' => $student->id,
-            'phone' => $rawPhone
-        ]);
-        $phone = null;
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Today Attendance Row
