@@ -390,7 +390,7 @@ Route::post('atten/webhook', function (Request $request) {
     $phone = preg_replace('/\D/', '', $rawPhone); // remove + - space
 
     if (strlen($phone) == 11) {
-        $phone = '88' . $phone;
+        $phone = $phone;
     }
 
     if (!(strlen($phone) == 13 && str_starts_with($phone, '88'))) {
