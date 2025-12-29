@@ -387,11 +387,7 @@ Route::post('atten/webhook', function (Request $request) {
     |--------------------------------------------------------------------------
     */
     $rawPhone = $student->StudentPhoneNumber;
-    $phone = preg_replace('/\D/', '', $rawPhone); // remove + - space
-
-    if (strlen($phone) == 11) {
-        $phone = $phone;
-    }
+    $phone = $rawPhone;
 
     /*
     |--------------------------------------------------------------------------
