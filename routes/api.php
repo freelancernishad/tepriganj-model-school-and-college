@@ -461,7 +461,7 @@ Route::post('atten/webhook', function (Request $request) {
                 'message' => $message
             ]);
 
-            SmsNocSmsSend($phone, $message);
+            SmsNocSmsSend($message, $phone);
         }
 
         return response()->json('Attendance created & SMS sent', 200);
@@ -506,7 +506,7 @@ Route::post('atten/webhook', function (Request $request) {
             'message' => $message
         ]);
 
-        SmsNocSmsSend($phone, $message);
+        SmsNocSmsSend($message, $phone);
     }
 
     $attendanceRow->attendance = json_encode($attendanceList, JSON_UNESCAPED_UNICODE);
