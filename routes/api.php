@@ -377,7 +377,8 @@ Route::post('atten/webhook', function (Request $request) {
         return response()->json('Student not found', 404);
     }
 
-    $date  = Carbon::parse($data['timestamp'])->toDateString();
+    // $date  = Carbon::parse($data['timestamp'])->toDateString();
+    $date = Carbon::parse($data['timestamp'])->format('Y-m-d H:i');
     $month = Carbon::parse($data['timestamp'])->format('F');
     $year  = Carbon::parse($data['timestamp'])->year;
 
@@ -442,7 +443,8 @@ Route::post('atten/webhook', function (Request $request) {
         */
         if ($phone) {
 
-            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+             $int_en_to_bnDate = int_en_to_bn($date);
+            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$int_en_to_bnDate} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
 
             Log::info('SMS TRY (FIRST)', [
                 'phone' => $phone,
@@ -486,8 +488,9 @@ Route::post('atten/webhook', function (Request $request) {
     |--------------------------------------------------------------------------
     */
     if ($phone) {
+        $int_en_to_bnDate = int_en_to_bn($date);
 
-        $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+        $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$int_en_to_bnDate} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
 
         Log::info('SMS TRY (LATE)', [
             'phone' => $phone,
