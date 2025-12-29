@@ -369,7 +369,7 @@ Route::post('atten/webhook', function (Request $request) {
     }
 
     // punch করা student
-    $student = Student::find($data['user_id']);
+    $student = student::find($data['user_id']);
     if (!$student) {
         return response()->json('Student not found', 404);
     }
@@ -378,7 +378,7 @@ Route::post('atten/webhook', function (Request $request) {
     $month = Carbon::parse($data['timestamp'])->format('F');
     $year  = Carbon::parse($data['timestamp'])->year;
 
-    // আজকের attendance row খোঁজা
+    // আজকের attendance row
     $attendanceRow = Attendance::where([
         'student_class' => $student->StudentClass,
         'date'          => $date,
@@ -392,8 +392,7 @@ Route::post('atten/webhook', function (Request $request) {
     */
     if (!$attendanceRow) {
 
-        // ঐ class-এর সব student
-        $students = Student::where([
+        $students = student::where([
             'StudentClass'  => $student->StudentClass,
             'Year'          => $student->Year,
             'StudentStatus' => $student->StudentStatus,
@@ -404,10 +403,10 @@ Route::post('atten/webhook', function (Request $request) {
         foreach ($students as $stu) {
             $attendanceArray[] = [
                 'id'         => $stu->id,
-                'stu_roll'   => $stu->roll,
-                'stu_id'     => $stu->stu_id,
-                'stu_name'   => $stu->name,
-                'phone'      => $stu->phone,
+                'stu_roll'   => $stu->StudentRoll,
+                'stu_id'     => $stu->StudentID,
+                'stu_name'   => $stu->StudentName,
+                'phone'      => $stu->StudentPhoneNumber,
                 'attendence' => ($stu->id == $student->id) ? 'Present' : 'Absent',
                 'status'     => 'pending',
             ];
@@ -423,19 +422,58 @@ Route::post('atten/webhook', function (Request $request) {
             'status'        => 'Pending',
         ]);
 
-        return response()->json('Attendance created & student marked present');
+        /*
+        |--------------------------------------------------------------------------
+        | ✅ FIRST PUNCH → SMS SEND
+        |--------------------------------------------------------------------------
+        */
+        if (!empty($student->StudentPhoneNumber)) {
+
+
+            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+
+
+            // এখানে তোমার SMS function বসাও
+            SmsNocSmsSend($student->StudentPhoneNumber, $message);
+
+            Log::info("SMS sent to {$student->StudentPhoneNumber}: {$message}");
+        }
+
+        return response()->json('Attendance created, student present & SMS sent', 200);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | CASE 2: attendance already আছে → শুধু update
+    | CASE 2: attendance আছে → duplicate punch prevent
     |--------------------------------------------------------------------------
     */
     $attendanceList = json_decode($attendanceRow->attendance, true);
 
     foreach ($attendanceList as &$row) {
-        if ($row['stu_id'] == $student->stu_id) {
+        if ($row['stu_id'] == $student->StudentID) {
+
+            // 🔴 already present
+            if ($row['attendence'] === 'Present') {
+                return response()->json('Student already present today', 200);
+            }
+
+            // 🟢 first time update
             $row['attendence'] = 'Present';
+
+            /*
+            |--------------------------------------------------------------------------
+            | ✅ FIRST UPDATE → SMS SEND
+            |--------------------------------------------------------------------------
+            */
+            if (!empty($student->StudentPhoneNumber)) {
+
+                $message = "Dear {$student->StudentName}, you are marked PRESENT on {$date}.";
+
+                // sendSms($student->StudentPhoneNumber, $message);
+
+                Log::info("SMS sent to {$student->StudentPhoneNumber}: {$message}");
+            }
+
             break;
         }
     }
@@ -443,10 +481,8 @@ Route::post('atten/webhook', function (Request $request) {
     $attendanceRow->attendance = json_encode($attendanceList, JSON_UNESCAPED_UNICODE);
     $attendanceRow->save();
 
-    return response()->json('Student attendance updated');
+    return response()->json('Student attendance updated & SMS sent', 200);
 });
-
-
 
 Route::get('all/students',function(){
     $student = student::where([
