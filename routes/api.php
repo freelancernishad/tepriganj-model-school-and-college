@@ -357,19 +357,22 @@ Route::get('/assessment/students',[AssessmentController::class , 'getStudent']);
 
 
 
-
 Route::post('atten/webhook', function (Request $request) {
 
     $payload = $request->all();
-    Log::info($payload);
+    Log::info('Attendance Webhook Payload', $payload);
 
     $data = $payload['data'] ?? null;
-    if (!$data) {
+    if (!$data || empty($data['user_id']) || empty($data['timestamp'])) {
         return response()->json('Invalid payload', 400);
     }
 
-    // punch করা student
-    $student = student::find($data['user_id']);
+    /*
+    |--------------------------------------------------------------------------
+    | Student Find
+    |--------------------------------------------------------------------------
+    */
+    $student = Student::find($data['user_id']);
     if (!$student) {
         return response()->json('Student not found', 404);
     }
@@ -378,7 +381,11 @@ Route::post('atten/webhook', function (Request $request) {
     $month = Carbon::parse($data['timestamp'])->format('F');
     $year  = Carbon::parse($data['timestamp'])->year;
 
-    // আজকের attendance row
+    /*
+    |--------------------------------------------------------------------------
+    | Today Attendance Row
+    |--------------------------------------------------------------------------
+    */
     $attendanceRow = Attendance::where([
         'student_class' => $student->StudentClass,
         'date'          => $date,
@@ -387,12 +394,12 @@ Route::post('atten/webhook', function (Request $request) {
 
     /*
     |--------------------------------------------------------------------------
-    | CASE 1: প্রথম punch → attendance নাই
+    | CASE 1: FIRST PUNCH → CREATE ATTENDANCE
     |--------------------------------------------------------------------------
     */
     if (!$attendanceRow) {
 
-        $students = student::where([
+        $students = Student::where([
             'StudentClass'  => $student->StudentClass,
             'Year'          => $student->Year,
             'StudentStatus' => $student->StudentStatus,
@@ -424,57 +431,77 @@ Route::post('atten/webhook', function (Request $request) {
 
         /*
         |--------------------------------------------------------------------------
-        | ✅ FIRST PUNCH → SMS SEND
+        | ✅ SMS → ONLY THIS STUDENT (FIRST PUNCH)
         |--------------------------------------------------------------------------
         */
         if (!empty($student->StudentPhoneNumber)) {
 
+            if (preg_match('/^01[3-9]\d{8}$/', $student->StudentPhoneNumber)) {
 
-            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+                $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
 
+                SmsNocSmsSend(
+                    $student->StudentPhoneNumber,
+                    $message
+                );
 
-            // এখানে তোমার SMS function বসাও
-            SmsNocSmsSend($message,$student->StudentPhoneNumber);
-
-            Log::info("SMS sent to {$student->StudentPhoneNumber}: {$message}");
+                Log::info("SMS sent (first punch)", [
+                    'student_id' => $student->id,
+                    'phone'      => $student->StudentPhoneNumber
+                ]);
+            }
         }
 
-        return response()->json('Attendance created, student present & SMS sent', 200);
+        return response()->json('Attendance created & SMS sent', 200);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | CASE 2: attendance আছে → duplicate punch prevent
+    | CASE 2: ATTENDANCE EXISTS → UPDATE PRESENT
     |--------------------------------------------------------------------------
     */
     $attendanceList = json_decode($attendanceRow->attendance, true);
 
+    $alreadyPresent = false;
+
     foreach ($attendanceList as &$row) {
+
         if ($row['stu_id'] == $student->StudentID) {
 
-            // 🔴 already present
             if ($row['attendence'] === 'Present') {
-                return response()->json('Student already present today', 200);
+                $alreadyPresent = true;
+                break;
             }
 
-            // 🟢 first time update
             $row['attendence'] = 'Present';
-
-            /*
-            |--------------------------------------------------------------------------
-            | ✅ FIRST UPDATE → SMS SEND
-            |--------------------------------------------------------------------------
-            */
-            if (!empty($student->StudentPhoneNumber)) {
-
-                $message = "Dear {$student->StudentName}, you are marked PRESENT on {$date}.";
-
-                // sendSms($student->StudentPhoneNumber, $message);
-
-                Log::info("SMS sent to {$student->StudentPhoneNumber}: {$message}");
-            }
-
             break;
+        }
+    }
+
+    if ($alreadyPresent) {
+        return response()->json('Student already present today', 200);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ✅ SMS → ONLY THIS STUDENT (FIRST TIME PRESENT)
+    |--------------------------------------------------------------------------
+    */
+    if (!empty($student->StudentPhoneNumber)) {
+
+        if (preg_match('/^01[3-9]\d{8}$/', $student->StudentPhoneNumber)) {
+
+            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+
+            SmsNocSmsSend(
+                $student->StudentPhoneNumber,
+                $message
+            );
+
+            Log::info("SMS sent (late present)", [
+                'student_id' => $student->id,
+                'phone'      => $student->StudentPhoneNumber
+            ]);
         }
     }
 
@@ -484,13 +511,21 @@ Route::post('atten/webhook', function (Request $request) {
     return response()->json('Student attendance updated & SMS sent', 200);
 });
 
-Route::get('all/students',function(){
-    $student = student::where([
-        'StudentStatus'=>'Active',
-        'Year' => date('Y')
-    ]
-    )->select('id','StudentName','StudentNameEn','StudentClass')->get();
-    return response()->json(['data'=>$student]);
+
+/*
+|--------------------------------------------------------------------------
+| All Students API
+|--------------------------------------------------------------------------
+*/
+Route::get('all/students', function () {
+
+    $students = Student::where([
+        'StudentStatus' => 'Active',
+        'Year'          => date('Y')
+    ])->select('id', 'StudentName', 'StudentNameEn', 'StudentClass')
+      ->get();
+
+    return response()->json(['data' => $students]);
 });
 
 
