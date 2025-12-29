@@ -434,7 +434,7 @@ Route::post('atten/webhook', function (Request $request) {
 
 
             // এখানে তোমার SMS function বসাও
-            SmsNocSmsSend($student->StudentPhoneNumber, $message);
+            SmsNocSmsSend($message,$student->StudentPhoneNumber);
 
             Log::info("SMS sent to {$student->StudentPhoneNumber}: {$message}");
         }
