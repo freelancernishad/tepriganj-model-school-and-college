@@ -360,7 +360,7 @@ Route::get('/assessment/students',[AssessmentController::class , 'getStudent']);
 Route::post('atten/webhook', function (Request $request) {
 
     $payload = $request->all();
-    Log::info('Attendance Webhook Payload', $payload);
+    Log::info('Webhook Hit', $payload);
 
     $data = $payload['data'] ?? null;
     if (!$data || empty($data['user_id']) || empty($data['timestamp'])) {
@@ -369,7 +369,7 @@ Route::post('atten/webhook', function (Request $request) {
 
     /*
     |--------------------------------------------------------------------------
-    | Student Find
+    | Find Student
     |--------------------------------------------------------------------------
     */
     $student = Student::find($data['user_id']);
@@ -380,6 +380,26 @@ Route::post('atten/webhook', function (Request $request) {
     $date  = Carbon::parse($data['timestamp'])->toDateString();
     $month = Carbon::parse($data['timestamp'])->format('F');
     $year  = Carbon::parse($data['timestamp'])->year;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Normalize Phone Number (🔥 VERY IMPORTANT)
+    |--------------------------------------------------------------------------
+    */
+    $rawPhone = $student->StudentPhoneNumber;
+    $phone = preg_replace('/\D/', '', $rawPhone); // remove + - space
+
+    if (strlen($phone) == 11) {
+        $phone = '88' . $phone;
+    }
+
+    if (!(strlen($phone) == 13 && str_starts_with($phone, '88'))) {
+        Log::warning('Invalid phone number', [
+            'student_id' => $student->id,
+            'phone' => $rawPhone
+        ]);
+        $phone = null;
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -413,9 +433,7 @@ Route::post('atten/webhook', function (Request $request) {
                 'stu_roll'   => $stu->StudentRoll,
                 'stu_id'     => $stu->StudentID,
                 'stu_name'   => $stu->StudentName,
-                'phone'      => $stu->StudentPhoneNumber,
                 'attendence' => ($stu->id == $student->id) ? 'Present' : 'Absent',
-                'status'     => 'pending',
             ];
         }
 
@@ -431,25 +449,19 @@ Route::post('atten/webhook', function (Request $request) {
 
         /*
         |--------------------------------------------------------------------------
-        | ✅ SMS → ONLY THIS STUDENT (FIRST PUNCH)
+        | ✅ SEND SMS (FIRST PUNCH)
         |--------------------------------------------------------------------------
         */
-        if (!empty($student->StudentPhoneNumber)) {
+        if ($phone) {
 
-            if (preg_match('/^01[3-9]\d{8}$/', $student->StudentPhoneNumber)) {
+            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
 
-                $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+            Log::info('SMS TRY (FIRST)', [
+                'phone' => $phone,
+                'message' => $message
+            ]);
 
-                SmsNocSmsSend(
-                    $student->StudentPhoneNumber,
-                    $message
-                );
-
-                Log::info("SMS sent (first punch)", [
-                    'student_id' => $student->id,
-                    'phone'      => $student->StudentPhoneNumber
-                ]);
-            }
+            SmsNocSmsSend($phone, $message);
         }
 
         return response()->json('Attendance created & SMS sent', 200);
@@ -461,11 +473,9 @@ Route::post('atten/webhook', function (Request $request) {
     |--------------------------------------------------------------------------
     */
     $attendanceList = json_decode($attendanceRow->attendance, true);
-
     $alreadyPresent = false;
 
     foreach ($attendanceList as &$row) {
-
         if ($row['stu_id'] == $student->StudentID) {
 
             if ($row['attendence'] === 'Present') {
@@ -484,25 +494,19 @@ Route::post('atten/webhook', function (Request $request) {
 
     /*
     |--------------------------------------------------------------------------
-    | ✅ SMS → ONLY THIS STUDENT (FIRST TIME PRESENT)
+    | ✅ SEND SMS (LATE PRESENT)
     |--------------------------------------------------------------------------
     */
-    if (!empty($student->StudentPhoneNumber)) {
+    if ($phone) {
 
-        if (preg_match('/^01[3-9]\d{8}$/', $student->StudentPhoneNumber)) {
+        $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
 
-            $message = "সম্মানিত অভিভাবক, আপনার সন্তান {$student->StudentName} আজ {$date} তারিখে বিদ্যালয়ে উপস্থিত হয়েছে।";
+        Log::info('SMS TRY (LATE)', [
+            'phone' => $phone,
+            'message' => $message
+        ]);
 
-            SmsNocSmsSend(
-                $student->StudentPhoneNumber,
-                $message
-            );
-
-            Log::info("SMS sent (late present)", [
-                'student_id' => $student->id,
-                'phone'      => $student->StudentPhoneNumber
-            ]);
-        }
+        SmsNocSmsSend($phone, $message);
     }
 
     $attendanceRow->attendance = json_encode($attendanceList, JSON_UNESCAPED_UNICODE);
@@ -511,6 +515,22 @@ Route::post('atten/webhook', function (Request $request) {
     return response()->json('Student attendance updated & SMS sent', 200);
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| All Students
+|--------------------------------------------------------------------------
+*/
+Route::get('all/students', function () {
+
+    $students = Student::where([
+        'StudentStatus' => 'Active',
+        'Year'          => date('Y')
+    ])->select('id', 'StudentName', 'StudentNameEn', 'StudentClass')
+      ->get();
+
+    return response()->json(['data' => $students]);
+});
 
 /*
 |--------------------------------------------------------------------------
