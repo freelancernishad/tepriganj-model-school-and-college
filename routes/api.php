@@ -533,7 +533,7 @@ Route::get('all/students', function () {
     $students = Student::where([
         'StudentStatus' => 'Active',
         'Year'          => date('Y')
-    ])->select('id', 'StudentName', 'StudentNameEn', 'StudentClass')
+    ])->select('id', 'StudentName', 'StudentNameEn', 'StudentClass','StudentID')
       ->get();
 
     return response()->json(['data' => $students]);
